@@ -1,26 +1,36 @@
 
-var TestDate = function () {
+var TestData = function () {
   this.resData = []
+  this.lsetDate = 0
 }
 
-TestDate.prototype.getId = function () {
+TestData.prototype.getId = function () {
   return new Date().getTime()
 }
 
-TestDate.prototype.add = function (data) {
+TestData.prototype.add = function (data) {
   if (JSON.stringify(data) === '{}' || typeof data !== 'object') {
     return false
   }
-  data.id = this.getId()
+  let dateNow = this.getId()
+
+  data.id = dateNow
+
+  if (dateNow === this.lsetDate) {
+    data.id = dateNow + 12
+  }
+
   this.resData.push(data)
+  this.lsetDate = dateNow
+
   return data
 }
 
-TestDate.prototype.getData = function () {
+TestData.prototype.getData = function () {
   return this.resData
 }
 
-TestDate.prototype.update = function (obj) {
+TestData.prototype.update = function (obj) {
   if (typeof obj !== 'object') {
     return false
   }
@@ -35,7 +45,7 @@ TestDate.prototype.update = function (obj) {
   }
 }
 
-TestDate.prototype.delete = function (id) {
+TestData.prototype.delete = function (id) {
   if (typeof id !== 'number') {
     return false
   }
@@ -43,7 +53,8 @@ TestDate.prototype.delete = function (id) {
   for (let [idx, item] of this.resData.entries()) {
     if (item) {
       if (item.id === id) {
-        delete this.resData[idx]
+        // delete this.resData[idx]
+        this.resData.splice(idx, 1)
         return true
       }
     }
@@ -52,4 +63,4 @@ TestDate.prototype.delete = function (id) {
   return false
 }
 
-export default TestDate
+export default TestData
