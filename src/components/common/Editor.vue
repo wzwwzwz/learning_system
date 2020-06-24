@@ -4,7 +4,7 @@
 //     </div>
 
 <template>
-  <div class="editorCom">
+  <div class="editorComp">
     <!-- 图片上传组件辅助-->
     <el-upload class="avatar-uploader" :action="serverUrl" name="img" :headers="header" :show-file-list="false" :on-success="uploadSuccess"
       :on-error="uploadError" :before-upload="beforeUpload"></el-upload>
@@ -18,9 +18,9 @@
 // 引入富文本编辑器
 import { quillEditor } from 'vue-quill-editor'
 // require styles 引入样式； 富文本编辑器外部引用样式  三种样式三选一引入即可
-import 'quill/dist/quill.core.css'
+// import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
-import 'quill/dist/quill.bubble.css'
+// import 'quill/dist/quill.bubble.css'
 
 // 导航栏选项
 const toolbarOptions = [
@@ -40,32 +40,46 @@ const toolbarOptions = [
   ['link', 'image', 'video'] // 链接、图片、视频
 ]
 
+// 内容清掉换行符
+// const content = this.content.eplace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;')
+
 export default {
   props: {
     /* 编辑器的内容 */
     value: {
-      type: String
+      type: String,
+      default: ''
     },
     /* 图片大小 */
     maxSize: {
       type: Number,
       default: 4000 // kb
+    },
+    placeholderVal: {
+      type: String,
+      default: '请输入内容'
     }
   },
-
   components: {
     quillEditor
   },
-
+  computed: {
+    updateContent () {
+      return this.content
+    }
+  },
+  created () {
+    console.log('dddd编辑器dddddddd', this.placeholderVal)
+  },
   data () {
     return {
       // 富文本编辑器默认内容
       content: this.value,
       quillUpdateImg: false, // 根据图片上传状态来确定是否显示loading动画，刚开始是false,不显示
       editorOption: {
-        // placeholder: '',
+        placeholder: this.placeholderVal,
         theme: 'snow', // or 'bubble'
-        placeholder: '您想说点什么？',
+        // placeholder: '您想说点什么？',
         modules: {
           toolbar: {
             container: toolbarOptions,
@@ -97,15 +111,16 @@ export default {
       } // 有的图片服务器要求请求头需要有token
     }
   },
-
   methods: {
     onEditorBlur () {
       // 失去焦点事件
+      console.log('失焦时内容', this.content)
     },
     onEditorFocus () {
       // 获得焦点事件
     },
     onEditorChange () {
+      // console.log('内容改变事件', this.content)
       // 内容改变事件
       this.$emit('input', this.content)
     },
@@ -139,12 +154,15 @@ export default {
       // loading动画消失
       this.quillUpdateImg = false
       this.$message.error('图片插入失败')
+    },
+    clearContent () {
+      this.content = ''
     }
   }
 }
 </script>
 
-<style>
+<style lang="scss">
 .editor {
   line-height: normal !important;
   /* height: 800px; */
@@ -168,15 +186,16 @@ export default {
 }
 .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="small"]::before,
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="small"]::before {
-  content: "10px";
+  content: "12px";
 }
+
 .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="large"]::before,
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="large"]::before {
-  content: "18px";
+  content: "16px";
 }
 .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="huge"]::before,
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="huge"]::before {
-  content: "32px";
+  content: "18px";
 }
 
 .ql-snow .ql-picker.ql-header .ql-picker-label::before,
@@ -221,10 +240,28 @@ export default {
   content: "等宽字体";
 }
 
-/* 覆盖样式 */
-.editorCom .ql-container {
-  min-height: 300px;
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="small"]::before {
+  font-size: 12px;
 }
+
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="large"]::before {
+  font-size: 16px;
+}
+
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="huge"]::before {
+  font-size: 18px;
+}
+
+/* 覆盖样式 */
+.editorComp .ql-container {
+  // min-height: 300px;
+
+  .ql-editor {
+    height: 100%;
+    min-height: 300px;
+  }
+}
+
 .ql-snow .ql-picker.ql-header {
   width: 65px;
 }

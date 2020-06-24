@@ -1,21 +1,16 @@
 <template>
-  <div class="home">
-    <!-- <el-container class="home_el-container">
-      <el-header>
-        <z-header></z-header>
-      </el-header>
-      <el-main>
-        <router-view></router-view>
-      </el-main>
-    </el-container> -->
-
-    <el-container class="home_el-container">
-      <el-header class="home_el_header">
-        <z-header></z-header>
+  <div class="ls_home">
+    <el-container class="ls_home_container">
+      <el-header class="ls_home_header ls_home_header">
+        <div class="ls_home_content_wrap">
+          <z-header></z-header>
+        </div>
       </el-header>
       <div class="g_spilt_div_Horizontal"></div>
-      <el-main class="ls_main_content">
-        <router-view></router-view>
+      <el-main class="ls_home_main">
+        <div class="ls_home_content_wrap">
+          <router-view></router-view>
+        </div>
       </el-main>
     </el-container>
   </div>
@@ -43,8 +38,8 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.home,
-.home_el-container {
+.ls_home,
+.ls_home_container {
   width: 100%;
   height: 100%;
 }
@@ -57,13 +52,18 @@ export default {
 }
 
 .el-main {
-  /* background-color: #e9eef3; */
+  background-color: #e9eef3;
   color: #333;
   // text-align: center;
   // line-height: 160px;
+  padding: 0;
 }
 
 body > .el-container {
   margin-bottom: 40px;
+}
+
+.ls_home_main .ls_home_content_wrap {
+  padding: 10px 20px;
 }
 </style>

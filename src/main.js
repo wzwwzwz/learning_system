@@ -21,6 +21,7 @@ import store from './store'
 // global css
 import '@/styles/index.css'
 import './icons'
+// import { valid } from 'semver'
 
 Vue.config.productionTip = false
 
@@ -37,5 +38,14 @@ new Vue({
   router,
   store,
   components: { App },
-  template: '<App/>'
+  template: '<App/>',
+  filters: {
+    // gFiltesShowMore: function (val, len, b) {
+    //   if (b) {
+    //     return val
+    //   } else {
+    //     return val.subString(0, len)
+    //   }
+    // }
+  }
 })

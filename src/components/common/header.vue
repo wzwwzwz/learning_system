@@ -1,5 +1,5 @@
 <template>
-  <div id="hearder" class="ls_main_content">
+  <div id="hearder" class="ddls_el_main">
     <!-- 菜单 -->
     <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect" :router="b_router">
       <!-- 主页 -->

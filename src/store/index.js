@@ -10,6 +10,7 @@ const state = {
   basicsReqURL: 'http://192.168.1.41:8000',
   // 用户信息
   userInfo: {
+    userId: 111,
     userName: 'userName11==',
     userAuth: null
   },

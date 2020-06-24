@@ -4,6 +4,10 @@
   padding: 0;
 }
 
+html {
+  height: 100%;
+}
+
 div:focus {
   outline: none;
 }
@@ -16,14 +20,24 @@ div:focus {
 #app {
   background-color: #f2f2f2;
   background-color: #e9eef3;
+  /* font-size: 16px; */
 }
 
-.ls_main_content {
+.ls_home_main,
+.ls_home_header {
   /* padding: 0 300px; */
-  width: 1070px;
+  /* width: 1070px; */
+  /* width: 80%; */
+  /* margin: 0 auto; */
+  background-color: #fff;
+}
+
+
+.ls_home_content_wrap {
   width: 80%;
   margin: 0 auto;
-  background-color: #fff;
+  height: 100%;
+  background: #fff;
 }
 
 .text-center {
@@ -114,7 +128,41 @@ text {
 } */
 
 
+
+/* 覆盖富文本编辑器 */
+.ql-container {
+  font-size: 14px;
+}
+
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="normal"]::before {
+  font-size: 10px;
+}
+
+.ql-editor .ql-size-small {
+  font-size: 12px;
+}
+
+.ql-editor .ql-size-large {
+  font-size: 16px;
+}
+
+.ql-editor .ql-size-huge {
+  font-size: 18px;
+}
+
+
 /********************************** 取消默认样式 **********************************/
 a {
   text-decoration: none;
+}
+
+
+
+/* 媒介查询 */
+@media screen and (max-height: 300px) {
+
+  /* 主体隐藏*/
+  .ls_home_main {
+    display: none;
+  }
 }

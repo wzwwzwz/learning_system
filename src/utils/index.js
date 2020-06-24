@@ -120,7 +120,7 @@ export function getQueryObject (url) {
 export function byteLength (str) {
   // returns the byte length of an utf8 string
   let s = str.length
-  for (var i = str.length - 1; i >= 0; i--) {
+  for (let i = str.length - 1; i >= 0; i--) {
     const code = str.charCodeAt(i)
     if (code > 0x7f && code <= 0x7ff) s++
     else if (code > 0x7ff && code <= 0xffff) s += 2
@@ -352,4 +352,38 @@ export function removeClass (ele, cls) {
     const reg = new RegExp('(\\s|^)' + cls + '(\\s|$)')
     ele.className = ele.className.replace(reg, ' ')
   }
+}
+
+// 以下作者 : wzw
+export function getSystemTime () {
+  let time = new Date()
+
+  let timeYear = time.getFullYear()
+  let timeMonth = time.getMonth() + 1
+  let timeDate = time.getDate()
+
+  let timeHours = time.getHours()
+  let timeMinutes = time.getMinutes()
+  let timeSeconds = time.getSeconds()
+
+  let timeTime = function (time_) {
+    if (time_ < 10) {
+      time_ = '0' + time_
+    }
+    return time_
+  }
+
+  let timeValue = timeYear +
+      '-' +
+      timeTime(timeMonth) +
+      '-' +
+      timeTime(timeDate) +
+      '  ' +
+      timeTime(timeHours) +
+      ':' +
+      timeTime(timeMinutes) +
+      ':' +
+      timeTime(timeSeconds)
+
+  return timeValue
 }
