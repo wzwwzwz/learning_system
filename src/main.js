@@ -11,6 +11,10 @@ import 'element-ui/lib/theme-chalk/index.css'
 // 引入store
 import store from './store'
 
+// 引入axios
+import axios from 'axios'
+import QS from 'qs'
+
 // 引入富文本编辑器
 // import VueQuillEditor from 'vue-quill-editor'
 // // require styles 引入样式； 富文本编辑器外部引用样式  三种样式三选一引入即可
@@ -21,8 +25,10 @@ import store from './store'
 // global css
 import '@/styles/index.css'
 import './icons'
-// import { valid } from 'semver'
 
+// 全局配置axios
+Vue.prototype.axios = axios
+Vue.prototype.qs = QS
 Vue.config.productionTip = false
 
 // 使用element-ui
@@ -38,14 +44,5 @@ new Vue({
   router,
   store,
   components: { App },
-  template: '<App/>',
-  filters: {
-    // gFiltesShowMore: function (val, len, b) {
-    //   if (b) {
-    //     return val
-    //   } else {
-    //     return val.subString(0, len)
-    //   }
-    // }
-  }
+  template: '<App/>'
 })

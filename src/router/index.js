@@ -2,6 +2,9 @@ import Vue from 'vue'
 import Router from 'vue-router'
 // import HelloWorld from '@/components/HelloWorld'
 
+// import {mapGetters} from 'vuex'
+import Store from '@/store/index'
+
 // 引入页面组件
 import Login from '@/pages/Login'
 import Home from '@/pages/Home'
@@ -22,7 +25,7 @@ Router.prototype.push = function push (location) {
   return originalPush.call(this, location).catch(err => err)
 }
 
-export default new Router({
+const router = new Router({
   routes: [
     // {path: '/',name: 'HelloWorld',component: HelloWorld},
     {
@@ -56,3 +59,25 @@ export default new Router({
   // 删掉锚点(#号键)
   mode: 'history'
 })
+
+// const gettersVuex = mapGetters(['getExamStatus'])
+
+// const gettersVuex = Store.getters.getExamStatus
+
+// console.log('route------', gettersVuex.getExamStatus)
+
+router.beforeEach((ro, from, next) => {
+  if (from.path === '/exam') {
+    const gettersVuex = Store.getters.getExamStatus
+
+    console.log(Store)
+
+    if (gettersVuex) {
+      next(false)
+      return
+    }
+  }
+  next()
+})
+
+export default router

@@ -1,6 +1,6 @@
 <template>
   <!-- <router-view></router-view> -->
-  <div id="learnDirIndex" class="container">
+  <div id="learnDirIndex" class="component_wrap container">
     <!-- <button @click="change">切换页面</button> -->
     <!--用is特性动态的选择要挂载的组件-->
     <component :is="currentView" @openDetails="openDetails($event)" @goBack="returnDefault" :AnswerDate="paramsDate" :idx="curIdx">

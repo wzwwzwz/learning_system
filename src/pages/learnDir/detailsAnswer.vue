@@ -68,7 +68,8 @@
             <el-link type="primary" @click="likeOperation()"><i class="el-icon-thumb "></i>点赞 {{`(${item.likes})`}}</el-link>
             <el-link type="primary"><i class="el-icon-chat-dot-square "></i>回复 {{`(${item.commenters})`}}</el-link>
             <!-- <el-button type="text" plain icon="el-icon-chat-dot-square">回复</el-button> -->
-            <el-link type="danger" @click="deleteAnswer(item)" v-show="getUserInfo.userId === item.userId">
+            <el-link type="danger" @click="deleteAnswer(item)"
+              v-show="getUserInfo.userId === item.userId || getUserInfo.userAuth === 'admin' || getUserInfo.userAuth === 'judge'">
               <i class="el-icon-delete"></i>删除
             </el-link>
           </div>
@@ -239,7 +240,6 @@ export default {
           likes: 2,
           commenters: 0
         }
-        debugger
 
         this.answerList.push(data)
         this.EditorVal = ''
@@ -253,7 +253,13 @@ export default {
       this.answerList[idx].showMore = !this.answerList[idx].showMore
     },
     likeOperation () {
-
+      // http get请求
+      this.axios.get('http://jsonplaceholder.typicode.com/users').then(
+        data => {
+          console.log(data)
+          this.id_num = data.body
+        }
+      )
     },
     deleteAnswer (item) {
       // debugger

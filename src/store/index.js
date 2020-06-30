@@ -13,9 +13,30 @@ const state = {
     userId: 111,
     userName: 'userName11==',
     userAuth: null
+    // userAuth: 'admin'
   },
   // 要设置的初始属性值
-  count: 1
+  count: 1,
+  bIsExam: false,
+  knowledgePoint: [{
+    name: '业内名词',
+    label: '业内名词'
+  }, {
+    name: '公司内部名词',
+    label: '公司内部名词'
+  }, {
+    name: '行业产品',
+    label: '行业产品'
+  }, {
+    name: '公司产品',
+    label: '公司产品'
+  }, {
+    name: '产品应用场景',
+    label: '产品应用场景'
+  }, {
+    name: '产品目的',
+    label: '产品目的'
+  }]
 }
 
 // 实时监听state值的变化(最新状态)
@@ -27,26 +48,32 @@ const getters = {
   // getters 写法二
   getCount: (state) => state.count,
   getBasicsReqURL: (state) => state.basicsReqURL,
-  isShow (state) {
-    return state.showFooter
-  },
-  // 方法名随意,主要是用来承载变化的changableNum的值
-  getChangedNum () {
-    return state.changebleNum
-  }
+  getKnowledgePoint: state => state.knowledgePoint,
+  getExamStatus: state => state.bIsExam
 }
 
+// 该方法接受第一个参数接受 state作为上下文
 const mutations = {
   add (state, num) {
     state.count += num
   },
-
   reduce (state) {
     state.count -= 1
     state.userInfo.userName = '555'
+  },
+  uploadHead (state, param) {
+    console.log('mutations上传头像', param.get('multfile'))
+    // commit('上传头像', param)
+  },
+  setExamStatus (state, b) {
+    if (typeof b !== 'boolean') {
+      return false
+    }
+    state.bIsExam = b
   }
 }
 
+// 可以实现异步
 const actions = {
   addAction (context) {
     context.commit('add', 10)
@@ -54,6 +81,14 @@ const actions = {
 
   reduceAction ({commit}) {
     commit('reduce')
+  },
+  // 上传头像
+  UPLOAD_HEAD ({commit}, param) {
+    console.log('actions上传头像')
+    commit('uploadHead', param)
+  },
+  setExamStatus ({commit}, param) {
+    commit('setExamStatus', param)
   }
 }
 

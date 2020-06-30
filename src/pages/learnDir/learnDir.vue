@@ -15,7 +15,7 @@
         </el-divider>
       </template>
 
-      <!-- <el-button type="primary" icon="el-icon-edit" @click="editExam()">出题</el-button> -->
+      <el-button type="primary" icon="el-icon-edit" @click="editExam()">出题</el-button>
       <el-button type="text" icon="el-icon-edit" @click="addLearnQus()" style="float: right;">添加一条</el-button>
       <!-- 出题表单弹框 -->
       <examQueDialog ref="examQueForm" :knowledgeOptions="oBtnGrpInfo.aBtn" @submitForm="submitForm($event)"

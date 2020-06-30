@@ -3,7 +3,7 @@
     <el-container class="ls_home_container">
       <el-header class="ls_home_header ls_home_header">
         <div class="ls_home_content_wrap">
-          <z-header></z-header>
+          <z-header @editExam="editExam" @uploadAvatarFun="uploadAvatarFun()"></z-header>
         </div>
       </el-header>
       <div class="g_spilt_div_Horizontal"></div>
@@ -13,27 +13,51 @@
         </div>
       </el-main>
     </el-container>
+
+    <!-------- 弹出框集合 -------->
+    <!-- 出题表单弹框 -->
+    <examQueDialog ref="examQueForm" @submitForm="submitForm($event)" :dialogTiltle="examQueData.title"></examQueDialog>
+    <upload-Avatar ref="dialogUploadAvatar"></upload-Avatar>
   </div>
 </template>
 <script>
 import zHeader from '@/components/common/header.vue'
 import hallo from '@/components/HelloWorld.vue'
 // import zAside from "@/pages/common/aside.vue";
+import examQueDialog from '@/components/common/examQueDialog.vue'
+import uploadAvatar from '@/components/common/uploadAvatar.vue'
+
 export default {
   name: 'index',
   data () {
-    return {}
+    return {
+      examQueData: {
+        showDialog: false,
+        title: ''
+      }
+    }
   },
   components: {
     // zAside,
     zHeader,
-    hallo
+    hallo,
+    examQueDialog,
+    uploadAvatar
   },
   created () {
     // this.$store.commit("changeBreadcumb", []);
     // this.$router.push({
     //   name: 'learn_dir'
     // })
+  },
+  methods: {
+    editExam () {
+      // this.examQueData.title = ''
+      this.$refs.examQueForm.openDialog(true)
+    },
+    uploadAvatarFun () {
+      this.$refs.dialogUploadAvatar.openDialog()
+    }
   }
 }
 </script>
@@ -61,9 +85,5 @@ export default {
 
 body > .el-container {
   margin-bottom: 40px;
-}
-
-.ls_home_main .ls_home_content_wrap {
-  padding: 10px 20px;
 }
 </style>

@@ -387,3 +387,69 @@ export function getSystemTime () {
 
   return timeValue
 }
+
+/**
+ * 格式化 时间位数
+ * @param { Number } time_ 年月日时分秒时间
+ * @return { Number } 格式化好的两位数时间表示
+ */
+export function formatTimeDigits (time_) {
+  if (time_ < 10) {
+    time_ = '0' + time_
+  }
+  return time_
+}
+
+// 计时器
+var NTimer = function name (params) {
+  // let timeNow = null
+  // let timeLen = null
+}
+
+NTimer.prototype.setTimeNow = function (val) {
+  this.timeNow = getSystemTime
+}
+
+NTimer.prototype.setTimeLen = function (len) {
+  this.timeLen = len
+}
+
+NTimer.prototype.updateTime = function () {
+
+}
+
+export default NTimer
+
+/**
+ * 计时器 -- 类
+ * @param { Number } len 倒计时时间戳
+ */
+export class UtilsTimer {
+  constructor (len) {
+    if (typeof len !== 'number') {
+      return false
+    }
+    this.timeLen = len
+  }
+
+  /**
+  * 更新时间
+  * @return { Object || false } 包含时分秒的对象
+  */
+  updateTime () {
+    this.timeLen = this.timeLen - 1
+    return this.getTimeLeft()
+  }
+
+  getTimeLeft () {
+    let h = formatTimeDigits(parseInt(this.timeLen / (60 * 60) % 24))
+    let m = formatTimeDigits(parseInt(this.timeLen / 60 % 60))
+    let s = formatTimeDigits(parseInt(this.timeLen % 60))
+
+    if (this.timeLen <= 0) {
+      return false
+    }
+
+    return {h, m, s}
+  }
+}

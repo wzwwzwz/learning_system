@@ -2,7 +2,7 @@
   <div class=''>
     <!-- 用户操作dialog弹框开始 -->
     <!-- width="50%" -->
-    <el-dialog :title="dialogTiltle" :visible.sync="dialogVisible" :close-on-click-modal="false">
+    <el-dialog :title="dialogTiltle" :visible.sync="dialogVisible" :close-on-click-modal="false" :before-close="dialogCancel">
       <slot name="examType" v-if="bEaxmQueDia">
         <!-- 题目类型 -->
         <div class="switch_wrap dbclick_unchecked">
@@ -23,7 +23,7 @@
         <!--知识点 -->
         <el-form-item label="知识点" prop="knowledgePoint">
           <el-select v-model="examQueForm.knowledgePoint" multiple placeholder="请选择知识点" style="display:block">
-            <el-option v-for="item in knowledgeOptions" :key="item.label" :label="item.label" :value="item.label"></el-option>
+            <el-option v-for="item in updateKnowledgePoint" :key="item.label" :label="item.label" :value="item.label"></el-option>
           </el-select>
         </el-form-item>
 
@@ -64,13 +64,17 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   name: '',
   props: {
-    knowledgeOptions: {
-      type: Array,
-      default: () => []
-    },
+    // knowledgeOptions: {
+    //   type: Array,
+    //   default: function () {
+    //     return this.getKnowledgePoint
+    //     // return this.updateKnowledgePoint
+    //   }
+    // },
     dialogTiltle: {
       type: String,
       default: () => ''
@@ -79,12 +83,16 @@ export default {
   components: {
   },
   computed: {
+    ...mapGetters(['getKnowledgePoint']),
     updateAnswerList () {
       if (this.examQueForm.bIsSelectQue) {
         return [{ key: true }, { key: false }]
       } else {
         return this.examQueForm.selectOptions
       }
+    },
+    updateKnowledgePoint () {
+      return this.getKnowledgePoint
     }
   },
   filters: {
@@ -115,22 +123,7 @@ export default {
         inactiveText: '选择题'
       },
       // 知识点
-      // knowledgeOptions: [{
-      //   value: '选项1',
-      //   label: '黄金糕'
-      // }, {
-      //   value: '选项2',
-      //   label: '双皮奶'
-      // }, {
-      //   value: '选项3',
-      //   label: '蚵仔煎'
-      // }, {
-      //   value: '选项4',
-      //   label: '龙须面'
-      // }, {
-      //   value: '选项5',
-      //   label: '北京烤鸭'
-      // }],
+      // knowledgeOptions: this.getKnowledgePoint,
       // 默认选项值
       selectOptionsDefaltArr: [
         { key: 'A', value: '默认测试值1' },
@@ -180,7 +173,6 @@ export default {
     }
   },
   created () {
-    // console.log(String.fromCharCode(65 + 0))
     this.switchChg(this.switchDate.switchVal)
     // this.answerList = this.examQueForm.selectOptions
   },
@@ -220,6 +212,10 @@ export default {
           vm.$message.error('请填写完表单')
         }
       })
+    },
+    beforeClose () {
+      this.dialogVisible = false
+      this.$refs.examQueForm.resetFields()
     },
     dialogCancel () {
       const vm = this

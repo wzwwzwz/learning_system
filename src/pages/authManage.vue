@@ -1,5 +1,5 @@
 <template>
-  <div id="auth">
+  <div id="auth" class="component_wrap">
     <div class="user">
       <el-button type="primary" class="adduser" size="small" @click="rolrData(0, roleForm)">添加用户</el-button>
     </div>
@@ -347,7 +347,7 @@ export default {
 </script>
 <style scoped>
 #auth {
-  margin: auto 20px;
+  /* margin: auto 20px; */
 }
 
 .adduser {
