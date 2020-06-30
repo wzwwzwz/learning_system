@@ -241,8 +241,6 @@ export default {
           this.submit(true)
           return false
         }
-
-        // console.log('剩余', vm.showTimeLeft)
       }, 1000)
     },
     // @param { boolean } 是否还剩余时间
