@@ -85,7 +85,7 @@ import Editor from '@/components/common/Editor'
 import { getSystemTime } from '@/utils/index'
 import { mapGetters } from 'vuex'
 // 测试代码
-import TestData from '@/utils/testData'
+import TestData from '@/utils/testFiles/testData'
 
 export default {
   name: 'btnGrp',

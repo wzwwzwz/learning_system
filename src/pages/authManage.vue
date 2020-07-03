@@ -54,7 +54,8 @@
   </div>
 </template>
 <script>
-import TestDate from '@/utils/testData'
+// 测试文件
+import TestDate from '@/utils/testFiles/testData'
 
 export default {
   created () {

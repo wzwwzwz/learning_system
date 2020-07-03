@@ -421,9 +421,9 @@ NTimer.prototype.updateTime = function () {
 export default NTimer
 
 /**
- * 计时器 -- 类
+ * @description 倒计时工具
  * @param { Number } len 倒计时时间戳
- */
+ **/
 export class UtilsTimer {
   constructor (len) {
     if (typeof len !== 'number') {
@@ -433,14 +433,18 @@ export class UtilsTimer {
   }
 
   /**
-  * 更新时间
-  * @return { Object || false } 包含时分秒的对象
-  */
+   * @description 更新时间
+   * @return { String } 包含时分秒的对象
+   */
   updateTime () {
     this.timeLen = this.timeLen - 1
     return this.getTimeLeft()
   }
 
+  /**
+   * @description 获取剩余时间
+   * @returns { Object || false} 返回对象 包含时，分，秒
+   **/
   getTimeLeft () {
     let h = formatTimeDigits(parseInt(this.timeLen / (60 * 60) % 24))
     let m = formatTimeDigits(parseInt(this.timeLen / 60 % 60))
@@ -452,4 +456,35 @@ export class UtilsTimer {
 
     return {h, m, s}
   }
+}
+
+/**
+ * @functionName countScore
+ * @description 统计分数
+ * @param { Array } aExam 原题目
+ * @param { Array } aAnswer 答题卡
+ * @param { Number || false} step 每题的分数
+ * @author 巫昭雯
+ * @date 2020-07-01 16:38:20
+ * @version V1.0
+ */
+export function countScore (aExam, aAnswer, step) {
+  if (typeof step !== 'number') {
+    return false
+  }
+  let result = 0
+
+  // for (let [index, item] in aExam) {
+  //   if (item.answer === aAnswer[index]) {
+  //     result += step
+  //   }
+  // }
+
+  for (let idx = 0; idx < aExam.length; idx++) {
+    const item = aExam[idx]
+    if (item.answer === aAnswer[idx]) {
+      result += step
+    }
+  }
+  return result
 }

@@ -32,6 +32,7 @@
               <el-avatar icon="el-icon-user-solid"></el-avatar>
             </span>
             <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item icon="el-icon-s-check" command="my_audit">我的审核</el-dropdown-item>
               <el-dropdown-item icon="el-icon-chat-dot-square" command="my_msg">我的评论</el-dropdown-item>
               <el-dropdown-item icon="el-icon-notebook-1" command="my_exam_que">我的题目</el-dropdown-item>
               <el-dropdown-item icon="el-icon-document" command="my_exam">我的考试</el-dropdown-item>
@@ -74,7 +75,6 @@ export default {
   },
   data () {
     return {
-
       b_router: true,
       // isCollapse: true
       // 消息对象
@@ -159,16 +159,6 @@ export default {
     },
     editExam () {
       this.$emit('editExam')
-    },
-    submitForm (data) {
-      console.log(data)
-      let { title, knowledgePoint } = data
-      this.tableData.push({
-        date: '2016-05-02',
-        name: title,
-        address: knowledgePoint[0],
-        tag: '家'
-      })
     }
   }
 }

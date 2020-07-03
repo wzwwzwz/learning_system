@@ -8,6 +8,7 @@ import Store from '@/store/index'
 // 引入页面组件
 import Login from '@/pages/Login'
 import Home from '@/pages/Home'
+import homeIndex from '@/pages/homeIndex'
 // import learnDir from '@/pages/learnDir/learnDir'
 import learnDirIndex from '@/pages/learnDir/index'
 // import detailsAnswer from '@/pages/learnDir/detailsAnswer'
@@ -31,11 +32,11 @@ const router = new Router({
     {
       path: '/',
       name: 'Home',
-      // redirect: '/Home',
       component: Home,
+      // redirect: '/index',
       children: [
-        // {path: '/Home', name: 'Home', component: Home},
-        {path: '/learnDir',
+        { path: '/', name: 'homeIndex', component: homeIndex },
+        { path: '/learnDir',
           name: 'learnDir',
           component: learnDirIndex,
           children: [
@@ -60,12 +61,7 @@ const router = new Router({
   mode: 'history'
 })
 
-// const gettersVuex = mapGetters(['getExamStatus'])
-
-// const gettersVuex = Store.getters.getExamStatus
-
-// console.log('route------', gettersVuex.getExamStatus)
-
+// 全局守卫
 router.beforeEach((ro, from, next) => {
   if (from.path === '/exam') {
     const gettersVuex = Store.getters.getExamStatus

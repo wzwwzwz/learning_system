@@ -16,8 +16,9 @@
 
     <!-------- 弹出框集合 -------->
     <!-- 出题表单弹框 -->
-    <examQueDialog ref="examQueForm" @submitForm="submitForm($event)" :dialogTiltle="examQueData.title"></examQueDialog>
+    <examQueDialog ref="examQueForm" @submitForm="examQueDialogSubmitForm($event)" :dialogTiltle="examQueData.title"></examQueDialog>
     <upload-Avatar ref="dialogUploadAvatar"></upload-Avatar>
+
   </div>
 </template>
 <script>
@@ -35,6 +36,7 @@ export default {
         showDialog: false,
         title: ''
       }
+
     }
   },
   components: {
@@ -50,6 +52,8 @@ export default {
     //   name: 'learn_dir'
     // })
   },
+  computed: {
+  },
   methods: {
     editExam () {
       // this.examQueData.title = ''
@@ -57,6 +61,21 @@ export default {
     },
     uploadAvatarFun () {
       this.$refs.dialogUploadAvatar.openDialog()
+    },
+    // 提交出题
+    examQueDialogSubmitForm (data) {
+      console.log(data)
+      // let params = data
+      // let url = `${this.getBasicsReqURL}/system/role/updateRole`
+      // this.axios.post(url, params).then(
+      //   data => {
+      //     console.log('成功')
+      //   }
+      // ).catch()
+
+      let obj = this.$store.state.classTestBack
+      obj.add(data)
+      console.log(obj.getData())
     }
   }
 }

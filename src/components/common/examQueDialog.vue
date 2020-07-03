@@ -47,7 +47,7 @@
           <el-form-item label="答案" prop="answer">
             <el-radio-group v-model="examQueForm.answer" @change="answerChg">
               <template v-for="(item) in updateAnswerList">
-                <el-radio :label="item.key" :key="item.key">{{item.key | formatVal}}</el-radio>
+                <el-radio :label="item.key" :key="item.key" border size="small">{{item.key | formatVal}}</el-radio>
               </template>
             </el-radio-group>
           </el-form-item>
@@ -126,8 +126,8 @@ export default {
       // knowledgeOptions: this.getKnowledgePoint,
       // 默认选项值
       selectOptionsDefaltArr: [
-        { key: 'A', value: '默认测试值1' },
-        { key: 'B', value: '默认测试值12' }
+        { key: 'A', value: '1' },
+        { key: 'B', value: '2' }
       ],
       // 答案列表
       answerList: [],
@@ -135,7 +135,7 @@ export default {
       examQueForm: {
         // 是否为选择题
         bIsSelectQue: true,
-        examTitle: 'ddd',
+        examTitle: '1+1=?',
         knowledgePoint: [],
         answer: '',
         // 绑定选项
@@ -200,8 +200,8 @@ export default {
         if (valid) {
           // 考试题目弹框确认
           if (this.bEaxmQueDia) {
-            let { bIsSelectQue, examTitle: title, knowledgePoint, selectOptions: options, answer } = vm.examQueForm
-            vm.$emit('submitForm', { bIsSelectQue, title, knowledgePoint, options, answer })
+            let { bIsSelectQue: bIsjudgeQue, examTitle: title, knowledgePoint, selectOptions: options, answer } = vm.examQueForm
+            vm.$emit('submitForm', { bIsjudgeQue, title, knowledgePoint, options, answer })
           } else {
             let { examTitle: title, knowledgePoint } = vm.examQueForm
             vm.$emit('submitForm', { title, knowledgePoint })
@@ -286,5 +286,11 @@ export default {
 .switch span {
   font-size: 20px;
   font-weight: 700;
+}
+
+/* 覆盖单选按钮组 */
+.el-radio {
+  // margin-right: 20px;
+  // padding: 10px 5px 10px 0;
 }
 </style>

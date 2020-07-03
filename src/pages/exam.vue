@@ -1,10 +1,12 @@
+
 <template>
-  <div class='component_wrap wrapper' :class="{'notes_wrap':showNotes}">
+  <div id="exam" class='component_wrap wrapper' :class="{'notes_wrap':showNotes}">
     <!------------------ 考试须知  ------------------>
     <div class="exam_notes" v-show="showNotes">
       <h3>考试须知</h3>
       <div class="notes">
-        <p>请严格遵守线上考试规则；考试时间为120分钟，考题分为选择题和判断题；</p>
+        <p>请严格遵守线上考试规则；考试时间为120分钟</p>
+        <p v-for="(item_des,idx_des) in rules" :key="idx_des">{{idx_des + 1}}.{{rules[idx_des]}}</p>
       </div>
       <div class="btnStart">
         <el-button type="primary" size="small" @click="startAnswerQue()">开始答题</el-button>
@@ -12,55 +14,72 @@
     </div>
 
     <!------------------ 试卷 ------------------>
-    <div class="exam_qus clearfix" v-show="!showNotes">
+    <div class="exam_qus clearfix" v-show="!showNotes" v-loading.fullscreen.lock="bIsSubmit" :element-loading-text="loadingText">
       <div class="qus">
 
         <!-- 选择题 -->
         <div class="top">
-          <div :class="queTitleClass" class="title">单选题</div>
-          <template v-for="(item,index) in qusList.selectQusList" class="text item">
-            <el-card class="box-card" :key="index" :id="`select_${index+1}`">
-              <div slot="header" class="clearfix">
-                <span>第{{index+1}}题</span>
-                <span style="margin-left:10px">{{item.title}}</span>
-                <el-button style=" float: right; padding: 3px 0" type="text">难度{{1}}</el-button>
-              </div>
+          <div :class="queTitleClass" class="title" style="">一.单选题</div>
+          <template v-for="(item_sel,idx_sel) in qusList.selectQusList" class="text item">
+            <div :key="idx_sel">
+              <el-card class="box-card" :id="`select_${idx_sel+1}`">
+                <div slot="header" class="clearfix">
+                  <span>第{{idx_sel+1}}题</span>
+                  <span style="margin-left:10px">{{item_sel.title}}</span>
+                  <el-button style=" float: right; padding: 3px 0" type="text">{{item_sel.type}}</el-button>
+                </div>
 
-              <!-- 选项 -->
-              <template>
-                <el-radio-group v-model="qusList.answerSheetSel[index]">
-                  <el-radio :label="item_op.key" v-for="(item_op,index) in item.options" :key="index">
-                    {{`${item_op.key}`}}.{{item_op.value}}
-                  </el-radio>
-                </el-radio-group>
-              </template>
+                <!-- 选项 -->
+                <template>
+                  <el-radio-group v-model="qusList.answerSheetSel[idx_sel]">
+                    <el-radio :label="item_op.key" v-for="(item_op,index_op) in item_sel.options" :key="index_op" :disabled="bTested"
+                      :class="{correct_answer_bg:item_op.key === item_sel.answer && bTested,error_answer_bg:item_op.key === qusList.answerSheetSel[idx_sel] && bTested}">
+                      {{`${item_op.key}`}}.{{item_op.value}}
+                      <!-- {{`${item_op.key}`}} === {{qusList.answerSheetSel[idx_sel]}} -->
+                    </el-radio>
+                  </el-radio-group>
+                </template>
 
-            </el-card>
+              </el-card>
+              <div class="el-card__header correct_answer" v-show="bTested">正确选项为 {{item_sel.answer}}</div>
+            </div>
+
           </template>
         </div>
 
         <!-- 判断题 -->
         <div class="bottom">
-          <div :class="queTitleClass" class="title">判断题</div>
-          <template v-for="(item,index) in qusList.decQusLise" class="text item">
-            <el-card class="box-card" :key="index" :id="`dec_${index+1}`">
-              <div slot="header" class="clearfix">
-                <span>第{{index+1}}题</span>
-                <span style="margin-left:10px">{{item.title}}</span>
-                <el-button style=" float: right; padding: 3px 0" type="text">难度{{1}}</el-button>
-              </div>
+          <div :class="queTitleClass" class="title">二.判断题</div>
+          <template v-for="(item_dec,idx_dec) in qusList.decQusLise" class="text item">
+            <div :key="idx_dec">
+              <el-card class="box-card" :id="`dec_${idx_dec+1}`">
+                <div slot="header" class="clearfix">
+                  <span>第{{idx_dec+1}}题</span>
+                  <span style="margin-left:10px">{{item_dec.title}}</span>
+                  <el-button style=" float: right; padding: 3px 0" type="text">{{item_dec.type}}</el-button>
+                </div>
 
-              <!-- 选项 -->
-              <template>
-                <el-radio-group v-model="qusList.answerSheetdec[index]">
-                  <el-radio label=true>{{true | formatVal}}</el-radio>
-                  <el-radio label=false>{{false | formatVal}}</el-radio>
-                </el-radio-group>
-              </template>
+                <!-- 选项 -->
+                <template>
+                  <el-radio-group v-model="qusList.answerSheetdec[idx_dec]" :disabled="bTested">
+                    <el-radio :label=true
+                      :class="{correct_answer_bg:true === item_dec.answer && bTested,error_answer_bg:true === qusList.answerSheetdec[idx_dec] && bTested}">
+                      {{true | formatVal}}
+                    </el-radio>
+                    <!-- <el-radio :label=true :class="updateOptionClass(correct_answer_bg,item_dec.answer,true)">
+                    {{true | formatVal}}
+                  </el-radio> -->
+                    <el-radio :label=false
+                      :class="{correct_answer_bg:false === item_dec.answer && bTested,error_answer_bg:false === qusList.answerSheetdec[idx_dec] && bTested}">
+                      {{false | formatVal}}
+                    </el-radio>
+                  </el-radio-group>
+                </template>
 
-            </el-card>
+              </el-card>
+              <div class="el-card__header correct_answer" v-show="bTested">正确选项为 {{item_dec.answer | formatVal}}</div>
+            </div>
           </template>
-
         </div>
 
       </div>
@@ -72,68 +91,91 @@
           <span class="time">{{this.showTimeLeft | formatTimeLeft}}</span>
         </div>
 
-        <div style="padding: 0 10px;margin-top:10px">
+        <div class="block">
+          <!-- 选择题 -->
           <div class="top">
             <div class="title">
               <span>选择题(共{{qusList.answerSheetSel.length}}题)</span>
             </div>
             <div class="g_spilt_div_Horizontal"></div>
             <div>
-              <template v-for="(item,index) in qusList.answerSheetSel">
-                <a :key="index" :href="`#select_${index+1}`" :class="{answered:item !== undefined}">
-                  <el-button :key="index" type="primary" plain style="margin-left: 10px;" class="btn_sheet">
-                    {{index+1}}-{{item}}
+              <template v-for="(item_sheet_sel,idx_sheet_sel) in qusList.answerSheetSel">
+                <a :key="idx_sheet_sel" :href="`#select_${idx_sheet_sel+1}`" :class="{answered:item_sheet_sel !== undefined}">
+                  <el-button :key="idx_sheet_sel" type="primary" plain style="margin-left: 10px;" class="btn_sheet">
+                    {{idx_sheet_sel+1}}-{{item_sheet_sel}}
                   </el-button>
                 </a>
               </template>
             </div>
           </div>
 
+          <!-- 判断题 -->
           <div class="bottom">
             <div class="title">
               <span>判断题(共{{qusList.answerSheetdec.length}}题)</span>
             </div>
             <div class="g_spilt_div_Horizontal"></div>
             <div>
-              <template v-for="(item,index) in qusList.answerSheetdec">
-                <a :key="index" :href="`#dec_${index+1}`" :class="{answered:item !== undefined}">
-                  <el-button :key="index" type="primary" plain style="margin-left: 10px;" class="btn_sheet">
-                    {{index+1}}-{{formatAnswerVal(item)}}
+              <template v-for="(item_sheet_dec,idx_sheet_dec) in qusList.answerSheetdec">
+                <a :key="idx_sheet_dec" :href="`#dec_${idx_sheet_dec+1}`" :class="{answered:item_sheet_dec !== undefined}">
+                  <el-button :key="idx_sheet_dec" type="primary" plain style="margin-left: 10px;" class="btn_sheet">
+                    {{idx_sheet_dec+1}}-{{formatAnswerVal(item_sheet_dec)}}
                   </el-button>
                 </a>
               </template>
             </div>
           </div>
 
-          <el-button type="primary" class="submit" @click="submit()">交卷</el-button>
+          <el-button type="primary" class="submit" :loading="bIsSubmit" @click="submit()" :disabled="bTested">{{ bIsSubmit ? "正在交卷":"交卷"}}
+          </el-button>
+        </div>
+
+        <div class="block">
+          <span style="font-weight:700">说明</span>
+          <div>
+            <div v-for="(item_des,idx_des) in rules" :key="idx_des">{{idx_des + 1}}.{{rules[idx_des]}}</div>
+          </div>
+        </div>
+
+        <div class="block title score" v-show="bTested">
+          <span>分数</span>
+          <span class="time"> {{allScore}}</span>
         </div>
 
       </div>
+
     </div>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { UtilsTimer } from '@/utils/index'
+import { UtilsTimer, countScore } from '@/utils/index'
 
 export default {
   name: '',
   components: {},
   computed: {
-    ...mapGetters(['getBasicsReqURL']),
+    ...mapGetters(['getBasicsReqURL', 'getExamStatus']),
     formatAnswerVal () {
       return function (val) {
         switch (val) {
-          case 'true':
+          case true:
             return 'T'
           // break
-          case 'false':
+          case false:
             return 'F'
           // break
           default:
             return ''
           // break
+        }
+      }
+    },
+    updateOptionClass () {
+      return function (strclass, param1, param2) {
+        if (param1 === param2 && this.bTested) {
+          return strclass
         }
       }
     }
@@ -163,20 +205,35 @@ export default {
   },
   data () {
     return {
-      timerInterval: null,
-      // 计时
-      timer: null,
-      showTimeLeft: {},
-      activeNames: ['1'],
+      loading: true,
+      loadingText: '统计分数中',
+      // 组件show属性
       showNotes: true,
+      timerInterval: null,
+      // 考试倒计时
+      timer: null,
+      // 显示剩余时间
+      showTimeLeft: {},
       queTitleClass: 'el-card box-card is-always-shadow',
+      // 题目列表
       qusList: {
         selectQusList: [],
         decQusLise: [],
         answerSheetSel: [],
         answerSheetdec: []
-      }
-
+      },
+      // 正在提交
+      bIsSubmit: false,
+      // 是否已经考完
+      bTested: false,
+      allScore: null,
+      rules: [
+        '题型分为选择题和判断题。',
+        '每题分数为2分,及格线为70分。',
+        '在时间内必须答完所有题目之后才能交卷。',
+        '时间到系统会将目前试卷提交',
+        '一周只有一次考试机会'
+      ]
     }
   },
   created () {
@@ -219,6 +276,16 @@ export default {
   beforeDestory () {
     this.clearTimer()
   },
+  beforeRouteLeave (to, from, next) {
+    if (from.path === '/exam') {
+      if (this.getExamStatus) {
+        next(false)
+        this.$message.error('考试期间不可退出')
+        return
+      }
+    }
+    next()
+  },
   mounted () { },
   methods: {
     ...mapActions(['setExamStatus']),
@@ -227,10 +294,12 @@ export default {
         clearTimeout(this.timerInterval)
       }
     },
+    // 开始考试
     startAnswerQue () {
       this.showNotes = false
       this.setExamStatus(true)
-      this.timer = new UtilsTimer(10)
+      this.initExam()
+      this.timer = new UtilsTimer(60)
       let vm = this
       vm.showTimeLeft = vm.timer.getTimeLeft()
       vm.timerInterval = setInterval(() => {
@@ -243,23 +312,28 @@ export default {
         }
       }, 1000)
     },
-    // @param { boolean } 是否还剩余时间
+    /**
+     * @description 交卷
+     * @param { String } bTime 是否还有剩余时间
+     **/
     submit (bTime) {
+      console.log('提交', bTime)
       let sheSel = this.qusList.answerSheetSel
       let sheDec = this.qusList.answerSheetdec
 
       console.log(sheSel, sheDec)
 
       if (bTime) {
+        this.bIsSubmit = true
         // 直接提交
-        let url = `${this.getBasicsReqURL}/system/role/updateRole`
-        let params = { sheSel, sheDec }
-        this.axios.post(url, params).then(
-          data => {
-            console.log(data)
-            this.id_num = data.body
-          }
-        )
+        // let url = `${this.getBasicsReqURL}/system/role/updateRole`
+        // let params = { sheSel, sheDec }
+        // this.axios.post(url, params).then(
+        //   data => {
+        //     console.log(data)
+        //     this.id_num = data.body
+        //   }
+        // )
       } else {
         if (sheSel.includes(undefined) || sheDec.includes(undefined)) {
           this.$message.error('还有题目未选择！')
@@ -267,13 +341,44 @@ export default {
         }
       }
 
+      // 交卷中
+      this.bIsSubmit = true
+
+      // 统计分数
+      let fenshuSelect = countScore(this.qusList.selectQusList, sheSel, 20)
+      let fenshuDec = countScore(this.qusList.decQusLise, sheDec, 20)
+      this.allScore = fenshuSelect + fenshuDec
+
       this.setExamStatus(false)
       this.clearTimer()
+      this.bIsSubmit = false
+      this.bTested = true
+    },
+    // 获取题目列表
+    getQuestion (bIsSelect) {
+      let obj = this.$store.state.classTestBack
+
+      return obj.getData(bIsSelect)
+    },
+    initExam () {
+      // 选择题
+      this.qusList.selectQusList = this.getQuestion(true)
+      this.qusList.answerSheetSel.length = this.qusList.selectQusList.length
+      // 判断题
+      this.qusList.decQusLise = this.getQuestion(false)
+      this.qusList.answerSheetdec.length = this.qusList.decQusLise.length
     }
+
   }
 }
 </script>
 <style lang='scss' scoped>
+@mixin answer_bg($bg) {
+  background-color: $bg !important;
+  color: white !important;
+  opacity: 0.8;
+}
+
 .wrapper {
   background: inherit;
   padding: 10px 0;
@@ -313,10 +418,25 @@ export default {
     font-weight: 700;
   }
 
+  .error_answer_bg {
+    @include answer_bg(#f44336);
+    &span {
+      color: darkgreen !important;
+    }
+  }
+
+  .correct_answer_bg {
+    @include answer_bg(#4caf50);
+    & .el-radio__input.is-disabled + span.el-radio__label {
+      color: darkgreen !important;
+    }
+  }
+
   .qus {
     width: calc(100% - 310px);
     margin-right: 10px;
     float: left;
+    margin-bottom: 40%;
 
     .text {
       font-size: 14px;
@@ -333,6 +453,13 @@ export default {
     .title {
       background-color: #409eff;
       color: #fff;
+      text-align: center;
+    }
+
+    .correct_answer {
+      color: darkgreen;
+      padding: 8px 20px;
+      font-weight: 700;
     }
   }
 
@@ -354,6 +481,11 @@ export default {
         width: 49%;
         text-align: center;
       }
+    }
+
+    .block {
+      padding: 0 10px;
+      margin-top: 10px;
     }
 
     .time {
@@ -397,6 +529,15 @@ export default {
       width: 100%;
       margin-top: 30px;
     }
+
+    .score {
+      color: inherit;
+      margin-top: 60px;
+      padding: 10px;
+      span {
+        // padding: 10px;
+      }
+    }
   }
 }
 
@@ -412,6 +553,16 @@ export default {
 
   &:hover {
     background: #eee;
+  }
+}
+</style>
+
+<style lang="scss">
+// 选项组按钮禁用样式
+#exam {
+  .el-radio__input.is-disabled + span.el-radio__label,
+  .el-radio__input.is-checked + .el-radio__label {
+    color: inherit;
   }
 }
 </style>
