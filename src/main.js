@@ -15,6 +15,9 @@ import store from './store'
 import axios from 'axios'
 import QS from 'qs'
 
+// 全局过滤器
+import filters from './utils/filters.js'
+
 // 引入富文本编辑器
 // import VueQuillEditor from 'vue-quill-editor'
 // // require styles 引入样式； 富文本编辑器外部引用样式  三种样式三选一引入即可
@@ -37,6 +40,8 @@ Vue.use(ElementUI)
 
 // register globally
 // Vue.component('svg-icon', SvgIcon)
+
+Object.keys(filters).forEach(key => Vue.filter(key, filters[key]))
 
 /* eslint-disable no-new */
 new Vue({

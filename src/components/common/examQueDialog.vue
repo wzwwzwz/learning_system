@@ -47,7 +47,7 @@
           <el-form-item label="答案" prop="answer">
             <el-radio-group v-model="examQueForm.answer" @change="answerChg">
               <template v-for="(item) in updateAnswerList">
-                <el-radio :label="item.key" :key="item.key" border size="small">{{item.key | formatVal}}</el-radio>
+                <el-radio :label="item.key" :key="item.key" border size="small">{{item.key | formatBooleanVal}}</el-radio>
               </template>
             </el-radio-group>
           </el-form-item>
@@ -96,17 +96,6 @@ export default {
     }
   },
   filters: {
-    formatVal (val) {
-      if (typeof val !== 'boolean') {
-        return val
-      }
-
-      if (val) {
-        return '正确'
-      } else {
-        return '错误'
-      }
-    }
   },
   data () {
     return {

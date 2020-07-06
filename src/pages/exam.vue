@@ -64,20 +64,20 @@
                   <el-radio-group v-model="qusList.answerSheetdec[idx_dec]" :disabled="bTested">
                     <el-radio :label=true
                       :class="{correct_answer_bg:true === item_dec.answer && bTested,error_answer_bg:true === qusList.answerSheetdec[idx_dec] && bTested}">
-                      {{true | formatVal}}
+                      {{true | formatBooleanVal}}
                     </el-radio>
                     <!-- <el-radio :label=true :class="updateOptionClass(correct_answer_bg,item_dec.answer,true)">
-                    {{true | formatVal}}
+                    {{true | formatBooleanVal}}
                   </el-radio> -->
                     <el-radio :label=false
                       :class="{correct_answer_bg:false === item_dec.answer && bTested,error_answer_bg:false === qusList.answerSheetdec[idx_dec] && bTested}">
-                      {{false | formatVal}}
+                      {{false | formatBooleanVal}}
                     </el-radio>
                   </el-radio-group>
                 </template>
 
               </el-card>
-              <div class="el-card__header correct_answer" v-show="bTested">正确选项为 {{item_dec.answer | formatVal}}</div>
+              <div class="el-card__header correct_answer" v-show="bTested">正确选项为 {{item_dec.answer | formatBooleanVal}}</div>
             </div>
           </template>
         </div>
@@ -182,17 +182,6 @@ export default {
 
   },
   filters: {
-    formatVal (val) {
-      if (typeof val !== 'boolean') {
-        return val
-      }
-
-      if (val) {
-        return '正确'
-      } else {
-        return '错误'
-      }
-    },
     formatTimeLeft (val) {
       // console.log(val)
       if (!val) {

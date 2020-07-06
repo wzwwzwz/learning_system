@@ -107,7 +107,8 @@ export default {
     // 用mapGetters获取vuex state状态
     ...mapGetters(['getUserInfo', 'getBasicsReqURL', 'getCount']),
     activeIndex () {
-      // console.log(this.$route.path)
+      console.log('activeIndex', this.$route.path)
+      // return '1'
       return this.$route.path
     }
   },
@@ -122,6 +123,8 @@ export default {
     },
     handleSelect (key, keyPath) {
       console.log(key, keyPath)
+      console.log('handleSelect', this.$route.path)
+
       // this.activeIndex = key
     },
     handleCommand (command) {
@@ -134,6 +137,11 @@ export default {
           break
         case 'sign_out':
           vm.loginOut()
+          break
+        case 'my_audit':
+          this.$router.push({
+            name: 'myAudit'
+          })
           break
         default:
           break

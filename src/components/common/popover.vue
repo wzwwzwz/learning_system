@@ -1,6 +1,6 @@
 <template>
   <div class='zPopover'>
-    <el-popover placement="top" width="160" v-model="visible">
+    <el-popover placement="top" width="160" v-model="visible" :popper-class="'popover_span'">
       <p>{{title}}</p>
       <div style="text-align: right; margin: 0">
         <el-button size="mini" type="text" @click="handleCancel()">取消</el-button>
@@ -34,10 +34,13 @@ export default {
     }
   },
   created () {
-    console.log(this.slotName)
+    // console.log(this.slotName)
   },
   mounted () { },
   methods: {
+    setVisible (b) {
+      this.visible = b
+    },
     handleCancel () {
       this.visible = false
       this.$emit('cancel')
@@ -52,5 +55,13 @@ export default {
 <style lang='scss' scoped>
 .zPopover {
   display: inline-block;
+
+  &:not(:first-child) {
+    margin-left: 15px;
+  }
+}
+
+p {
+  font-weight: 700;
 }
 </style>

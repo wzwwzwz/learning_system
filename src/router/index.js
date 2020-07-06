@@ -17,6 +17,7 @@ import authManage from '@/pages/authManage'
 import notFound from '@/pages/notFound'
 import examQueDialog from '@/components/common/examQueDialog'
 import testPage from '@/components/testPage'
+import myAudit from '@/pages/personalManagement/myAudit/auditIndex'
 
 Vue.use(Router)
 
@@ -47,7 +48,8 @@ const router = new Router({
         {path: '/exam', name: 'exam', component: exam},
         {path: '/authManage', name: 'authManage', component: authManage},
         // 测试页：二级页面
-        {path: '/test', name: 'test', component: examQueDialog}
+        {path: '/test', name: 'test', component: examQueDialog},
+        {path: '/myAudit', name: 'myAudit', component: myAudit}
       ]
     },
     {path: '/login', name: 'Login', component: Login},
