@@ -1,7 +1,7 @@
 
 <template>
   <div id="myAudit" class="component_wrap">
-    <el-tabs :tab-position="tabPosition" style="height: 100%;" @tab-click="swichTab()" v-model="tabsIndex">
+    <el-tabs :tab-position="tabPosition" style="height: auto;" @tab-click="swichTab()" v-model="tabsIndex">
 
       <template v-for="(item_tabs,idx_tabs) in aTabs">
         <el-tab-pane :key="idx_tabs" :label="item_tabs" :name="item_tabs">
@@ -19,11 +19,16 @@
           </div>
 
           <!-- 表格组件 -->
-          <auditTable ref="refTable" :auditType="item_tabs" :tableData="allList"></auditTable>
+          <!-- <auditTable ref="refTable" :auditType="item_tabs" :tableData="allList"></auditTable> -->
         </el-tab-pane>
-      </template>
 
+      </template>
     </el-tabs>
+
+    <!-- 动态挂载 -->
+    <component :is="isComponent" ref="refTable" :auditType="tabsIndex" :tableData="allList" @itemOperation="handlePassSingle($event)">
+    </component>
+
   </div>
 </template>
 
@@ -38,6 +43,12 @@ export default {
     auditTable
   },
   computed: {
+    isComponent () {
+      let zcom = this.componentsList[this.activeName]
+      console.log(zcom)
+      // return zcom
+      return 'auditTable'
+    },
     updateAuditStatus () {
       return function name (val) {
         switch (val) {
@@ -53,8 +64,16 @@ export default {
   },
   data () {
     return {
+      activeName: 'first',
+      componentsList: {
+        first: 'auditTable', // 需要引入具体的组件
+        second: 'auditTable',
+        third: 'auditTable',
+        four: 'auditTable'
+      },
+      // 测试
       tabsIndex: '全部',
-      tabPosition: 'left',
+      tabPosition: 'top',
       allList: [],
       multipleSelection: [],
       mulBtn: [
@@ -63,17 +82,26 @@ export default {
           refName: 'passPopover',
           bPass: true,
           type: 'primary',
-          title: `你确定通过所有已选中的题目吗？`
+          title: `你确定批量通过所有已选中的题目吗？`
         },
         {
           slotName: 'btn',
           refName: 'noPassPopover',
           bPass: false,
           type: 'danger',
-          title: `你确定不通过所有已选中的题目吗？`
+          title: `你确定批量不通过所有已选中的题目吗？`
         }
       ],
-      aTabs: ['全部', '待审核', '已审核']
+      // , '待审核', '已审核'
+      aTabs: ['全部', '待审核', '已审核'],
+      arrComponent: [{
+        name: 'auditTable'
+      }, {
+        name: 'auditTable'
+      },
+      {
+        name: 'auditTable'
+      }]
     }
   },
   filters: {
@@ -89,7 +117,7 @@ export default {
     },
     formatPass (val) {
       if (val) {
-        return '通过'
+        return '收进题库'
       } else {
         return '不通过'
       }
@@ -101,26 +129,27 @@ export default {
   mounted () { },
   methods: {
     swichTab () {
-      this.$nextTick(() => {
-        let key = this.tabsIndex
-        console.log(key)
-        let arr = this.saveList
+      // this.$nextTick(() => {
+      let key = this.tabsIndex
+      console.log(key)
+      let arr = this.saveList
 
-        let filterData = arr.filter(item => {
-          switch (key) {
-            case '已审核':
-              return item.auditStatus !== 2
-            case '待审核':
-              return item.auditStatus === 2
-            default:
-              return item
-          }
-        })
-
-        console.log(filterData)
-
-        this.allList = filterData
+      let filterData = arr.filter(item => {
+        switch (key) {
+          case '已审核':
+            return item.auditStatus !== 2
+          case '待审核':
+            return item.auditStatus === 2
+          default:
+            return item
+        }
       })
+
+      console.log(filterData)
+      this.allList = filterData
+      this.$refs.refTable.clearFormVerification()
+
+      // })
     },
     // 获取题目列表
     getQuestion (bIsSelect) {
@@ -133,40 +162,9 @@ export default {
       this.allList = data
       this.saveList = data
     },
-    formatExamType (row, column, cellValue) {
-      if (cellValue) {
-        return '判断题'
-      } else {
-        return '选择题'
-      }
+    MultipleCancel () {
+      this.$refs.refTable.addLoadding(false)
     },
-    formatAnswer (row, column, cellValue) {
-      if (row.bIsjudgeQue) {
-        if (cellValue) {
-          return '正确'
-        } else {
-          return '错误'
-        }
-      } else {
-        return cellValue
-      }
-    },
-    formatKnowledgePoint (row, column, cellValue) {
-      let val = ''
-      let len = row.knowledgePoint.length
-      for (let [idx, item] of row.knowledgePoint.entries()) {
-        if (idx !== len - 1) {
-          val += `${item},`
-        } else {
-          val += `${item}`
-        }
-      }
-      return val
-    },
-    setHeaderStyle ({ row, rowIndex }) {
-      return ''
-    },
-    MultipleCancel () { },
     // 批量通过
     multipleOk (b) {
       console.log(b, '批量通过')
@@ -176,55 +174,33 @@ export default {
 
       }
     },
+    handlePassSingle (param) {
+      console.log('handlePassSingle', param)
+    },
     // 批量操作
     handlePassMultiple ({ idx, bPass, refName }) {
       let vm = this
-      let popover = vm.$refs[refName][0]
-      let data = vm.$refs.refTable[idx].getSelectData()
+      let popover = vm.$refs[refName][idx]
+      // let data = vm.$refs.refTable[idx].getSelectData()
+      let data = vm.$refs.refTable.getSelectData(bPass)
       popover.setVisible(false)
-      console.log(data)
+      console.log('handlePassMultiple', data)
+
+      if (data === false) {
+        vm.$message.error('请完成必要的选项')
+        popover.setVisible(true)
+        return false
+      }
+
       if (data.length === 0) {
         vm.$message.error('请选择题目')
         popover.setVisible(true)
         return false
       }
-    },
-    handlePass (idx, data, bPass) {
-      console.log(idx, data)
-    },
-    handleSelectionChange (val) {
-      // console.log(val)
-      this.multipleSelection = val
-    },
-    selectable (row, index) {
-      if (row.auditStatus === 2) {
-        return true
-      } else {
-        return false
-      }
-    },
-    // 表格行点击方法
-    rowClick (row, column, event) {
-      if (row) {
-        if (row.auditStatus === 2) {
-          console.log(row)
-          this.$refs.multipleTable.toggleRowSelection(row)
-        }
-      }
-    },
-    tableRowClassName ({ row, rowIndex }) {
-      // 把每一行的索引放进row
-      row.index = rowIndex
-    },
-    toggleSelection (rows) {
-      if (rows) {
-        rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row)
-        })
-      } else {
-        this.$refs.multipleTable.clearSelection()
-      }
+
+      vm.$refs.refTable.addLoadding(true)
     }
+
   }
 }
 </script>

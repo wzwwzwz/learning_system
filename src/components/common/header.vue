@@ -33,10 +33,10 @@
             </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item icon="el-icon-s-check" command="my_audit">我的审核</el-dropdown-item>
-              <el-dropdown-item icon="el-icon-chat-dot-square" command="my_msg">我的评论</el-dropdown-item>
-              <el-dropdown-item icon="el-icon-notebook-1" command="my_exam_que">我的题目</el-dropdown-item>
+              <!-- <el-dropdown-item icon="el-icon-chat-dot-square" command="my_msg">我的评论</el-dropdown-item> -->
+              <!-- <el-dropdown-item icon="el-icon-notebook-1" command="my_exam_que">我的题目</el-dropdown-item> -->
               <el-dropdown-item icon="el-icon-document" command="my_exam">我的考试</el-dropdown-item>
-              <el-dropdown-item icon="el-icon-document" command="my_upload_avatar">上传头像</el-dropdown-item>
+              <el-dropdown-item icon="el-icon-picture-outline" command="my_upload_avatar">上传头像</el-dropdown-item>
               <div class="g_spilt_div_Horizontal"></div>
               <el-dropdown-item icon="el-icon-circle-close" command="sign_out">退出登录</el-dropdown-item>
             </el-dropdown-menu>
@@ -128,7 +128,7 @@ export default {
       // this.activeIndex = key
     },
     handleCommand (command) {
-      this.$message('click on item ' + command)
+      // this.$message('click on item ' + command)
       const vm = this
 
       switch (command) {

@@ -21,28 +21,24 @@
         <div class="top">
           <div :class="queTitleClass" class="title" style="">一.单选题</div>
           <template v-for="(item_sel,idx_sel) in qusList.selectQusList" class="text item">
-            <div :key="idx_sel">
-              <el-card class="box-card" :id="`select_${idx_sel+1}`">
-                <div slot="header" class="clearfix">
-                  <span>第{{idx_sel+1}}题</span>
-                  <span style="margin-left:10px">{{item_sel.title}}</span>
-                  <el-button style=" float: right; padding: 3px 0" type="text">{{item_sel.type}}</el-button>
-                </div>
+            <!-- <div :key="idx_sel"> -->
+            <el-card :key="idx_sel" class="box-card" :id="`select_${idx_sel+1}`">
+              <div slot="header" class="clearfix">
+                <span>第{{idx_sel+1}}题</span>
+                <span style="margin-left:10px">{{item_sel.title}}</span>
+                <el-button style=" float: right; padding: 3px 0" type="text">{{item_sel.type}}</el-button>
+              </div>
 
-                <!-- 选项 -->
-                <template>
-                  <el-radio-group v-model="qusList.answerSheetSel[idx_sel]">
-                    <el-radio :label="item_op.key" v-for="(item_op,index_op) in item_sel.options" :key="index_op" :disabled="bTested"
-                      :class="{correct_answer_bg:item_op.key === item_sel.answer && bTested,error_answer_bg:item_op.key === qusList.answerSheetSel[idx_sel] && bTested}">
-                      {{`${item_op.key}`}}.{{item_op.value}}
-                      <!-- {{`${item_op.key}`}} === {{qusList.answerSheetSel[idx_sel]}} -->
-                    </el-radio>
-                  </el-radio-group>
-                </template>
+              <!-- 选项 -->
+              <template>
+                <el-radio-group v-model="qusList.answerSheetSel[idx_sel]">
+                  <el-radio :label="item_op.key" v-for="(item_op,index_op) in item_sel.options" :key="index_op" :disabled="bTested">
+                    {{`${item_op.key}`}}.{{item_op.value}}
+                  </el-radio>
+                </el-radio-group>
+              </template>
 
-              </el-card>
-              <div class="el-card__header correct_answer" v-show="bTested">正确选项为 {{item_sel.answer}}</div>
-            </div>
+            </el-card>
 
           </template>
         </div>
@@ -51,34 +47,28 @@
         <div class="bottom">
           <div :class="queTitleClass" class="title">二.判断题</div>
           <template v-for="(item_dec,idx_dec) in qusList.decQusLise" class="text item">
-            <div :key="idx_dec">
-              <el-card class="box-card" :id="`dec_${idx_dec+1}`">
-                <div slot="header" class="clearfix">
-                  <span>第{{idx_dec+1}}题</span>
-                  <span style="margin-left:10px">{{item_dec.title}}</span>
-                  <el-button style=" float: right; padding: 3px 0" type="text">{{item_dec.type}}</el-button>
-                </div>
 
-                <!-- 选项 -->
-                <template>
-                  <el-radio-group v-model="qusList.answerSheetdec[idx_dec]" :disabled="bTested">
-                    <el-radio :label=true
-                      :class="{correct_answer_bg:true === item_dec.answer && bTested,error_answer_bg:true === qusList.answerSheetdec[idx_dec] && bTested}">
-                      {{true | formatBooleanVal}}
-                    </el-radio>
-                    <!-- <el-radio :label=true :class="updateOptionClass(correct_answer_bg,item_dec.answer,true)">
+            <el-card :key="idx_dec" class="box-card" :id="`dec_${idx_dec+1}`">
+              <div slot="header" class="clearfix">
+                <span>第{{idx_dec+1}}题</span>
+                <span style="margin-left:10px">{{item_dec.title}}</span>
+                <el-button style=" float: right; padding: 3px 0" type="text">{{item_dec.type}}</el-button>
+              </div>
+
+              <!-- 选项 -->
+              <template>
+                <el-radio-group v-model="qusList.answerSheetdec[idx_dec]" :disabled="bTested">
+                  <el-radio label=true>
                     {{true | formatBooleanVal}}
-                  </el-radio> -->
-                    <el-radio :label=false
-                      :class="{correct_answer_bg:false === item_dec.answer && bTested,error_answer_bg:false === qusList.answerSheetdec[idx_dec] && bTested}">
-                      {{false | formatBooleanVal}}
-                    </el-radio>
-                  </el-radio-group>
-                </template>
+                  </el-radio>
+                  <el-radio label=false>
+                    {{false | formatBooleanVal}}
+                  </el-radio>
+                </el-radio-group>
+              </template>
 
-              </el-card>
-              <div class="el-card__header correct_answer" v-show="bTested">正确选项为 {{item_dec.answer | formatBooleanVal}}</div>
-            </div>
+            </el-card>
+
           </template>
         </div>
 
@@ -162,13 +152,10 @@ export default {
         switch (val) {
           case true:
             return 'T'
-          // break
           case false:
             return 'F'
-          // break
           default:
             return ''
-          // break
         }
       }
     },
@@ -407,6 +394,9 @@ export default {
     font-weight: 700;
   }
 
+  .user_answer_bg {
+  }
+
   .error_answer_bg {
     @include answer_bg(#f44336);
     &span {
@@ -549,9 +539,10 @@ export default {
 <style lang="scss">
 // 选项组按钮禁用样式
 #exam {
-  .el-radio__input.is-disabled + span.el-radio__label,
-  .el-radio__input.is-checked + .el-radio__label {
+  .el-radio__input.is-disabled + span.el-radio__label {
     color: inherit;
+  }
+  .el-radio__input.is-checked + .el-radio__label {
   }
 }
 </style>

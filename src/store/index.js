@@ -44,6 +44,8 @@ const state = {
     name: '产品目的',
     label: '产品目的'
   }],
+  //
+  arrQusLevel: ['简单', '中等', '困难'],
   // 测试 保存出题
   classTestBack: new TestBack()
 }
@@ -56,7 +58,8 @@ const getters = {
   getKnowledgePoint: state => state.knowledgePoint,
   getExamStatus: state => state.bIsExam,
   // 获取题库对象
-  getClassTestBack: state => state.classTestBack
+  getClassTestBack: state => state.classTestBack,
+  getArrQusLevel: state => state.arrQusLevel
 }
 
 // 该方法接受第一个参数接受 state作为上下文

@@ -65,6 +65,8 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { isBoolean } from '@/utils/validate'
+
 export default {
   name: '',
   props: {
@@ -169,9 +171,12 @@ export default {
   methods: {
     // @param { Boolean } 是否为考试题目弹框
     openDialog (b) {
-      if (typeof b !== 'boolean') {
+      if (!isBoolean(b)) {
         return
       }
+      // if (typeof b !== 'boolean') {
+      //   return
+      // }
 
       this.bEaxmQueDia = b
       this.dialogVisible = true

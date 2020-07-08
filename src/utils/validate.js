@@ -13,7 +13,7 @@ export function isExternal (path) {
  */
 export function validUsername (str) {
   // const valid_map = ['admin', 'editor']
-  const validMap = ['admin', 'editor']
+  const validMap = ['admin', 'generalUser', 'judge']
   return validMap.indexOf(str.trim()) >= 0
 }
 
@@ -82,4 +82,15 @@ export function isArray (arg) {
     return Object.prototype.toString.call(arg) === '[object Array]'
   }
   return Array.isArray(arg)
+}
+
+/**
+ * @param {Boolean} b
+ * @returns {Boolean}
+ */
+export function isBoolean (b) {
+  if (typeof b === 'boolean') {
+    return true
+  }
+  return false
 }
