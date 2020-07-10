@@ -23,7 +23,7 @@
     <el-dialog :title="dialogTiltle" :visible.sync="dialogVisible" :close-on-click-modal="false" width="50%">
       <el-form label-width="80px" :model="roleForm" :rules="rules" ref="roleForm">
         <el-form-item label="用户名称" prop="roleName">
-          <el-input type="text" v-model="roleForm.roleName" clearable maxlength="15"></el-input>
+          <el-input type="text" v-model="roleForm.roleName" clearable maxlength="15" :disabled="dialogTiltle ==='修改用户' "></el-input>
         </el-form-item>
         <!-- <el-form-item label="用户描述" prop="description">
           <el-input type="text" maxlength="15" v-model="roleForm.description" clearable></el-input>
@@ -54,6 +54,8 @@
   </div>
 </template>
 <script>
+import formValidte from '@/utils/formValidte'
+
 // 测试文件
 import TestDate from '@/utils/testFiles/testData'
 
@@ -63,7 +65,7 @@ export default {
     // 测试数据
     let data1 = {
       description: '',
-      roleName: '开始',
+      roleName: '开始dd',
       auth: 3
     }
 
@@ -130,11 +132,7 @@ export default {
           message: '请输入用户名称',
           trigger: 'blur'
         },
-        {
-          //   pattern: window._check.isChineseReg,
-          message: '请输入中文不能包含空格',
-          trigger: 'blur'
-        }
+        { validator: formValidte.userName, trigger: ['change', 'blur'] }
         ],
         auth: [
           { required: true, message: '请选择权限', trigger: 'change blur' }
@@ -211,19 +209,22 @@ export default {
       let formData = JSON.parse(JSON.stringify(res))
       const vm = this
       vm.dialogVisible = true
-      this.$nextTick(() => {
+      // this.$nextTick(() => {
+      if (vm.$refs.roleForm) {
         // 清除表单校验
         vm.$refs.roleForm.resetFields()
-        if (statu === 0) {
-          vm.dialogTiltle = '添加用户'
-          vm.roleForm = JSON.parse(JSON.stringify(vm.roleFormAdd))
-          vm.defaultData()
-        } else {
-          vm.dialogTiltle = '修改用户'
-          vm.roleForm = formData
-          vm.defaultData(res.list)
-        }
-      })
+      }
+
+      if (statu === 0) {
+        vm.dialogTiltle = '添加用户'
+        vm.roleForm = JSON.parse(JSON.stringify(vm.roleFormAdd))
+        vm.defaultData()
+      } else {
+        vm.dialogTiltle = '修改用户'
+        vm.roleForm = formData
+        vm.defaultData(res.list)
+      }
+      // })
     },
     // 弹窗默认数据
     defaultData (res) {
@@ -248,6 +249,8 @@ export default {
             description: vm.roleForm.description,
             auth: vm.roleForm.auth
           }
+
+          console.log(data)
 
           if (vm.roleForm.id) {
             // 修改用户

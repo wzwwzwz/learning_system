@@ -55,4 +55,7 @@ export default {
 }
 </script>
 <style lang='scss' scoped>
+#learnDirIndex {
+  height: auto;
+}
 </style>

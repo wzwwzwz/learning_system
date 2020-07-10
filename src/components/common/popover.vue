@@ -1,8 +1,8 @@
 <template>
-  <div class='zPopover'>
-    <el-popover placement="top" width="160" v-model="visible" :popper-class="'popover_span'">
+  <div class='zPopover' :class="className">
+    <el-popover placement="top" :width="width" v-model="visible" :popper-class="'popover_span'">
       <p>{{title}}</p>
-      <div style="text-align: right; margin: 0">
+      <div style="text-align: right; margin: 10px 0 0 ">
         <el-button size="mini" type="text" @click="handleCancel()">取消</el-button>
         <el-button type="primary" size="mini" @click="handleOk()">确定</el-button>
       </div>
@@ -23,6 +23,14 @@ export default {
     title: {
       type: String,
       default: () => '你确定吗？'
+    },
+    width: {
+      // type: Number,
+      default: () => 160
+    },
+    className: {
+      type: String,
+      default: () => ''
     }
   },
   components: {
@@ -34,7 +42,7 @@ export default {
     }
   },
   created () {
-    // console.log(this.slotName)
+    // console.log(this.className)
   },
   mounted () { },
   methods: {
@@ -56,9 +64,9 @@ export default {
 .zPopover {
   display: inline-block;
 
-  &:not(:first-child) {
-    margin-left: 15px;
-  }
+  // &:not(:first-child) {
+  //   margin-left: 15px;
+  // }
 }
 
 p {

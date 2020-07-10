@@ -8,8 +8,8 @@
           <!-- 操作按钮：多个选中 -->
           <div class="btn_wrap" v-show="idx_tabs !== 2">
             <template v-for="(item_popover,idx_popover) in mulBtn">
-              <zPopover :key="idx_popover" :ref="item_popover.refName" :title="item_popover.title" @cancel="MultipleCancel()"
-                @ok="multipleOk(item_popover.bPass)">
+              <zPopover :key="idx_popover" :ref="item_popover.refName" :title="item_popover.title" :class="'auditPopover'"
+                @cancel="MultipleCancel()" @ok="multipleOk(item_popover.bPass)">
                 <el-button slot="btn" size="small" :type="item_popover.type"
                   @click.stop="handlePassMultiple({idx:idx_tabs,bPass:item_popover.bPass,refName:item_popover.refName})">
                   {{item_popover.bPass | formatPass}}
@@ -153,7 +153,7 @@ export default {
     },
     // 获取题目列表
     getQuestion (bIsSelect) {
-      let obj = this.$store.state.classTestBack
+      let obj = this.$store.state.classTestBank
 
       return obj.getData(bIsSelect)
     },
@@ -230,6 +230,14 @@ export default {
   div {
     display: inline-block;
     // margin-left: 15px;
+  }
+}
+
+.auditPopover {
+  display: inline-block;
+
+  &:not(:first-child) {
+    margin-left: 15px;
   }
 }
 </style>

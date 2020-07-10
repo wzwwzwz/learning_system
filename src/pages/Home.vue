@@ -73,7 +73,7 @@ export default {
       //   }
       // ).catch()
 
-      let obj = this.$store.state.classTestBack
+      let obj = this.$store.state.classTestBank
       obj.add(data)
       console.log(obj.getData())
     }

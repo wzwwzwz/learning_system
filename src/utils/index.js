@@ -488,3 +488,30 @@ export function countScore (aExam, aAnswer, step) {
   }
   return result
 }
+
+/**
+ * @functionName existPath
+ * @description 是否存在路径
+ * @param { String } routes 路由
+ * @return { Number }  true === "存在" || false === "不存在"
+ * @author 巫昭雯
+ * @date 2020-07-10 17:35:17
+ * @version V1.0
+*/
+export function existPath (routes, path) {
+  for (let item of routes) {
+    if (item) {
+      if (item.path === path) {
+        return true
+      }
+
+      if (item.children) {
+        if (existPath(item.children, path)) {
+          return true
+        }
+      }
+    }
+  }
+
+  return false
+}

@@ -4,6 +4,7 @@ import Router from 'vue-router'
 
 // import {mapGetters} from 'vuex'
 import Store from '@/store/index'
+// import { existPath } from '@/utils/index'
 
 // 引入页面组件
 import Login from '@/pages/Login'
@@ -27,54 +28,72 @@ Router.prototype.push = function push (location) {
   return originalPush.call(this, location).catch(err => err)
 }
 
+let routes = [
+  // {path: '/',name: 'HelloWorld',component: HelloWorld},
+  {
+    path: '/',
+    name: 'Home',
+    component: Home,
+    // redirect: '/index',
+    children: [
+      { path: '/', name: 'homeIndex', component: homeIndex },
+      { path: '/learnDir',
+        name: 'learnDir',
+        component: learnDirIndex,
+        children: [
+          // {path: '', name: 'learnDir', component: learnDir},
+          // {path: '', name: 'detailsAnswer', component: detailsAnswer}
+        ]
+      },
+      {path: '/exam', name: 'exam', component: exam},
+      {path: '/authManage', name: 'authManage', component: authManage},
+      // 测试页：二级页面
+      {path: '/test', name: 'test', component: examQueDialog},
+      {path: '/myAudit', name: 'myAudit', component: myAudit}
+    ]
+  },
+  {path: '/login', name: 'Login', component: Login},
+  {path: '/404', name: 'notFound', component: notFound},
+  /* 路由重定向，当用户搜索不到页面时，默认跳转到指定页面 */
+  {path: '*', redirect: '/404'},
+  // 测试页：布局
+  {path: '/0', name: 'testPage', component: testPage}
+]
+
 const router = new Router({
-  routes: [
-    // {path: '/',name: 'HelloWorld',component: HelloWorld},
-    {
-      path: '/',
-      name: 'Home',
-      component: Home,
-      // redirect: '/index',
-      children: [
-        { path: '/', name: 'homeIndex', component: homeIndex },
-        { path: '/learnDir',
-          name: 'learnDir',
-          component: learnDirIndex,
-          children: [
-            // {path: '', name: 'learnDir', component: learnDir},
-            // {path: '', name: 'detailsAnswer', component: detailsAnswer}
-          ]
-        },
-        {path: '/exam', name: 'exam', component: exam},
-        {path: '/authManage', name: 'authManage', component: authManage},
-        // 测试页：二级页面
-        {path: '/test', name: 'test', component: examQueDialog},
-        {path: '/myAudit', name: 'myAudit', component: myAudit}
-      ]
-    },
-    {path: '/login', name: 'Login', component: Login},
-    {path: '/404', name: 'notFound', component: notFound},
-    /* 路由重定向，当用户搜索不到页面时，默认跳转到指定页面 */
-    {path: '*', redirect: '/'},
-    // 测试页：布局
-    {path: '/0', name: 'testPage', component: testPage}
-  ],
+  routes,
   // 删掉锚点(#号键)
   mode: 'history'
 })
 
 // 全局守卫
-router.beforeEach((ro, from, next) => {
+router.beforeEach((to, from, next) => {
+  // if (!existPath(routes, to.path)) {
+  //   next('/404')
+  //   return
+  // }
+
   if (from.path === '/exam') {
     const gettersVuex = Store.getters.getExamStatus
 
-    console.log(Store)
+    // console.log(Store)
 
     if (gettersVuex) {
       next(false)
       return
     }
   }
+
+  if (to.path === '/myAudit') {
+    const userAuth = Store.getters.getUserInfo.userAuth
+    // console.log(routes)
+
+    if (userAuth !== 2) {
+      next('/404')
+      return
+    }
+  }
+
   next()
 })
 

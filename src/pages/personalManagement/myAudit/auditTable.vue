@@ -49,7 +49,8 @@
               <!-- {{scope.$index}} -->
               <el-form-item :prop="'tableData.' + scope.$index + '.qusLevel'" :rules="model.rules.grade">
                 <el-select v-model="scope.row.qusLevel" placeholder="请选择题目级别" size="mini">
-                  <el-option v-for="item_level in getArrQusLevel" :key="item_level" :label="item_level" :value="item_level"></el-option>
+                  <el-option v-for="item_level in getArrQusLevel" :key="item_level.key" :label="item_level.val" :value="item_level.key ">
+                  </el-option>
                 </el-select>
               </el-form-item>
             </template>
@@ -64,7 +65,8 @@
             <div v-show="scope.row.auditStatus === 2">
               <el-button size="mini" type="primary" @click.stop="handlePass({idx:scope.$index, data:scope.row,bPass:true})">收进题库
               </el-button>
-              <el-button size="mini" type="danger" @click.stop="handlePass(scope.$index, scope.row,false)" v-show="auditType !== '已审核'">不通过
+              <el-button size="mini" type="danger" @click.stop="handlePass({idx:scope.$index,data: scope.row,bPass:false})"
+                v-show="auditType !== '已审核'">不通过
               </el-button>
             </div>
             <el-tag :type="updateAuditStatus(scope.row.auditStatus)" v-show="scope.row.auditStatus !== 2">
@@ -156,6 +158,13 @@ export default {
       }
     },
     formatQusLevel (val) {
+      // console.log('ddd', getArrQusLevel )
+      // for (const key in this.getArrQusLevel) {
+      //   if (object.hasOwnProperty(key)) {
+      //     const element = object[key]
+      //   }
+      // }
+
       if (val) {
         return val
       } else {
@@ -220,7 +229,7 @@ export default {
     },
     // 获取题目列表
     getQuestion (bIsSelect) {
-      let obj = this.$store.state.classTestBack
+      let obj = this.$store.state.classTestBank
 
       return obj.getData(bIsSelect)
     },

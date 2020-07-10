@@ -14,7 +14,8 @@
           autocomplete="on" />
       </el-form-item>
 
-      <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
+      <!-- 大写锁定已打开 === Caps lock is On -->
+      <el-tooltip class="8888" v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
         <el-form-item prop="password">
           <span class="svg-container">
             <!-- <svg-icon icon-class="password" /> -->
@@ -25,7 +26,9 @@
             @keyup.enter.native="handleLogin" />
           <span class="show-pwd" @click="showPwd">
             <!-- <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" /> -->
-            <i class="el-icon-view"></i>
+            <!-- el-icon-open el-icon-turn-off -->
+            <i :class="passwordType === 'password' ? 'el-icon-turn-off' : 'el-icon-open'"></i>
+            <!-- <i class=" el-icon-view"></i> -->
           </span>
         </el-form-item>
       </el-tooltip>
@@ -295,6 +298,7 @@ $light_gray: #eee;
     vertical-align: middle;
     width: 30px;
     display: inline-block;
+    text-align: center;
   }
 
   .title-container {
@@ -330,5 +334,10 @@ $light_gray: #eee;
       display: none;
     }
   }
+}
+
+[class*=" el-icon-"],
+[class^="el-icon-"] {
+  font-size: 20px;
 }
 </style>

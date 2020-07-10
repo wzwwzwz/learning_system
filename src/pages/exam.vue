@@ -22,11 +22,12 @@
           <div :class="queTitleClass" class="title" style="">一.单选题</div>
           <template v-for="(item_sel,idx_sel) in qusList.selectQusList" class="text item">
             <!-- <div :key="idx_sel"> -->
+            <!-- {{item_sel}} -->
             <el-card :key="idx_sel" class="box-card" :id="`select_${idx_sel+1}`">
               <div slot="header" class="clearfix">
                 <span>第{{idx_sel+1}}题</span>
                 <span style="margin-left:10px">{{item_sel.title}}</span>
-                <el-button style=" float: right; padding: 3px 0" type="text">{{item_sel.type}}</el-button>
+                <el-button style=" float: right; padding: 3px 0" type="text">{{item_sel.qusLevel}}</el-button>
               </div>
 
               <!-- 选项 -->
@@ -46,13 +47,13 @@
         <!-- 判断题 -->
         <div class="bottom">
           <div :class="queTitleClass" class="title">二.判断题</div>
-          <template v-for="(item_dec,idx_dec) in qusList.decQusLise" class="text item">
+          <template v-for="(item_dec,idx_dec) in qusList.decQusList" class="text item">
 
             <el-card :key="idx_dec" class="box-card" :id="`dec_${idx_dec+1}`">
               <div slot="header" class="clearfix">
                 <span>第{{idx_dec+1}}题</span>
                 <span style="margin-left:10px">{{item_dec.title}}</span>
-                <el-button style=" float: right; padding: 3px 0" type="text">{{item_dec.type}}</el-button>
+                <el-button style=" float: right; padding: 3px 0" type="text">{{item_dec.qusLevel}}</el-button>
               </div>
 
               <!-- 选项 -->
@@ -146,7 +147,7 @@ export default {
   name: '',
   components: {},
   computed: {
-    ...mapGetters(['getBasicsReqURL', 'getExamStatus']),
+    ...mapGetters(['getBasicsReqURL', 'getExamStatus', 'getUserInfo']),
     formatAnswerVal () {
       return function (val) {
         switch (val) {
@@ -194,7 +195,7 @@ export default {
       // 题目列表
       qusList: {
         selectQusList: [],
-        decQusLise: [],
+        decQusList: [],
         answerSheetSel: [],
         answerSheetdec: []
       },
@@ -245,7 +246,7 @@ export default {
     let len2 = 2
 
     for (let idx = 0; idx < len2; idx++) {
-      this.qusList.decQusLise.push(data1)
+      this.qusList.decQusList.push(data1)
     }
     this.qusList.answerSheetdec.length = len2
   },
@@ -322,8 +323,15 @@ export default {
 
       // 统计分数
       let fenshuSelect = countScore(this.qusList.selectQusList, sheSel, 20)
-      let fenshuDec = countScore(this.qusList.decQusLise, sheDec, 20)
+      let fenshuDec = countScore(this.qusList.decQusList, sheDec, 20)
       this.allScore = fenshuSelect + fenshuDec
+
+      let url = ''
+      let params = this.getUserInfo()
+      params.score = this.allScore
+
+      // 提交考试入库
+      this.axios.get(url, params).then(data => { })
 
       this.setExamStatus(false)
       this.clearTimer()
@@ -332,7 +340,7 @@ export default {
     },
     // 获取题目列表
     getQuestion (bIsSelect) {
-      let obj = this.$store.state.classTestBack
+      let obj = this.$store.state.classTestBank
 
       return obj.getData(bIsSelect)
     },
@@ -341,8 +349,8 @@ export default {
       this.qusList.selectQusList = this.getQuestion(true)
       this.qusList.answerSheetSel.length = this.qusList.selectQusList.length
       // 判断题
-      this.qusList.decQusLise = this.getQuestion(false)
-      this.qusList.answerSheetdec.length = this.qusList.decQusLise.length
+      this.qusList.decQusList = this.getQuestion(false)
+      this.qusList.answerSheetdec.length = this.qusList.decQusList.length
     }
 
   }
