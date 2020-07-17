@@ -1,7 +1,7 @@
 <template>
   <div id="hearder" class="">
     <!-- 菜单 -->
-    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect" :router="b_router">
+    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
       <!-- 主页 -->
       <el-menu-item index="/">主页</el-menu-item>
       <div class="icon_wrap btn_home" @click="gotohome">
@@ -45,28 +45,12 @@
 
       </div>
     </el-menu>
-
-    <!-- 测试vuex -->
-    <div v-show="false">
-      <div>mapState 获取userInfo{{getUserInfo.userName}}</div>
-      <div>$store.state 获取{{ $store.state.count }}</div>
-      <div>mapGetters 获取{{getCount}}</div>
-      <div>{{ $store.state.userInfo.userName }}</div>
-      <div>{{ $store.state.changableNum }}</div>
-      <!-- <el-button @click="$store.commit('add')">+</el-button> -->
-      <el-button @click="add(2)">+</el-button>
-      <el-button @click="$store.commit('reduce')">-</el-button>
-      <!-- Action -->
-      <el-button @click="addAction">Action+</el-button>
-      <el-button @click="reduceAction">Action-</el-button>
-      <div>getBasicsReqURL {{getBasicsReqURL}}</div>
-    </div>
   </div>
 </template>
 
 <script>
-// import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import * as vuex from 'vuex'
 
 export default {
   name: '',
@@ -75,42 +59,48 @@ export default {
   },
   data () {
     return {
-      b_router: true,
-      // isCollapse: true
+      activeIndex: '/',
       // 消息对象
       o_msg: {
         b_new_msg: true,
         msg_num: 12
       },
       // 菜单数组
-      arr_menu: [{
-        path: '/learnDir',
-        val: '学习纲目'
-      },
-      {
-        path: '/exam',
-        val: '考试'
-      },
-      {
-        path: '/authManage',
-        val: '用户'
-      }
+      arr_menu: [
+        {
+          path: '/learnDir',
+          val: '学习纲目'
+        },
+        {
+          path: '/question',
+          val: '出题'
+        },
+        {
+          path: '/exam',
+          val: '考试'
+        },
+        {
+          path: '/system',
+          val: '系统'
+        }
       ]
     }
   },
   created () {
     // this.realName = sessionStorage.getItem("realName");
-    let url = `${this.getBasicsReqURL}/system/role/updateRole`
-    console.log('urlurlurlurlurlurlurlurlurl', url)
+    // let url = `${this.getBasicsReqURL}/system/role/updateRole`
+    // console.log('urlurlurlurlurlurlurlurlurl', url)
+    console.log(vuex.mapGetters(['getUserInfo', 'getBasicsReqURL', 'getCount']))
+    console.log(...(vuex.mapGetters(['getUserInfo', 'getBasicsReqURL', 'getCount'])))
   },
   computed: {
     // 用mapGetters获取vuex state状态
-    ...mapGetters(['getUserInfo', 'getBasicsReqURL', 'getCount']),
-    activeIndex () {
-      console.log('activeIndex', this.$route.path)
-      // return '1'
-      return this.$route.path
-    }
+    ...mapGetters(['getUserInfo', 'getBasicsReqURL', 'getCount'])
+    // activeIndex () {
+    //   // console.log('activeIndex', this.$route.path)
+    //   // return '1'
+    //   return this.$route.path
+    // }
   },
   methods: {
     // 添加vuex状态函数
@@ -123,9 +113,11 @@ export default {
     },
     handleSelect (key, keyPath) {
       console.log(key, keyPath)
-      console.log('handleSelect', this.$route.path)
 
-      // this.activeIndex = key
+      this.$router.push({
+        path: key
+      })
+      this.activeIndex = key
     },
     handleCommand (command) {
       // this.$message('click on item ' + command)
@@ -146,13 +138,6 @@ export default {
         default:
           break
       }
-
-      // if (command === 'pwd') {
-      //   // vm.$router.push("/personalSet/passwordReset");
-      // }
-      // if (command === 'msg') {
-      //   // vm.$router.push("/personalSet/personManagement");
-      // }
     },
     loginOut () {
       const vm = this

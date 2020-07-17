@@ -22,7 +22,7 @@
 export default {
   name: 'btn-grp',
   created () {
-    console.log(this.objData)
+    // console.log(this.objData)
   },
   computed: {
     titleName () {
@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     btnClick (name) {
-      console.log(name)
+      // console.log(name)
       this.$emit('btnGrpClick', name)
     }
   }

@@ -1,5 +1,6 @@
 <template>
   <div id="auth" class="component_wrap">
+
     <div class="user">
       <el-button type="primary" class="adduser" size="small" @click="rolrData(0, roleForm)">添加用户</el-button>
     </div>
@@ -54,7 +55,7 @@
   </div>
 </template>
 <script>
-import formValidte from '@/utils/formValidte'
+import formValidte from '@/utils/form-validte'
 
 // 测试文件
 import TestDate from '@/utils/testFiles/testData'
@@ -345,6 +346,7 @@ export default {
       }
       return reVal
     }
+
   }
 }
 

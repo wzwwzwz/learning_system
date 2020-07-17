@@ -72,8 +72,8 @@
             <!-- 查看所有回复 -->
             <div class="childrenList" :class="{hideChildrenList:listOperation[index].commentsList.length !== 0}"
               v-show="listOperation[index].commentsList.length !== 0 && componentLevel < 10">
-              <replyList :answerList="listOperation[index].commentsList" :componentLevel="componentLevel + 1"
-                @delete="deleteAnswer($event)"></replyList>
+              <ReplyList :answerList="listOperation[index].commentsList" :componentLevel="componentLevel + 1"
+                @delete="deleteAnswer($event)"></ReplyList>
             </div>
 
           </div>
@@ -92,7 +92,7 @@ import { mapGetters } from 'vuex'
 import TestData from '@/utils/testFiles/testData'
 
 export default {
-  name: 'replyList',
+  name: 'ReplyList',
   components: { zPopover },
   props: {
     answerList: {

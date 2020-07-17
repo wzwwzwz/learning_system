@@ -5232,7 +5232,7 @@
 }
 
 .custom-theme .el-checkbox-group {
-  font-size: 0
+  font-size: inherit
 }
 
 .custom-theme .el-switch {
@@ -7274,7 +7274,7 @@
 }
 
 .custom-theme .el-checkbox-group {
-  font-size: 0
+  font-size: inherit
 }
 
 .custom-theme .el-tag {
@@ -8321,7 +8321,7 @@
 }
 
 .custom-theme .el-checkbox-group {
-  font-size: 0
+  font-size: inherit
 }
 
 .custom-theme .el-tag {
@@ -22811,7 +22811,7 @@
 }
 
 .custom-theme .el-checkbox-group {
-  font-size: 0
+  font-size: inherit
 }
 
 .custom-theme .el-transfer {

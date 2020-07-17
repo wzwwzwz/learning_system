@@ -1,23 +1,25 @@
 <template>
   <!-- <router-view></router-view> -->
   <div id="learnDirIndex" class="component_wrap container">
-    <!-- <button @click="change">切换页面</button> -->
+
     <!--用is特性动态的选择要挂载的组件-->
-    <component :is="currentView" @openDetails="openDetails($event)" @goBack="returnDefault" :AnswerDate="paramsDate" :idx="curIdx">
-    </component>
+    <!-- <component :is="currentView" @openDetails="openDetails($event)" @goBack="returnDefault" :AnswerDate="paramsDate" :idx="curIdx">
+    </component> -->
+
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
 // 导入的命名 === 组件的name属性
-import learnDir from '@/pages/learnDir/learnDir'
-import detailsAnswer from '@/pages/learnDir/detailsAnswer'
+import Issue from '@/pages/learnDir/Issue'
+import DetailsAnswer from '@/pages/learnDir/DetailsAnswer'
 
 export default {
   name: '',
   components: {
-    learnDir,
-    detailsAnswer
+    Issue,
+    DetailsAnswer
   },
   computed: {
     currentView () {
@@ -29,9 +31,9 @@ export default {
       curIdx: 0,
       // 组件组合
       arrComponent: [{
-        name: 'learnDir'
+        name: 'Issue'
       }, {
-        name: 'detailsAnswer'
+        name: 'DetailsAnswer'
       }],
       paramsDate: ''
     }
@@ -39,13 +41,8 @@ export default {
   created () { },
   mounted () { },
   methods: {
-    change: function () {
-      this.curIdx = (++this.curIdx) % this.arrComponent.length
-    },
     openDetails (data) {
-      //   debugger
       this.curIdx = (++this.curIdx) % this.arrComponent.length
-      //   this.curIdx =
       this.paramsDate = data
     },
     returnDefault () {

@@ -474,12 +474,6 @@ export function countScore (aExam, aAnswer, step) {
   }
   let result = 0
 
-  // for (let [index, item] in aExam) {
-  //   if (item.answer === aAnswer[index]) {
-  //     result += step
-  //   }
-  // }
-
   for (let idx = 0; idx < aExam.length; idx++) {
     const item = aExam[idx]
     if (item.answer === aAnswer[idx]) {

@@ -93,12 +93,12 @@ export default {
       },
       tableData: [{
         date: '2016-05-02',
-        name: '有什么奇怪的知识点',
+        name: '什么时色温？',
         address: '业内名词',
         tag: '家'
       }, {
         date: '2016-05-04',
-        name: '今天你吃了吗？',
+        name: '什么是LED亮度？',
         address: '行业产品',
         tag: '公司'
       }, {
@@ -159,14 +159,16 @@ export default {
     },
     // 表格方法
     rowClick (row) {
-      console.log(`点击行${row}`, row)
+      // console.log(`点击行${row}`, row)
       this.getIndex = row.index
 
-      // 跳转详情
-      // this.$router
-      // this.$router.push({ name: 'detailsAnswer', params: { data: row } })
+      // this.$emit('openDetails', row)
 
-      this.$emit('openDetails', row)
+      // 跳转详情
+      this.$router.push({
+        name: 'DetailsAnswer',
+        params: { data: row }
+      })
     },
     resetDateFilter () {
       this.$refs.filterTable.clearFilter('date')

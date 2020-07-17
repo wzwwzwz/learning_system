@@ -15,15 +15,11 @@ import store from './store'
 import axios from 'axios'
 import QS from 'qs'
 
-// 全局过滤器
+// 全局因引用
+// 过滤器
 import filters from './utils/filters.js'
-
-// 引入富文本编辑器
-// import VueQuillEditor from 'vue-quill-editor'
-// // require styles 引入样式； 富文本编辑器外部引用样式  三种样式三选一引入即可
-// import 'quill/dist/quill.core.css'
-// import 'quill/dist/quill.snow.css'
-// import 'quill/dist/quill.bubble.css'
+// 数据处理
+import dataProcess from './utils/data-process.js'
 
 // global css
 import '@/styles/index.css'
@@ -33,6 +29,7 @@ import './icons'
 Vue.prototype.axios = axios
 Vue.prototype.qs = QS
 Vue.config.productionTip = false
+Vue.prototype.$dataProcess = dataProcess
 
 // 使用element-ui
 Vue.use(ElementUI)

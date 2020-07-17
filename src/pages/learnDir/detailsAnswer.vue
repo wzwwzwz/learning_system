@@ -1,6 +1,6 @@
 <template>
   <div class=''>
-    <el-page-header @back="goBack" :content="AnswerDate.name"></el-page-header>
+    <el-page-header @back="goBack" :content="qusTitle"></el-page-header>
 
     <!-- 所有回答 -->
     <!-- <el-input type="textarea" :rows="2" placeholder="写下你的回答" v-model="textarea"></el-input> -->
@@ -37,7 +37,7 @@
 
 <script>
 import Editor from '@/components/common/Editor'
-import zReplyList from '@/pages/learnDir/replyList'
+import zReplyList from '@/pages/learnDir/ReplyList'
 
 import { getSystemTime } from '@/utils/index'
 import { mapGetters } from 'vuex'
@@ -65,6 +65,9 @@ export default {
       } else {
         return '我要回答'
       }
+    },
+    updateTitle () {
+      return this.qusTitle
     }
   },
   watch: {
@@ -164,18 +167,19 @@ export default {
     // 测试数据结束
 
     this.getAllAnswer()
+
+    // 获取连接参数
+    let id = this.$route.params.data
+    this.qusTitle = id.name
+    console.log(id)
   },
   mounted () { },
   methods: {
     goBack () {
       //   console.log('go back')
-      //   this.$router.go(-1)
+      this.$router.go(-1)
       this.qusTitle = 'ss'
-      // console.log(this.idx)
-
       this.$emit('goBack')
-
-      //   console.log(this.$options.name)
     },
     submit () {
       // console.log(this.article.content)

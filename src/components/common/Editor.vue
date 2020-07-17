@@ -69,7 +69,7 @@ export default {
     }
   },
   created () {
-    console.log('dddd编辑器dddddddd', this.placeholderVal)
+    // console.log('dddd编辑器dddddddd', this.placeholderVal)
   },
   data () {
     return {
@@ -114,7 +114,7 @@ export default {
   methods: {
     onEditorBlur () {
       // 失去焦点事件
-      console.log('失焦时内容', this.content)
+      // console.log('失焦时内容', this.content)
     },
     onEditorFocus () {
       // 获得焦点事件

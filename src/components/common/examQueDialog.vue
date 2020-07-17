@@ -20,6 +20,14 @@
           <el-input type="text" v-model="examQueForm.examTitle" clearable placeholder="请输入题目"></el-input>
         </el-form-item>
 
+        <!-- 题目级别 -->
+        <el-form-item label="级别" prop="qusLevel">
+          <el-select v-model="examQueForm.qusLevel" placeholder="请选择题目级别" style="width:100%">
+            <el-option v-for="item_level in getArrQusLevel" :key="item_level.key" :label="item_level.val" :value="item_level.key ">
+            </el-option>
+          </el-select>
+        </el-form-item>
+
         <!--知识点 -->
         <el-form-item label="知识点" prop="knowledgePoint">
           <el-select v-model="examQueForm.knowledgePoint" multiple placeholder="请选择知识点" style="display:block">
@@ -70,13 +78,6 @@ import { isBoolean } from '@/utils/validate'
 export default {
   name: '',
   props: {
-    // knowledgeOptions: {
-    //   type: Array,
-    //   default: function () {
-    //     return this.getKnowledgePoint
-    //     // return this.updateKnowledgePoint
-    //   }
-    // },
     dialogTiltle: {
       type: String,
       default: () => ''
@@ -85,7 +86,7 @@ export default {
   components: {
   },
   computed: {
-    ...mapGetters(['getKnowledgePoint']),
+    ...mapGetters(['getKnowledgePoint', 'getArrQusLevel']),
     updateAnswerList () {
       if (this.examQueForm.bIsSelectQue) {
         return [{ key: true }, { key: false }]
@@ -113,8 +114,6 @@ export default {
         activeText: '判断题',
         inactiveText: '选择题'
       },
-      // 知识点
-      // knowledgeOptions: this.getKnowledgePoint,
       // 默认选项值
       selectOptionsDefaltArr: [
         { key: 'A', value: '1' },
@@ -141,22 +140,17 @@ export default {
       },
       // 表单校验规则
       formRules: {
-        examTitle: [{
-          required: true,
-          message: '请输入题目',
-          trigger: 'blur'
-        },
-        {
-          //   pattern: window._check.isChineseReg,
-          message: '请输入中文不能包含空格',
-          trigger: 'blur'
-        }
+        examTitle: [
+          { required: true, message: '请输入题目', trigger: 'blur' },
+          // pattern: window._check.isChineseReg,
+          { message: '请输入中文不能包含空格', trigger: 'blur' }
         ],
-        knowledgePoint: [{
-          required: true,
-          message: '请选择知识点',
-          trigger: 'change'
-        }],
+        qusLevel: [
+          { required: true, message: '请选择题目等级', trigger: ['change', 'blur'] }
+        ],
+        knowledgePoint: [
+          { required: true, message: '请选择知识点', trigger: ['change', 'blur'] }
+        ],
         answer: [
           { required: true, message: '请选择答案', trigger: 'change' }
         ]
@@ -169,6 +163,16 @@ export default {
   },
   mounted () { },
   methods: {
+    /**
+     * @description 设置表单类别
+     * @param { Boolean } true === 考试表单 || false === 词条表单
+     **/
+    setFormType (b) {
+      if (!isBoolean(b)) {
+        return false
+      }
+      this.bEaxmQueDia = b
+    },
     // @param { Boolean } 是否为考试题目弹框
     openDialog (b) {
       if (!isBoolean(b)) {
@@ -194,11 +198,11 @@ export default {
         if (valid) {
           // 考试题目弹框确认
           if (this.bEaxmQueDia) {
-            let { bIsSelectQue: bIsjudgeQue, examTitle: title, knowledgePoint, selectOptions: options, answer } = vm.examQueForm
-            vm.$emit('submitForm', { bIsjudgeQue, title, knowledgePoint, options, answer })
+            let { bIsSelectQue: bIsjudgeQue, examTitle: title, qusLevel, knowledgePoint, selectOptions: options, answer } = vm.examQueForm
+            vm.$emit('submitForm', { bIsjudgeQue, title, qusLevel, knowledgePoint, options, answer })
           } else {
-            let { examTitle: title, knowledgePoint } = vm.examQueForm
-            vm.$emit('submitForm', { title, knowledgePoint })
+            let { examTitle: title, knowledgePoint, qusLevel } = vm.examQueForm
+            vm.$emit('submitForm', { title, knowledgePoint, qusLevel })
           }
           vm.dialogVisible = false
           vm.$refs.examQueForm.resetFields()
@@ -237,7 +241,8 @@ export default {
       if (val) {
         this.examQueForm.selectOptions = []
       } else {
-        this.examQueForm.selectOptions = JSON.parse(JSON.stringify(this.selectOptionsDefaltArr))
+        // this.examQueForm.selectOptions = JSON.parse(JSON.stringify(this.selectOptionsDefaltArr))
+        this.examQueForm.selectOptions = [...this.selectOptionsDefaltArr]
       }
       this.examQueForm.bIsSelectQue = val
     },
@@ -254,7 +259,7 @@ export default {
       }
     },
     answerChg (value) {
-      console.log(value, this.examQueForm.answer)
+      // console.log(value, this.examQueForm.answer)
     }
   }
 }

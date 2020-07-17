@@ -18,8 +18,6 @@
             </template>
           </div>
 
-          <!-- 表格组件 -->
-          <!-- <auditTable ref="refTable" :auditType="item_tabs" :tableData="allList"></auditTable> -->
         </el-tab-pane>
 
       </template>
@@ -34,20 +32,20 @@
 
 <script>
 import zPopover from '@/components/common/popover.vue'
-import auditTable from './auditTable.vue'
+import AuditTable from './AuditTable'
 
 export default {
   name: 'myAudit',
   components: {
     zPopover,
-    auditTable
+    AuditTable
   },
   computed: {
     isComponent () {
       let zcom = this.componentsList[this.activeName]
       console.log(zcom)
       // return zcom
-      return 'auditTable'
+      return 'AuditTable'
     },
     updateAuditStatus () {
       return function name (val) {
@@ -66,10 +64,10 @@ export default {
     return {
       activeName: 'first',
       componentsList: {
-        first: 'auditTable', // 需要引入具体的组件
-        second: 'auditTable',
-        third: 'auditTable',
-        four: 'auditTable'
+        first: 'AuditTable', // 需要引入具体的组件
+        second: 'AuditTable',
+        third: 'AuditTable',
+        four: 'AuditTable'
       },
       // 测试
       tabsIndex: '全部',
@@ -95,12 +93,12 @@ export default {
       // , '待审核', '已审核'
       aTabs: ['全部', '待审核', '已审核'],
       arrComponent: [{
-        name: 'auditTable'
+        name: 'AuditTable'
       }, {
-        name: 'auditTable'
+        name: 'AuditTable'
       },
       {
-        name: 'auditTable'
+        name: 'AuditTable'
       }]
     }
   },

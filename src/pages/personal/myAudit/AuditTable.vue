@@ -84,7 +84,7 @@ import { mapGetters } from 'vuex'
 import { isBoolean } from '@/utils/validate'
 
 export default {
-  name: 'auditTable',
+  name: 'AuditTable',
   props: {
     // 审核分类
     auditType: {
