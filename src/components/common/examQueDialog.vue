@@ -1,5 +1,5 @@
 <template>
-  <div class=''>
+  <div id="examQueDialog" class=''>
     <!-- 用户操作dialog弹框开始 -->
     <!-- width="50%" -->
     <el-dialog :title="dialogTiltle" :visible.sync="dialogVisible" :close-on-click-modal="false" :before-close="dialogCancel">
@@ -76,7 +76,7 @@ import { mapGetters } from 'vuex'
 import { isBoolean } from '@/utils/validate'
 
 export default {
-  name: '',
+  name: 'examQueDialog',
   props: {
     dialogTiltle: {
       type: String,

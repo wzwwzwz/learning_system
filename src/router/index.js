@@ -1,32 +1,29 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-// import HelloWorld from '@/components/HelloWorld'
-
-// import {mapGetters} from 'vuex'
 import Store from '@/store/index'
-// import { existPath } from '@/utils/index'
 
 // 引入页面组件
-import Login from '@/pages/Login'
-import Home from '@/pages/Home'
-import HomeIndex from '@/pages/HomeIndex'
-import Exam from '@/pages/Exam'
-import NotFound from '@/pages/NotFound'
-import examQueDialog from '@/components/common/examQueDialog'
-import testPage from '@/components/testPage'
-import myAudit from '@/pages/personal/myAudit/AuditIndex'
-import QueIndex from '@/pages/question/QueIndex'
+const HomeIndex = () => import('@/pages/HomeIndex')
+const NotFound = () => import('@/pages/NotFound')
+const Login = () => import('@/pages/Login')
+const Home = () => import('@/pages/Home')
+const Exam = () => import('@/pages/Exam')
+const myAudit = () => import('@/pages/personal/myAudit/AuditIndex')
+const QueIndex = () => import('@/pages/question/QueIndex')
+// 测试组件
+const testPage = () => import('@/components/testPage')
 
 // 学习纲目
-import learnDirIndex from '@/pages/learnDir/index'
-import Issue from '@/pages/learnDir/Issue'
-import DetailsAnswer from '@/pages/learnDir/DetailsAnswer'
+const learnDirIndex = () => import(/* webpackChunkName:'learnPackage' */ '@/pages/learnDir/index')
+const Issue = () => import(/* webpackChunkName:'learnPackage' */ '@/pages/learnDir/Issue')
+const DetailsAnswer = () => import(/* webpackChunkName:'learnPackage' */ '@/pages/learnDir/DetailsAnswer')
 
 // 系统管理
-import systemIndex from '@/pages/system/systemIndex'
-import businessManagement from '@/pages/system/businessManagement'
-import AuthManage from '@/pages/system/AuthManage'
-import Organization from '@/pages/system/Organization'
+const SystemIndex = () => import(/* webpackChunkName:'systemPackage' */ '@/pages/system/SystemIndex')
+const Company = () => import(/* webpackChunkName:'systemPackage' */ '@/pages/system/Company')
+const User = () => import(/* webpackChunkName:'systemPackage' */ '@/pages/system/User')
+const Organization = () => import(/* webpackChunkName:'systemPackage' */ '@/pages/system/Organization')
+const Privilege = () => import(/* webpackChunkName:'systemPackage' */ '@/pages/system/Privilege')
 
 Vue.use(Router)
 
@@ -37,7 +34,6 @@ Router.prototype.push = function push (location) {
 }
 
 let routes = [
-  // {path: '/',name: 'HelloWorld',component: HelloWorld},
   {
     path: '/',
     name: 'Home',
@@ -60,16 +56,16 @@ let routes = [
       // 系统管理
       { path: '/system',
         name: 'system',
-        component: systemIndex,
-        redirect: '/system',
+        component: SystemIndex,
         children: [
-          {path: '/department', name: 'businessManagement', component: businessManagement},
-          {path: '/system', name: 'AuthManage', component: AuthManage},
-          {path: '/organization', name: 'Organization', component: Organization}
+          {path: '/department', name: 'Company', component: Company},
+          {path: '/user', name: 'User', component: User},
+          {path: '/organization', name: 'organization', component: Organization},
+          {path: '/privilege', name: 'Privilege', component: Privilege}
         ]
       },
       // 测试页：二级页面
-      {path: '/test', name: 'test', component: examQueDialog},
+      {path: '/test', name: 'test', component: testPage},
       {path: '/myAudit', name: 'myAudit', component: myAudit}
     ]
   },
@@ -89,11 +85,6 @@ const router = new Router({
 
 // 全局守卫
 router.beforeEach((to, from, next) => {
-  // if (!existPath(routes, to.path)) {
-  //   next('/404')
-  //   return
-  // }
-
   if (from.path === '/Exam') {
     const gettersVuex = Store.getters.getExamStatus
 

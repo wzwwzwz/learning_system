@@ -98,5 +98,11 @@ export default {
   .el-menu {
     height: 100%;
   }
+
+  // 覆盖单选|多选按钮
+  .el-radio,
+  .el-checkbox {
+    margin-right: 10px;
+  }
 }
 </style>

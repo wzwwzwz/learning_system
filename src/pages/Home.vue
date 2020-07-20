@@ -17,16 +17,16 @@
     <!-------- 弹出框集合 -------->
     <!-- 出题表单弹框 -->
     <examQueDialog ref="examQueForm" @submitForm="examQueDialogSubmitForm($event)" :dialogTiltle="examQueData.title"></examQueDialog>
-    <upload-Avatar ref="dialogUploadAvatar"></upload-Avatar>
+    <Upload-Avatar ref="dialogUploadAvatar"></Upload-Avatar>
 
   </div>
 </template>
 <script>
 import zHeader from '@/components/common/header.vue'
-import hallo from '@/components/HelloWorld.vue'
-// import zAside from "@/pages/common/aside.vue";
 import examQueDialog from '@/components/common/examQueDialog.vue'
-import uploadAvatar from '@/components/common/uploadAvatar.vue'
+// import UploadAvatar from '@/components/common/UploadAvatar.vue'
+
+const UploadAvatar = () => import('@/components/common/UploadAvatar.vue')
 
 export default {
   name: 'index',
@@ -40,11 +40,9 @@ export default {
     }
   },
   components: {
-    // zAside,
     zHeader,
-    hallo,
     examQueDialog,
-    uploadAvatar
+    UploadAvatar
   },
   created () {
     // this.$store.commit("changeBreadcumb", []);
@@ -88,7 +86,7 @@ export default {
 }
 
 .el-header {
-  color: #333;
+  // color: #333;
   text-align: center;
   padding: 0;
   background: #fff;
@@ -96,7 +94,7 @@ export default {
 
 .el-main {
   background-color: #e9eef3;
-  color: #333;
+  // color: #333;
   // text-align: center;
   // line-height: 160px;
   padding: 0;

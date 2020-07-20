@@ -45,7 +45,6 @@ const state = {
     name: '产品目的',
     label: '产品目的'
   }],
-  //
   // arrQusLevel: ['简单', '中等', '困难'],
   arrQusLevel: [
     {
@@ -61,6 +60,32 @@ const state = {
       val: '困难'
     }
   ],
+  // 用户分类数组
+  arrUserType: [
+    {
+      idx: 1,
+      val: '管理员'
+    },
+    {
+      idx: 2,
+      val: '评审员'
+    },
+    {
+      idx: 3,
+      val: '普通用户'
+    }
+  ],
+  // 性别数组
+  arrGender: [
+    {
+      name: 0,
+      label: '女'
+    },
+    {
+      name: 1,
+      label: '男'
+    }
+  ],
   // 测试 保存出题
   classTestBank: new TestBack()
 }
@@ -74,6 +99,8 @@ const getters = {
   getKnowledgePoint: state => state.knowledgePoint,
   getExamStatus: state => state.bIsExam,
   getArrQusLevel: state => state.arrQusLevel,
+  getArrUserType: state => state.arrUserType,
+  getArrGender: state => state.arrGender,
   // 获取题库对象 (测试)
   getClassTestBank: state => state.classTestBank
 }

@@ -50,7 +50,6 @@
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
-import * as vuex from 'vuex'
 
 export default {
   name: '',
@@ -82,6 +81,10 @@ export default {
         {
           path: '/system',
           val: '系统'
+        },
+        {
+          path: '/test',
+          val: '测试'
         }
       ]
     }
@@ -90,8 +93,7 @@ export default {
     // this.realName = sessionStorage.getItem("realName");
     // let url = `${this.getBasicsReqURL}/system/role/updateRole`
     // console.log('urlurlurlurlurlurlurlurlurl', url)
-    console.log(vuex.mapGetters(['getUserInfo', 'getBasicsReqURL', 'getCount']))
-    console.log(...(vuex.mapGetters(['getUserInfo', 'getBasicsReqURL', 'getCount'])))
+
   },
   computed: {
     // 用mapGetters获取vuex state状态
@@ -161,10 +163,11 @@ export default {
 <style lang="scss" scoped>
 /* // 测试scss配置 */
 $title-color: red;
+// 定义菜单高
+$nav-height: 60px;
 
 #hearder {
   position: relative;
-  /* // color: $title-color; */
 }
 
 #hearder li:first-of-type {
@@ -181,8 +184,8 @@ $title-color: red;
     color: #000;
     height: 100%;
     display: inline-block;
-    height: 60px;
-    line-height: 60px;
+    height: $nav-height;
+    line-height: $nav-height;
     margin: 0 10px;
 
     &:hover {

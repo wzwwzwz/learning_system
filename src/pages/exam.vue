@@ -391,6 +391,7 @@ export default {
 }
 
 .exam_qus {
+  $sheet-width: 300px;
   .qus,
   .sheet {
     display: inline-block;
@@ -400,9 +401,6 @@ export default {
   .title {
     padding: 10px;
     font-weight: 700;
-  }
-
-  .user_answer_bg {
   }
 
   .error_answer_bg {
@@ -420,7 +418,7 @@ export default {
   }
 
   .qus {
-    width: calc(100% - 310px);
+    width: calc(100% - 10px - #{$sheet-width});
     margin-right: 10px;
     float: left;
     margin-bottom: 40%;
@@ -431,10 +429,6 @@ export default {
 
     .item {
       margin-bottom: 18px;
-    }
-
-    .box-card {
-      // width: 480px;
     }
 
     .title {
@@ -452,7 +446,7 @@ export default {
 
   .sheet {
     width: 29%;
-    width: 300px;
+    width: $sheet-width;
     position: fixed;
     background: #fff;
     // padding: 0 10px;
@@ -521,9 +515,6 @@ export default {
       color: inherit;
       margin-top: 60px;
       padding: 10px;
-      span {
-        // padding: 10px;
-      }
     }
   }
 }
@@ -550,7 +541,7 @@ export default {
   .el-radio__input.is-disabled + span.el-radio__label {
     color: inherit;
   }
-  .el-radio__input.is-checked + .el-radio__label {
-  }
+  // .el-radio__input.is-checked + .el-radio__label {
+  // }
 }
 </style>
