@@ -2,30 +2,14 @@
   <div id="systemIdex" class="component_wrap">
     <el-row class="menu">
       <el-col :span="menuSpan">
-        <el-menu default-active="1" :active="curMenu" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"
+        <el-menu :default-active="defaultActive" :active="curMenu" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"
           @select="selectMenu">
-          <el-menu-item index="/department">
-            <i class="el-icon-menu"></i>
-            <span slot="title">部门</span>
+
+          <el-menu-item v-for="(item,idx) in arrMenu" :key="idx" :index="item.path">
+            <i :class="item.icon"></i>
+            <span slot="title">{{item.val}}</span>
           </el-menu-item>
-          <!-- <router-link to="/organization"> -->
-          <el-menu-item index="/user">
-            <i class="el-icon-menu"></i>
-            <span slot="title">用户</span>
-          </el-menu-item>
-          <!-- </router-link> -->
-          <el-menu-item index="/system">
-            <i class="el-icon-document"></i>
-            <span slot="title">权限</span>
-          </el-menu-item>
-          <el-menu-item index="/privilege">
-            <i class="el-icon-setting"></i>
-            <span slot="title">权限组</span>
-          </el-menu-item>
-          <el-menu-item index="/organization">
-            <i class="el-icon-setting"></i>
-            <span slot="title">organization</span>
-          </el-menu-item>
+
         </el-menu>
       </el-col>
 
@@ -45,7 +29,36 @@ export default {
   data () {
     return {
       menuSpan: 3,
-      curMenu: '1'
+      defaultActive: '/organization',
+      curMenu: '1',
+      arrMenu: [
+        // {
+        //   icon: 'el-icon-menu',
+        //   path: '/company',
+        //   val: '公司'
+        // },
+        {
+          icon: 'el-icon-menu',
+          path: '/organization',
+          val: '组织架构'
+        },
+        {
+          icon: 'el-icon-menu',
+          path: '/user',
+          val: '用户'
+        },
+        {
+          icon: 'el-icon-menu',
+          path: '/system',
+          val: '权限'
+        },
+        {
+          icon: 'el-icon-menu',
+          path: '/privilege',
+          val: '权限组'
+        }
+
+      ]
     }
   },
   methods: {

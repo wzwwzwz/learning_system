@@ -1,32 +1,36 @@
 <template>
-  <div id="auth" class="component_wrap">
+  <div id="user" class="component_wrap">
 
-    <div class="user">
-      <el-button type="primary" class="adduser" size="small" @click="rolrData(0, {})">添加用户</el-button>
+    <div class="btn_add_user_wrap">
+      <el-button type="primary" class="btn_add_user" size="small" @click="rolrData(0, {})">添加用户</el-button>
     </div>
 
     <!-- 表格 -->
     <el-table :data="tableData.slice((currentPage - 1) * pagesize, currentPage * pagesize)" border>
-      <el-table-column type="index" width="50" label="序号" align="center"></el-table-column>
-      <el-table-column label="用户名称" prop="roleName" align="center"></el-table-column>
-      <el-table-column label="用户权限" prop="auth" align="center" :formatter="formatDes"></el-table-column>
+      <el-table-column type="index" label="序号" align="center" width="50" fixed="left"></el-table-column>
+      <el-table-column label="用户名称" prop="roleName" align="center" fixed="left"></el-table-column>
+      <el-table-column label="权限" prop="auth" align="center" fixed="left" :formatter="formatDes"></el-table-column>
 
       <!-- 后续添加 -->
-      <el-table-column label="用户姓" prop="surname"></el-table-column>
-      <el-table-column label="用户名" prop="persionname"></el-table-column>
-      <el-table-column label="性别" prop="gender" :formatter="formatGender"></el-table-column>
-      <el-table-column label="年龄" prop="age"></el-table-column>
-      <el-table-column label="入职时间" prop="onboarding"></el-table-column>
-      <el-table-column label="所属部门" prop="department"></el-table-column>
-      <el-table-column label="联系电话" prop="phone"></el-table-column>
-      <el-table-column label="邮箱" prop="email"></el-table-column>
-      <el-table-column label="描述" prop="descript"></el-table-column>
+      <!-- <el-table-column label="用户姓" prop="surname" align="center"></el-table-column>
+      <el-table-column label="用户名" prop="persionname" align="center"></el-table-column> -->
+      <el-table-column label="全名" align="center" :formatter="formatFullName">
+      </el-table-column>
+
+      <el-table-column label="性别" prop="gender" align="center" width="50" :formatter="formatGender"></el-table-column>
+      <el-table-column label="年龄" prop="age" align="center" width="50"></el-table-column>
+      <el-table-column label="入职时间" prop="onboarding" align="center" width="100"></el-table-column>
+      <el-table-column label="所属部门" prop="department" align="center"></el-table-column>
+      <el-table-column label="联系电话" prop="phone" align="center" width="110"></el-table-column>
+      <el-table-column label="邮箱" prop="email" align="center" width="180"></el-table-column>
+      <el-table-column label="描述" prop="descript" align="center" show-overflow-tooltip=true></el-table-column>
 
       <!-- 表格操作 -->
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" width="250" fixed="right">
         <template slot-scope="scope">
-          <el-button type="primary" plain size="small" @click="rolrData(1, scope.row)">修改用户</el-button>
-          <el-button type="danger" plain size="small" @click.prevent="deleteRole(scope.row.id)">删除用户</el-button>
+          <el-button type="primary" plain size="small" @click="rolrData(1, scope.row)">修改</el-button>
+          <el-button type="danger" plain size="small" @click.prevent="deleteRole(scope.row.id)">删除</el-button>
+          <el-button type="danger" size="small" @click="resetPassword(scope.row)">重置密码</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -53,7 +57,7 @@ export default {
     UserDialog
   },
   computed: {
-    ...mapGetters(['getArrUserType'])
+    ...mapGetters(['getArrUserType', 'getBasicsReqURL'])
   },
   created () {
     // 测试数据
@@ -111,7 +115,7 @@ export default {
       vm.tableData = []
       // let pageIndex = vm.pageIndex
       // vm.axios.post(
-      //   `${vm.$store.state.basicsReqURL}/system/role/roleInfo`,
+      //   `${vm.getBasicsReqURL}/system/role/roleInfo`,
       //   pageIndex
       // ).then(data => {
       //   if (data.code === 200) {
@@ -132,7 +136,7 @@ export default {
         .then(() => {
           const vm = this
           // vm.axios.post(
-          //   //   `${vm.$store.state.basicsReqURL}/system/role/deleteRole`,
+          //   //   `${vm.getBasicsReqURL}/system/role/deleteRole`,
           //   res
           // ).then(data => {
           //   if (data.code === 200) {
@@ -222,6 +226,37 @@ export default {
       }
       return obj
     },
+    // 重置密码
+    resetPassword (row) {
+      const vm = this
+      let id = row.id
+      vm.$confirm(`重置用户:${row.roleName}的密码?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        vm.isLoading = true
+        let objData = new vm.$dataProcess.RequestParams('set_user_psw')
+        objData.setParams({
+          key: id,
+          psw: ''
+        })
+
+        let encryptedData = objData.getEncryptData()
+        objData.setDecryptData('dfdsg')
+
+        let jiemi = objData.getParams()
+        console.log(encryptedData, jiemi)
+
+        // vm.$post(`${vm.getBasicsReqURL}`, encryptedData).then(r => {
+        //   if (r && r.code === 200) {
+        //     vm.$message({ message: `${r.msg}`, type: 'success' })
+        //     vm.showAllUserInfo()
+        //   }
+        //   vm.isLoading = false
+        // })
+      })
+    },
     // 分页方法
     handleSizeChange: function (size) {
       this.pagesize = size
@@ -229,6 +264,7 @@ export default {
     handleCurrentChange: function (currentPage) {
       this.currentPage = currentPage
     },
+    // 表格格式化
     formatDes (row, column) {
       var type = row[column.property]
       let reVal = '无效权限'
@@ -247,19 +283,25 @@ export default {
       } else {
         return '女'
       }
+    },
+    formatFullName (row, column) {
+      // var val = row[column.property]
+      return `${row.surname}${row.persionname}`
     }
-
   }
 }
 
 </script>
-<style scoped>
-.adduser {
-  margin-bottom: 10px;
-}
+<style lang="scss" scoped>
+#user {
+  padding: 0;
+  .btn_add_user_wrap {
+    margin-bottom: 5px;
 
-.user {
-  margin-bottom: 5px;
+    .btn_add_user {
+      margin-bottom: 10px;
+    }
+  }
 }
 
 /* 分页 */

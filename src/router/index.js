@@ -57,8 +57,9 @@ let routes = [
       { path: '/system',
         name: 'system',
         component: SystemIndex,
+        redirect: '/company',
         children: [
-          {path: '/department', name: 'Company', component: Company},
+          {path: '/company', name: 'Company', component: Company},
           {path: '/user', name: 'User', component: User},
           {path: '/organization', name: 'organization', component: Organization},
           {path: '/privilege', name: 'Privilege', component: Privilege}

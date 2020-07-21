@@ -85,7 +85,7 @@ export default {
   data () {
     return {
       dialogTiltle: '',
-      dialogVisible: true,
+      dialogVisible: false,
       userForm: {},
       // 用户表单添加
       roleFormAdd: {

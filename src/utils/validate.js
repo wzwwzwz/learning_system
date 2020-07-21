@@ -94,3 +94,19 @@ export function isBoolean (b) {
   }
   return false
 }
+
+/**
+ * @functionName isObject
+ * @description 校验数据格式是否为对象
+ * @param { String } 参数1
+ * @returns {Boolean} true === 是对象 || false === 不是对象
+ * @author 巫昭雯
+ * @date 2020-07-21 11:41:50
+ * @version V1.0
+*/
+export function isObject (obj) {
+  if (typeof obj === 'object' && Object.prototype.toString.call(obj) === '[object Object]') {
+    return true
+  }
+  return false
+}

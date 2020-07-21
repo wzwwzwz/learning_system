@@ -42,6 +42,8 @@ module.exports = {
 
     // https://webpack.js.org/configuration/devtool/#development
     devtool: 'cheap-module-eval-source-map',
+    // devtool: '#eval-source-map',
+
 
     // If you have problems debugging vue-files in devtools,
     // set this to false - it *may* help
@@ -72,7 +74,7 @@ module.exports = {
     // Surge or Netlify already gzip all static assets for you.
     // Before setting to `true`, make sure to:
     // npm install --save-dev compression-webpack-plugin
-    productionGzip: false,
+    productionGzip: true, // 开启Gzip压缩
     productionGzipExtensions: ['js', 'css'],
 
     // Run the build command with an extra argument to

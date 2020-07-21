@@ -1,6 +1,6 @@
 
 /**
- * @description 全局过滤函数
+ * @description 全局过滤 || 格式化函数
  * @author 巫昭雯
  * @date 2020-07-03 15:46:38
  * @version V1.0

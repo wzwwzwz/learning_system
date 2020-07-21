@@ -1,7 +1,3 @@
-// 使用改组件外框必须包裹样式 ql-container ql-snow && 渲染的文本 必须包含类 ql-editor
-//    <div class="ql-container ql-snow">
-//       <div class="ql-editor" v-html="AnswerTest"></div>
-//     </div>
 
 <template>
   <div class="editorComp">
@@ -11,12 +7,24 @@
 
     <quill-editor class="editor" v-model="content" ref="myQuillEditor" :options="editorOption" @blur="onEditorBlur($event)"
       @focus="onEditorFocus($event)" @change="onEditorChange($event)"></quill-editor>
+
+    <template>
+      <!-- 使用改组件外框必须包裹样式 ql-container ql-snow && 渲染的文本 必须包含类 ql-editor -->
+      <!-- <div class="ql-container ql-snow">
+        <div class="ql-editor" v-html="AnswerTest"></div>
+      </div> -->
+    </template>
   </div>
+
 </template>
 <script>
+// 安装命令：富文本编辑器
+// npm i vue-quill-editor
+
 // 工具栏配置
 // 引入富文本编辑器
 import { quillEditor } from 'vue-quill-editor'
+
 // require styles 引入样式； 富文本编辑器外部引用样式  三种样式三选一引入即可
 // import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
