@@ -8,7 +8,6 @@ const NotFound = () => import('@/pages/NotFound')
 const Login = () => import('@/pages/Login')
 const Home = () => import('@/pages/Home')
 const Exam = () => import('@/pages/Exam')
-const myAudit = () => import('@/pages/personal/myAudit/AuditIndex')
 const QueIndex = () => import('@/pages/question/QueIndex')
 // 测试组件
 const testPage = () => import('@/components/testPage')
@@ -24,6 +23,10 @@ const Company = () => import(/* webpackChunkName:'systemPackage' */ '@/pages/sys
 const User = () => import(/* webpackChunkName:'systemPackage' */ '@/pages/system/User')
 const Organization = () => import(/* webpackChunkName:'systemPackage' */ '@/pages/system/Organization')
 const Privilege = () => import(/* webpackChunkName:'systemPackage' */ '@/pages/system/Privilege')
+
+// 个人设置
+const AuditIndex = () => import(/* webpackChunkName:'personalPackage' */ '@/pages/personal/myAudit/AuditIndex')
+const ResetPwd = () => import(/* webpackChunkName:'personalPackage' */ '@/pages/personal/ResetPwd')
 
 Vue.use(Router)
 
@@ -67,7 +70,8 @@ let routes = [
       },
       // 测试页：二级页面
       {path: '/test', name: 'test', component: testPage},
-      {path: '/myAudit', name: 'myAudit', component: myAudit}
+      {path: '/myAudit', name: 'myAudit', component: AuditIndex},
+      {path: '/resetPwd', name: 'ResetPwd', component: ResetPwd}
     ]
   },
   {path: '/login', name: 'Login', component: Login},

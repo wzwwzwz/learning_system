@@ -88,7 +88,7 @@ export default {
 
   .div_wrap {
     height: calc(100% - 40px);
-    margin: 20px 136px;
+    // margin: 20px 136px;
   }
 }
 </style>

@@ -1,9 +1,27 @@
 <template>
   <div id="user" class="component_wrap">
 
-    <div class="btn_add_user_wrap">
-      <el-button type="primary" class="btn_add_user" size="small" @click="rolrData(0, {})">添加用户</el-button>
-    </div>
+    <el-row :gutter="20" class="user_top_wrap">
+
+      <el-col :span="10">
+        <!-- 搜索 -->
+        <el-input placeholder="请输入内容" v-model="searchInput" class="input-with-select" clearable
+          @keyup.enter.native="search(searchInput,searchSelect)">
+          <el-select v-model="select" slot="prepend" placeholder="请选择" clearable>
+            <el-option label="餐厅名" value="1"></el-option>
+            <el-option label="订单号" value="2"></el-option>
+            <el-option label="用户电话" value="3"></el-option>
+          </el-select>
+          <el-button slot="append" icon="el-icon-search" @click="search(searchInput,searchSelect)"></el-button>
+        </el-input>
+      </el-col>
+
+      <el-col :span="6">
+        <!-- 添加 -->
+        <el-button type="primary" class="btn_add_user" size="medium" @click="updateUser(0, {})">添加用户</el-button>
+      </el-col>
+
+    </el-row>
 
     <!-- 表格 -->
     <el-table :data="tableData.slice((currentPage - 1) * pagesize, currentPage * pagesize)" border>
@@ -23,20 +41,20 @@
       <el-table-column label="所属部门" prop="department" align="center"></el-table-column>
       <el-table-column label="联系电话" prop="phone" align="center" width="110"></el-table-column>
       <el-table-column label="邮箱" prop="email" align="center" width="180"></el-table-column>
-      <el-table-column label="描述" prop="descript" align="center" show-overflow-tooltip=true></el-table-column>
+      <el-table-column label="描述" prop="descript" align="center" :show-overflow-tooltip="true"></el-table-column>
 
       <!-- 表格操作 -->
       <el-table-column label="操作" align="center" width="250" fixed="right">
         <template slot-scope="scope">
-          <el-button type="primary" plain size="small" @click="rolrData(1, scope.row)">修改</el-button>
-          <el-button type="danger" plain size="small" @click.prevent="deleteRole(scope.row.id)">删除</el-button>
+          <el-button type="primary" plain size="small" @click="updateUser(1, scope.row)">修改</el-button>
+          <el-button type="danger" plain size="small" @click.prevent="deleteUser(scope.row.key)">删除</el-button>
           <el-button type="danger" size="small" @click="resetPassword(scope.row)">重置密码</el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <!-- 表单Dialog -->
-    <UserDialog ref="userDialog"></UserDialog>
+    <UserDialog ref="userDialog" @ok="dialogOk($event)"></UserDialog>
 
     <!-- 分页显示 -->
     <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
@@ -62,13 +80,14 @@ export default {
   created () {
     // 测试数据
     let data1 = {
+      key: '修改用户的key1',
+      roleName: '123例子',
       auth: 3,
       surname: '李',
       persionname: '四',
-      roleName: '123例子',
       gender: 0,
-      age: '18',
-      onboarding: '2011-11-1',
+      age: 18,
+      onboarding: '2011-11-21',
       department: '研发部',
       phone: '13755669933',
       email: '23674992@qq.con',
@@ -78,13 +97,14 @@ export default {
     this.testfun.add(data1)
 
     let data2 = {
+      key: '修改用户的key2',
       auth: 1,
       surname: '周',
       persionname: '三',
       roleName: '例子2',
       gender: 1,
-      age: '20',
-      onboarding: '2011-07-01',
+      age: 2,
+      onboarding: '2018-07-21',
       department: '电子部门',
       phone: '13866999433',
       email: '2368596992@qq.con',
@@ -99,6 +119,9 @@ export default {
     return {
       // 测试函数
       testfun: new TestDate(),
+      // 搜索
+      searchInput: '',
+      searchSelect: '',
       // 添加用户
       input: '',
       pageIndex: 0,
@@ -106,9 +129,13 @@ export default {
       // 分页默认
       currentPage: 1,
       pagesize: 5
+
     }
   },
   methods: {
+    search (searchInput, searchSelect) {
+      console.log(searchInput, searchSelect)
+    },
     // 查询用户
     getRoleInfo () {
       const vm = this
@@ -126,8 +153,11 @@ export default {
       // 测试数据
       vm.tableData = vm.testfun.getData()
     },
-    // 删除用户
-    deleteRole (res) {
+    /**
+     * @description 删除用户
+     * @param { String } key 用户key
+    **/
+    deleteUser (key) {
       this.$confirm('是否确定删除此用户?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -135,8 +165,15 @@ export default {
       })
         .then(() => {
           const vm = this
+          let objData = new vm.$dataProcess.Parameter()
+          objData.setFunc('del_user')
+          objData.setParams({ key })
+
+          let param = objData.getJson()
+          console.log(param)
+
           // vm.axios.post(
-          //   //   `${vm.getBasicsReqURL}/system/role/deleteRole`,
+          //   //   `${vm.getBasicsReqURL}/system/role/deleteUser`,
           //   res
           // ).then(data => {
           //   if (data.code === 200) {
@@ -145,7 +182,7 @@ export default {
           //   }
           // })
 
-          var data = vm.testfun.delete(res)
+          var data = vm.testfun.delete(key)
           if (data) {
             // this.$message({
             //   type: 'success',
@@ -166,8 +203,12 @@ export default {
         })
     },
     /* 用户表单弹窗操作：添加用户、修改用户;打开表单 */
-    rolrData (statu, res) {
+    updateUser (statu, res) {
       this.$refs.userDialog.userAction(statu, res)
+    },
+    dialogOk ({ statu, data }) {
+      console.log('ok回调', statu, data)
+      this.tableData = data
     },
     // 弹窗默认数据
     defaultData (res) {
@@ -236,7 +277,7 @@ export default {
         type: 'warning'
       }).then(() => {
         vm.isLoading = true
-        let objData = new vm.$dataProcess.RequestParams('set_user_psw')
+        let objData = new vm.$dataProcess.Parameter('set_user_psw')
         objData.setParams({
           key: id,
           psw: ''
@@ -257,6 +298,7 @@ export default {
         // })
       })
     },
+
     // 分页方法
     handleSizeChange: function (size) {
       this.pagesize = size
@@ -295,12 +337,12 @@ export default {
 <style lang="scss" scoped>
 #user {
   padding: 0;
-  .btn_add_user_wrap {
-    margin-bottom: 5px;
+  .user_top_wrap {
+    margin-bottom: 15px;
 
-    .btn_add_user {
-      margin-bottom: 10px;
-    }
+    // .btn_add_user {
+    //   // margin-bottom: 10px;
+    // }
   }
 }
 
@@ -313,5 +355,16 @@ export default {
 .el-tree {
   height: 200px;
   overflow: auto;
+}
+</style>
+
+<style lang="scss">
+#user {
+  .el-select .el-input {
+    width: 130px;
+  }
+  .input-with-select .el-input-group__prepend {
+    background-color: #fff;
+  }
 }
 </style>

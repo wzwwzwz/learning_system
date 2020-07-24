@@ -32,11 +32,11 @@
               <el-avatar icon="el-icon-user-solid"></el-avatar>
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item icon="el-icon-s-check" command="my_audit">我的审核</el-dropdown-item>
-              <!-- <el-dropdown-item icon="el-icon-chat-dot-square" command="my_msg">我的评论</el-dropdown-item> -->
-              <!-- <el-dropdown-item icon="el-icon-notebook-1" command="my_exam_que">我的题目</el-dropdown-item> -->
-              <el-dropdown-item icon="el-icon-document" command="my_exam">我的考试</el-dropdown-item>
-              <el-dropdown-item icon="el-icon-picture-outline" command="my_upload_avatar">上传头像</el-dropdown-item>
+
+              <template v-for="(item_chi,idx) in arrMenuPersonal">
+                <el-dropdown-item :key="idx" :icon="item_chi.icon" :command="item_chi.key">{{item_chi.val}}</el-dropdown-item>
+              </template>
+
               <div class="g_spilt_div_Horizontal"></div>
               <el-dropdown-item icon="el-icon-circle-close" command="sign_out">退出登录</el-dropdown-item>
             </el-dropdown-menu>
@@ -86,6 +86,39 @@ export default {
           path: '/test',
           val: '测试'
         }
+      ],
+      arrMenuPersonal: [
+        {
+          icon: 'el-icon-s-check',
+          key: 'my_audit',
+          val: '我的审核'
+        },
+        // {
+        //   icon: 'el-icon-chat-dot-square',
+        //   key: 'my_msg',
+        //   val: '我的评论'
+        // },
+        // {
+        //   icon: 'el-icon-notebook-1',
+        //   key: 'my_exam_que',
+        //   val: '我的题目'
+        // },
+        {
+          icon: 'el-icon-document',
+          key: 'my_exam',
+          val: '我的考试'
+        },
+        {
+          icon: 'el-icon-picture-outline',
+          key: 'my_upload_avatar',
+          val: '上传头像'
+        },
+        {
+          icon: 'el-icon-picture-outline',
+          key: 'resetPwd',
+          val: '重置密码'
+        }
+
       ]
     }
   },
@@ -135,6 +168,11 @@ export default {
         case 'my_audit':
           this.$router.push({
             name: 'myAudit'
+          })
+          break
+        case 'resetPwd':
+          this.$router.push({
+            name: 'ResetPwd'
           })
           break
         default:

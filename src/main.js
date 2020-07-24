@@ -14,8 +14,10 @@ import store from './store'
 // 引入axios
 import axios from 'axios'
 import QS from 'qs'
+// 封装请求函数
+import './utils/request.js'
 
-// 全局因引用
+// 全局引用
 // 过滤器
 import filters from './utils/filters.js'
 // 数据处理
@@ -33,7 +35,6 @@ Vue.prototype.$dataProcess = dataProcess
 
 // 使用element-ui
 Vue.use(ElementUI)
-// Vue.use(VueQuillEditor)
 
 // register globally
 // Vue.component('svg-icon', SvgIcon)

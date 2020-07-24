@@ -10,11 +10,11 @@ Vue.use(Vuex)
 const state = {
   token: '',
   // 基本请求地址
-  basicsReqURL: 'http://192.168.1.41:8000',
+  basicsReqURL: 'http://192.168.1.41:8080',
   // 用户信息
   userInfo: {
     userId: 111,
-    userName: 'userName11==',
+    userName: '==userName11==',
     // userAuth: 'admin'
     // 1 === 管理员；2 === 评审员 ; 3 === 普通用户
     userAuth: 2,

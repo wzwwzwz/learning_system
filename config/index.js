@@ -12,8 +12,8 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        target: 'http://192.168.1.41:8000', // 后台访问地址
-        changeOrigin: true,
+        target: 'http://192.168.1.41:8888', // 后台访问地址
+        changeOrigin: true, //允许websockets跨域
         pathRewrite: {
           '^/api': ''
         }
@@ -66,7 +66,7 @@ module.exports = {
      * Source Maps
      */
 
-    productionSourceMap: true,
+    productionSourceMap: false,
     // https://webpack.js.org/configuration/devtool/#production
     devtool: '#source-map',
 

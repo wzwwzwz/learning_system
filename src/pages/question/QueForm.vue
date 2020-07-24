@@ -47,8 +47,8 @@
       <!-- 答案(单选) -->
       <el-form-item label="答案" prop="answer" v-show="switchDate.switchVal">
         <el-radio-group v-model="examQueForm.answer" @change="answerChg">
-          <template v-for="(item) in updateAnswerList">
-            <el-radio :label="item.key" :key="item.key" border size="small">{{item.key | formatBooleanVal}}</el-radio>
+          <template v-for="(item,idx) in updateAnswerList">
+            <el-radio :label="idx" :key="item.key" border size="small">{{item.key | formatBooleanVal}}</el-radio>
           </template>
         </el-radio-group>
       </el-form-item>
@@ -56,8 +56,8 @@
       <!-- 答案(多选) -->
       <el-form-item label="答案(" prop="answerMulti" v-show="!examQueForm.bIsSelectQue && !switchDate.switchVal">
         <el-checkbox-group v-model="examQueForm.answerList">
-          <template v-for="(item) in updateAnswerList">
-            <el-checkbox :label="item.key" :key="item.key" border size="small">{{item.key}}</el-checkbox>
+          <template v-for="(item,idx) in updateAnswerList">
+            <el-checkbox :label="idx" :key="item.key" border size="small">{{item.key}}</el-checkbox>
           </template>
         </el-checkbox-group>
       </el-form-item>
@@ -83,7 +83,7 @@ export default {
   components: {
   },
   computed: {
-    ...mapGetters(['getKnowledgePoint', 'getArrQusLevel']),
+    ...mapGetters(['getKnowledgePoint', 'getArrQusLevel', 'getUserInfo']),
     updateAnswerList () {
       if (this.examQueForm.bIsSelectQue) {
         return [{ key: true }, { key: false }]
@@ -183,13 +183,7 @@ export default {
       let propName = ''
       this.switchDate.switchVal ? propName = 'answerMulti' : propName = 'answer'
       let fields = this.getProps(propName)
-
-      console.log(fields)
-
-      let objData = new this.$dataProcess.RequestParams('get_user')
-      objData.setFunc('ddd')
-      objData.FUNC = 'ss'
-      console.log(objData.getJson())
+      // console.log(fields)
 
       let error = false
       vm.$refs['examQueForm'].validateField(fields, (errorMessage) => {
@@ -198,14 +192,50 @@ export default {
         }
       })
 
+      // 测试代码
+      error = false
       if (error) {
         vm.$message.error('请填写完表单')
         return
       }
 
-      console.log(vm.examQueForm)
-      let { bIsSelectQue: bIsjudgeQue, examTitle: title, qusLevel, knowledgePoint, selectOptions: options, answer } = vm.examQueForm
-      vm.$emit('submitForm', { bIsjudgeQue, title, qusLevel, knowledgePoint, options, answer })
+      // console.log(vm.examQueForm)
+
+      let objOption = new this.$dataProcess.FormatOption()
+
+      let objData = new this.$dataProcess.Parameter()
+      objData.setFunc('set_exam_item')
+      let { bIsSelectQue: bIsjudgeQue, examTitle, qusLevel, knowledgePoint, selectOptions: options, answer } = vm.examQueForm
+
+      let data = {
+        id: 123,
+        // 新增考题key为空
+        key: '',
+        question: examTitle,
+        option: objOption.toStr(options),
+        answer: answer,
+        level: qusLevel,
+        authid: this.getUserInfo.userId
+      }
+
+      objData.setParams(data)
+      let json = objData.getJson()
+      let encryptData = objData.getEncryptData()
+
+      // 加密
+      console.log(json, encryptData)
+
+      // 解密
+      let objData2 = new this.$dataProcess.Parameter()
+      objData2.setDecryptData(encryptData)
+      let resData = objData2.getParams()
+
+      let optionjiemi = objOption.toArr(resData[0].option)
+      resData[0].option = optionjiemi
+
+      console.log(optionjiemi)
+
+      vm.$emit('submitForm', { bIsjudgeQue, examTitle, qusLevel, knowledgePoint, options, answer })
       vm.$refs.examQueForm.resetFields()
     },
     dialogCancel () {

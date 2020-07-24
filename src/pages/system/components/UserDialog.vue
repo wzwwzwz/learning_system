@@ -1,7 +1,8 @@
 <template>
   <div class='user_dialog'>
     <el-dialog :title="dialogTiltle" :visible.sync="dialogVisible" :close-on-click-modal="false" width="50%">
-      <el-form label-width="80px" :model="userForm" :rules="rules" ref="userForm">
+      <el-form label-width="80px" :model="userForm" ref="userForm" :rules="rules">
+        <!-- :rules="rules" -->
 
         <el-row>
           <el-col :span="6">
@@ -36,7 +37,7 @@
         </el-form-item>
         <el-form-item label="入职时间" prop="onboarding">
           <el-date-picker v-model="userForm.onboarding" align="left" type="date" placeholder="选择日期" :picker-options="pickerOptions"
-            :editable=false @change="changeDate">
+            format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" :editable=false @change="changeDate">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="所属部门" prop="department">
@@ -86,21 +87,21 @@ export default {
     return {
       dialogTiltle: '',
       dialogVisible: false,
+      statu: 0,
       userForm: {},
       // 用户表单添加
       roleFormAdd: {
-        roleName: '',
-        description: '',
+        roleName: '添加用户roleName',
         auth: 3,
-        surname: '',
-        persionname: '',
-        gender: '',
+        surname: '添加用户姓',
+        persionname: '添加用户名',
+        gender: 1,
         age: '',
-        onboarding: '',
-        department: '',
-        phone: '',
-        email: '',
-        descript: ''
+        onboarding: '2011-11-21',
+        department: '添加用户部门',
+        phone: '13325684796',
+        email: '122@qq.com',
+        descript: '添加用户描述'
       },
       // 单选按钮组
       defalutAuth: 3,
@@ -109,6 +110,7 @@ export default {
         disabledDate (time) {
           return time.getTime() > Date.now()
         },
+        // 时间快捷键
         shortcuts: [{
           text: '今天',
           onClick (picker) {
@@ -152,7 +154,7 @@ export default {
           { type: 'number', message: '年龄必须为数字值' }
         ],
         onboarding: [
-          { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
+          { type: 'string', required: true, message: '请选择日期', trigger: 'change' }
         ],
         phone: [
           { required: true, message: '请填写电话', trigger: 'blur' },
@@ -191,6 +193,8 @@ export default {
         // 清除表单校验
         vm.$refs.userForm.resetFields()
       }
+      // 保存打开弹框状态
+      this.statu = statu
 
       if (statu === 0) {
         vm.dialogTiltle = '添加用户'
@@ -218,29 +222,36 @@ export default {
       const vm = this
       vm.$refs.userForm.validate(valid => {
         if (valid) {
-          var data = {
-            roleName: vm.userForm.roleName,
-            description: vm.userForm.description,
-            auth: vm.userForm.auth
-          }
+          let objData = new vm.$dataProcess.Parameter()
+          objData.setFunc('set_user')
+          let data = this.userForm
+          data.id = 'set_user_new'
 
           // console.log(data)
 
-          if (vm.userForm.id) {
+          if (vm.userForm.key && vm.statu === 1) {
             // 修改用户
-            data.id = vm.userForm.id
-            //   let url = `${vm.$store.state.basicsReqURL}/system/role/updateRole`
-            // let url = ''
+            data.key = vm.userForm.key
+            // let url = `${vm.$store.state.basicsReqURL}/system/role/updateRole`
             // vm.sendRequest(url, data)
+
+            objData.setParams(data)
+            objData.setParams(data)
+            objData.setParams(data)
           } else {
             // 添加用户
-            //   let url = `${vm.$store.state.basicsReqURL}/system/role/saveRole`
-            // let url = ''
+            // let url = `${vm.$store.state.basicsReqURL}/system/role/saveRole`
             // vm.sendRequest(url, data)
-            vm.roleFormAdd.roleName = ''
-            vm.roleFormAdd.description = ''
+            // vm.roleFormAdd.roleName = ''
+            // vm.roleFormAdd.description = ''
             // vm.roleFormAdd.auth = ''
+
+            data.key = ''
+            objData.setParams(data)
           }
+          console.log(objData.getJson())
+
+          this.$emit('ok', { statu: vm.statu, data: objData.getParams() })
           //   vm.dialogVisible = false
         } else {
           vm.$message.error('请填写完表单')
