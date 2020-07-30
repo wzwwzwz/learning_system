@@ -1,7 +1,7 @@
 <template>
   <div id="systemIdex" class="component_wrap">
     <el-row class="menu">
-      <el-col :span="menuSpan">
+      <el-col :style="{width:spanWidth}">
         <el-menu :default-active="defaultActive" :active="curMenu" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"
           @select="selectMenu">
 
@@ -13,7 +13,7 @@
         </el-menu>
       </el-col>
 
-      <el-col :span="24-menuSpan" class="childrenMenu">
+      <el-col class="childrenMenu" :style="{width:`calc(100% - ${spanWidth})`}">
         <transition name="fade">
           <router-view></router-view>
         </transition>
@@ -29,6 +29,7 @@ export default {
   data () {
     return {
       menuSpan: 3,
+      spanWidth: '130px',
       defaultActive: '/organization',
       curMenu: '1',
       arrMenu: [
@@ -63,13 +64,13 @@ export default {
   },
   methods: {
     handleOpen (key, keyPath) {
-      console.log(key, keyPath)
+      // console.log(key, keyPath)
     },
     handleClose (key, keyPath) {
-      console.log(key, keyPath)
+      // console.log(key, keyPath)
     },
     selectMenu (index, indexPath) {
-      console.log(index, indexPath)
+      // console.log(index, indexPath)
 
       this.$router.push(index)
     }

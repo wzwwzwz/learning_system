@@ -193,7 +193,7 @@ export default {
       })
 
       // 测试代码
-      error = false
+      // error = false
       if (error) {
         vm.$message.error('请填写完表单')
         return
@@ -202,13 +202,13 @@ export default {
       // console.log(vm.examQueForm)
 
       let objOption = new this.$dataProcess.FormatOption()
-
       let objData = new this.$dataProcess.Parameter()
       objData.setFunc('set_exam_item')
       let { bIsSelectQue: bIsjudgeQue, examTitle, qusLevel, knowledgePoint, selectOptions: options, answer } = vm.examQueForm
-
+      // 设置请求id
+      let reqId = 'add_exam_1'
       let data = {
-        id: 123,
+        id: reqId,
         // 新增考题key为空
         key: '',
         question: examTitle,
@@ -219,23 +219,15 @@ export default {
       }
 
       objData.setParams(data)
-      let json = objData.getJson()
-      let encryptData = objData.getEncryptData()
 
-      // 加密
-      console.log(json, encryptData)
-
-      // 解密
-      let objData2 = new this.$dataProcess.Parameter()
-      objData2.setDecryptData(encryptData)
-      let resData = objData2.getParams()
-
-      let optionjiemi = objOption.toArr(resData[0].option)
-      resData[0].option = optionjiemi
-
-      console.log(optionjiemi)
+      console.log(data)
 
       vm.$emit('submitForm', { bIsjudgeQue, examTitle, qusLevel, knowledgePoint, options, answer })
+      this.$request('/set_exam_item', { data: objData.getJson() }).then((res) => {
+        console.log('ok', res)
+      }).catch((error) => {
+        console.log('error', error)
+      })
       vm.$refs.examQueForm.resetFields()
     },
     dialogCancel () {
@@ -294,11 +286,13 @@ export default {
     getProps (prop) {
       let res = []
       let arrProps = this.$refs['examQueForm'].fields
+
       for (const item of arrProps.values()) {
         if (item.prop !== prop) {
           res.push(item.prop)
         }
       }
+
       return res
     }
   }

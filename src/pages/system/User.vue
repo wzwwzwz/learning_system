@@ -58,8 +58,8 @@
 
     <!-- 分页显示 -->
     <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
-      :page-sizes="[5, 10, 20, 30, 40]" :page-size="5" layout="total, sizes, prev, pager, next, jumper" :total="tableData.length" background
-      style="margin-top:10px;"></el-pagination>
+      :page-sizes="[5, 10, 20, 30, 40]" :page-size="5" layout="total, sizes, prev, pager, next, jumper" :total="tableData.length"
+      background></el-pagination>
   </div>
 </template>
 <script>
@@ -141,7 +141,7 @@ export default {
       const vm = this
       vm.tableData = []
       // let pageIndex = vm.pageIndex
-      // vm.axios.post(
+      // vm.$request(
       //   `${vm.getBasicsReqURL}/system/role/roleInfo`,
       //   pageIndex
       // ).then(data => {
@@ -162,45 +162,43 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      })
-        .then(() => {
-          const vm = this
-          let objData = new vm.$dataProcess.Parameter()
-          objData.setFunc('del_user')
-          objData.setParams({ key })
+      }).then(() => {
+        const vm = this
+        let objData = new vm.$dataProcess.Parameter()
+        objData.setFunc('del_user')
+        objData.setParams({ key })
 
-          let param = objData.getJson()
-          console.log(param)
+        let param = objData.getJson()
+        console.log(param)
 
-          // vm.axios.post(
-          //   //   `${vm.getBasicsReqURL}/system/role/deleteUser`,
-          //   res
-          // ).then(data => {
-          //   if (data.code === 200) {
-          //     this.currentPage = 1
-          //     vm.getRoleInfo()
-          //   }
+        // vm.$request(
+        //   //   `${vm.getBasicsReqURL}/system/role/deleteUser`,
+        //   res
+        // ).then(data => {
+        //   if (data.code === 200) {
+        //     this.currentPage = 1
+        //     vm.getRoleInfo()
+        //   }
+        // })
+
+        var data = vm.testfun.delete(key)
+        if (data) {
+          // this.$message({
+          //   type: 'success',
+          //   message: '删除成功!'
           // })
-
-          var data = vm.testfun.delete(key)
-          if (data) {
-            // this.$message({
-            //   type: 'success',
-            //   message: '删除成功!'
-            // })
-            vm.getRoleInfo()
-          }
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
+          vm.getRoleInfo()
+        }
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
         })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
         })
+      })
     },
     /* 用户表单弹窗操作：添加用户、修改用户;打开表单 */
     updateUser (statu, res) {
@@ -229,7 +227,7 @@ export default {
       const vm = this
 
       // 请求数据
-      // vm.axios.post(url, JSON.stringify(data)).then(res => {
+      // vm.$request(url, JSON.stringify(data)).then(res => {
       //   if (res.code === 200) {
       //     this.$message({
       //       showClose: true,
@@ -283,19 +281,16 @@ export default {
           psw: ''
         })
 
-        let encryptedData = objData.getEncryptData()
-        objData.setDecryptData('dfdsg')
-
-        let jiemi = objData.getParams()
-        console.log(encryptedData, jiemi)
-
-        // vm.$post(`${vm.getBasicsReqURL}`, encryptedData).then(r => {
-        //   if (r && r.code === 200) {
-        //     vm.$message({ message: `${r.msg}`, type: 'success' })
-        //     vm.showAllUserInfo()
-        //   }
-        //   vm.isLoading = false
-        // })
+        this.$request('url', { data: objData.getJson() }).then((res) => {
+          console.log('ok', res)
+          //   if (r && r.code === 200) {
+          //     vm.$message({ message: `${r.msg}`, type: 'success' })
+          //     vm.showAllUserInfo()
+          //   }
+          //   vm.isLoading = false
+        }).catch((error) => {
+          console.log('error', error)
+        })
       })
     },
 
@@ -344,12 +339,6 @@ export default {
     //   // margin-bottom: 10px;
     // }
   }
-}
-
-/* 分页 */
-.el-pagination {
-  display: flex;
-  justify-content: flex-end;
 }
 
 .el-tree {

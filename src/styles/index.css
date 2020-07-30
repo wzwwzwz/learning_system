@@ -211,6 +211,14 @@ text {
   color: #333;
 }
 
+/* 分页 */
+.el-pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+
 /********************************** 取消默认样式 **********************************/
 a {
   text-decoration: none;

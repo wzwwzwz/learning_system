@@ -65,7 +65,7 @@ export default {
       console.log(data)
       // let params = data
       // let url = `${this.getBasicsReqURL}/system/role/updateRole`
-      // this.axios.post(url, params).then(
+      // this.$request(url, params).then(
       //   data => {
       //     console.log('成功')
       //   }

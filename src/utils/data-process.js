@@ -182,7 +182,7 @@ class Parameter {
    * @description 获取用户key
    * @method getUser
    * @for Parameter
-   * @return { 返回值类型 } 用户key
+   * @return { String } 用户key
   **/
   getUser () {
     return this._USER
@@ -191,12 +191,23 @@ class Parameter {
   /**
    * @description 获取返回码
    * @method getCode
-   * @for 所属类名
-   * @param { 参数类型 } 参数名 参数说明
-   * @return { 返回值类型 } 返回值说明
+   * @for Parameter
+   * @return { Number } 返回值说明
   **/
   getCode () {
     return this._CODE
+  }
+
+  /**
+   * @description 清空数据
+   * @method clear
+   * @for Parameter
+  **/
+  clear () {
+    this._FUNC = ''
+    this._USER = store.state.userInfo.userName
+    this._PARAMS = []
+    this._CODE = null
   }
 }
 

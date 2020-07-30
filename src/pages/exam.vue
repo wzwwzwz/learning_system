@@ -17,13 +17,12 @@
     <div class="exam_qus clearfix" v-show="!showNotes" v-loading.fullscreen.lock="bIsSubmit" :element-loading-text="loadingText">
       <div class="qus">
 
-        <!-- 选择题 -->
+        <!-- 选择题:单选 -->
         <div class="top">
           <div :class="queTitleClass" class="title" style="">一.单选题</div>
-          <template v-for="(item_sel,idx_sel) in qusList.selectQusList" class="text item">
-            <!-- <div :key="idx_sel"> -->
-            <!-- {{item_sel}} -->
-            <el-card :key="idx_sel" class="box-card" :id="`select_${idx_sel+1}`">
+          <template v-for="(item_sel,idx_sel) in qusList.select" class="text item">
+            <el-card :key="idx_sel" class="box-card" :id="`${idPrefix[1]}_${idx_sel+1}`">
+
               <div slot="header" class="clearfix">
                 <span>第{{idx_sel+1}}题</span>
                 <span style="margin-left:10px">{{item_sel.title}}</span>
@@ -32,24 +31,23 @@
 
               <!-- 选项 -->
               <template>
-                <el-radio-group v-model="qusList.answerSheetSel[idx_sel]">
-                  <el-radio :label="item_op.key" v-for="(item_op,index_op) in item_sel.options" :key="index_op" :disabled="bTested">
+                <el-radio-group v-model="answerSheet.choice[idx_sel]">
+                  <el-radio :label="index_op" v-for="(item_op,index_op) in item_sel.options" :key="index_op" :disabled="bTested">
                     {{`${item_op.key}`}}.{{item_op.value}}
                   </el-radio>
                 </el-radio-group>
               </template>
 
             </el-card>
-
           </template>
         </div>
 
         <!-- 判断题 -->
         <div class="bottom">
           <div :class="queTitleClass" class="title">二.判断题</div>
-          <template v-for="(item_dec,idx_dec) in qusList.decQusList" class="text item">
+          <template v-for="(item_dec,idx_dec) in qusList.tOrF" class="text item">
+            <el-card :key="idx_dec" class="box-card" :id="`${idPrefix[0]}_${idx_dec+1}`">
 
-            <el-card :key="idx_dec" class="box-card" :id="`dec_${idx_dec+1}`">
               <div slot="header" class="clearfix">
                 <span>第{{idx_dec+1}}题</span>
                 <span style="margin-left:10px">{{item_dec.title}}</span>
@@ -58,18 +56,18 @@
 
               <!-- 选项 -->
               <template>
-                <el-radio-group v-model="qusList.answerSheetdec[idx_dec]" :disabled="bTested">
-                  <el-radio label=true>
+                <el-radio-group v-model="answerSheet.tOrF[idx_dec]" :disabled="bTested">
+                  <!-- 绑定值label本来为true || false; 为适应后台数据传参更改为相应格式 -->
+                  <el-radio :label="true">
                     {{true | formatBooleanVal}}
                   </el-radio>
-                  <el-radio label=false>
+                  <el-radio :label="false">
                     {{false | formatBooleanVal}}
                   </el-radio>
                 </el-radio-group>
               </template>
 
             </el-card>
-
           </template>
         </div>
 
@@ -86,14 +84,14 @@
           <!-- 选择题 -->
           <div class="top">
             <div class="title">
-              <span>选择题(共{{qusList.answerSheetSel.length}}题)</span>
+              <span>选择题(共{{answerSheet.choice.length}}题)</span>
             </div>
             <div class="g_spilt_div_Horizontal"></div>
             <div>
-              <template v-for="(item_sheet_sel,idx_sheet_sel) in qusList.answerSheetSel">
-                <a :key="idx_sheet_sel" :href="`#select_${idx_sheet_sel+1}`" :class="{answered:item_sheet_sel !== undefined}">
+              <template v-for="(item_sheet_sel,idx_sheet_sel) in answerSheet.choice">
+                <a :key="idx_sheet_sel" :href="`#${idPrefix[1]}_${idx_sheet_sel+1}`" :class="{answered:item_sheet_sel !== undefined}">
                   <el-button :key="idx_sheet_sel" type="primary" plain style="margin-left: 10px;" class="btn_sheet">
-                    {{idx_sheet_sel+1}}-{{item_sheet_sel}}
+                    {{idx_sheet_sel+1}}-{{ item_sheet_sel !== undefined ? String.fromCharCode(65 + item_sheet_sel) : ""}}
                   </el-button>
                 </a>
               </template>
@@ -103,12 +101,12 @@
           <!-- 判断题 -->
           <div class="bottom">
             <div class="title">
-              <span>判断题(共{{qusList.answerSheetdec.length}}题)</span>
+              <span>判断题(共{{answerSheet.tOrF.length}}题)</span>
             </div>
             <div class="g_spilt_div_Horizontal"></div>
             <div>
-              <template v-for="(item_sheet_dec,idx_sheet_dec) in qusList.answerSheetdec">
-                <a :key="idx_sheet_dec" :href="`#dec_${idx_sheet_dec+1}`" :class="{answered:item_sheet_dec !== undefined}">
+              <template v-for="(item_sheet_dec,idx_sheet_dec) in answerSheet.tOrF">
+                <a :key="idx_sheet_dec" :href="`#${idPrefix[0]}_${idx_sheet_dec+1}`" :class="{answered:item_sheet_dec !== undefined}">
                   <el-button :key="idx_sheet_dec" type="primary" plain style="margin-left: 10px;" class="btn_sheet">
                     {{idx_sheet_dec+1}}-{{formatAnswerVal(item_sheet_dec)}}
                   </el-button>
@@ -142,10 +140,16 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { UtilsTimer, countScore } from '@/utils/index'
+// 测试文件
+import testExam from '@/utils/testFiles/testExam'
+
+const ExamItem = () => import('./exam/ExamItem')
 
 export default {
   name: '',
-  components: {},
+  components: {
+    ExamItem
+  },
   computed: {
     ...mapGetters(['getBasicsReqURL', 'getExamStatus', 'getUserInfo']),
     formatAnswerVal () {
@@ -167,7 +171,6 @@ export default {
         }
       }
     }
-
   },
   filters: {
     formatTimeLeft (val) {
@@ -175,10 +178,21 @@ export default {
       if (!val) {
         return '时间到!'
       }
-      let string = `${val.h}:${val.m}:${val.s}`
-      return string
+      let str = `${val.h}:${val.m}:${val.s}`
+      return str
     }
 
+  },
+  watch: {
+    qusList: {
+      handler (newName, oldName) {
+        console.log(newName, oldName)
+        this.answerSheet.choice.length = this.qusList.select.length
+        this.answerSheet.tOrF.length = this.qusList.tOrF.length
+      },
+      deep: true
+      // immediate: true
+    }
   },
   data () {
     return {
@@ -194,10 +208,18 @@ export default {
       queTitleClass: 'el-card box-card is-always-shadow',
       // 题目列表
       qusList: {
-        selectQusList: [],
-        decQusList: [],
-        answerSheetSel: [],
-        answerSheetdec: []
+        select: [],
+        tOrF: []
+      },
+      answerSheet: {
+        choice: [],
+        tOrF: []
+      },
+      // id前缀
+      idPrefix: {
+        0: 'tf',
+        1: 'select',
+        2: 'multSel'
       },
       // 正在提交
       bIsSubmit: false,
@@ -210,7 +232,9 @@ export default {
         '在时间内必须答完所有题目之后才能交卷。',
         '时间到系统会将目前试卷提交',
         '一周只有一次考试机会'
-      ]
+      ],
+      // 获取后台的题目列表
+      qusListResult: []
     }
   },
   created () {
@@ -233,22 +257,20 @@ export default {
       }]
     }
 
-    let len = 3
-    for (let idx = 0; idx < len; idx++) {
-      this.qusList.selectQusList.push(data)
-    }
-    this.qusList.answerSheetSel.length = len
+    // let len = 3
+    // for (let idx = 0; idx < len; idx++) {
+    //   this.qusList.select.push(data)
+    // }
 
-    // 判断题
-    let data1 = {
-      title: '1+1=2'
-    }
-    let len2 = 2
+    // // 判断题
+    // let data1 = {
+    //   title: '1+1=2'
+    // }
+    // let len2 = 2
 
-    for (let idx = 0; idx < len2; idx++) {
-      this.qusList.decQusList.push(data1)
-    }
-    this.qusList.answerSheetdec.length = len2
+    // for (let idx = 0; idx < len2; idx++) {
+    //   this.qusList.tOrF.push(data1)
+    // }
   },
   beforeDestory () {
     this.clearTimer()
@@ -276,7 +298,7 @@ export default {
       this.showNotes = false
       this.setExamStatus(true)
       this.initExam()
-      this.timer = new UtilsTimer(60)
+      this.timer = new UtilsTimer(60 * 60 * 2)
       let vm = this
       vm.showTimeLeft = vm.timer.getTimeLeft()
       vm.timerInterval = setInterval(() => {
@@ -294,18 +316,20 @@ export default {
      * @param { String } bTime 是否还有剩余时间
      **/
     submit (bTime) {
+      let vm = this
       console.log('提交', bTime)
-      let sheSel = this.qusList.answerSheetSel
-      let sheDec = this.qusList.answerSheetdec
+      let sheSel = this.answerSheet.choice
+      let sheDec = this.answerSheet.tOrF
 
       console.log(sheSel, sheDec)
+      console.log(this.qusList.select, this.qusList.tOrF, this.qusListResult)
 
       if (bTime) {
         this.bIsSubmit = true
         // 直接提交
         // let url = `${this.getBasicsReqURL}/system/role/updateRole`
         // let params = { sheSel, sheDec }
-        // this.axios.post(url, params).then(
+        // this.$request(url, params).then(
         //   data => {
         //     console.log(data)
         //     this.id_num = data.body
@@ -318,39 +342,108 @@ export default {
         }
       }
 
+      this.clearTimer()
       // 交卷中
       this.bIsSubmit = true
 
       // 统计分数
-      let fenshuSelect = countScore(this.qusList.selectQusList, sheSel, 20)
-      let fenshuDec = countScore(this.qusList.decQusList, sheDec, 20)
+      let fenshuSelect = countScore(this.qusList.select, sheSel, 20)
+      let fenshuDec = countScore(this.qusList.tOrF, sheDec, 20)
       this.allScore = fenshuSelect + fenshuDec
 
-      let url = ''
-      let params = this.getUserInfo()
-      params.score = this.allScore
+      // 题目添加答案 (转换数据格式)
+      let paramChoice = this.setAnswer(this.qusList.select, sheSel)
+      let paramTOrF = this.setAnswer(this.qusList.tOrF, sheDec)
+      // 合并答案
+      let param = paramChoice.concat(paramTOrF)
 
-      // 提交考试入库
-      this.axios.get(url, params).then(data => { })
+      console.log(param)
 
-      this.setExamStatus(false)
-      this.clearTimer()
-      this.bIsSubmit = false
-      this.bTested = true
+      // 提交考试
+      let objData = new this.$dataProcess.Parameter()
+      objData.setFunc('submit_exam')
+      param.forEach((item, idx) => {
+        // console.log(item, idx)
+        objData.setParams(item)
+      }, vm)
+
+      this.$request('/submitExam', { data: objData.getJson() }).then((res) => {
+        console.log('ok', res)
+      }).catch((error) => {
+        console.log('error', error)
+      }).finally(() => {
+        // 后置操作
+        vm.setExamStatus(false)
+        vm.bIsSubmit = false
+        vm.bTested = true
+      })
     },
     // 获取题目列表
     getQuestion (bIsSelect) {
-      let obj = this.$store.state.classTestBank
+      let objData = new this.$dataProcess.Parameter('get_exam')
 
+      this.$request('/getExam', { data: objData.getJson() }).then((res) => {
+        console.log('ok', res)
+        this.qusListResult = res.data
+      }).catch((error) => {
+        console.log('error', error)
+      })
+
+      let obj = this.$store.state.classTestBank
       return obj.getData(bIsSelect)
     },
     initExam () {
+      // 测试
+      console.log(testExam)
+      this.qusListResult = testExam
+
       // 选择题
-      this.qusList.selectQusList = this.getQuestion(true)
-      this.qusList.answerSheetSel.length = this.qusList.selectQusList.length
+      this.qusList.select = this.getFilterExam('1')
       // 判断题
-      this.qusList.decQusList = this.getQuestion(false)
-      this.qusList.answerSheetdec.length = this.qusList.decQusList.length
+      this.qusList.tOrF = this.getFilterExam('0')
+    },
+    /**
+     * @description 获取题目过滤后的
+     * @param { String } 参数1
+     * @param { String } 参数2
+    **/
+    getFilterExam (type) {
+      let objOp = new this.$dataProcess.FormatOption()
+      // 转化获取到的数据
+      return this.qusListResult.map((item, idx) => {
+        if (item.type === type) {
+          return {
+            key: item.key,
+            title: item.question,
+            options: objOp.toArr(item.option),
+            type: item.type
+          }
+        }
+        return false
+      }).filter(i => i !== false)
+    },
+    setAnswer (que = [], sheet = [], type) {
+      let objOp = new this.$dataProcess.FormatOption()
+
+      return que.map(function (item, idx) {
+        let res = {
+          key: item.key,
+          question: item.title,
+          option: objOp.toStr(item.options),
+          type: item.type,
+          answer: sheet[idx]
+        }
+        if (item.type === '0') {
+          res.answer = this.chgAnswerType(sheet[idx])
+        }
+        return res
+      }, this)
+    },
+    chgAnswerType (b) {
+      if (b) {
+        return 0
+      }
+      return 1
     }
 
   }

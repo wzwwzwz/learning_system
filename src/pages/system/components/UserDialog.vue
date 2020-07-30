@@ -1,7 +1,7 @@
 <template>
   <div class='user_dialog'>
     <el-dialog :title="dialogTiltle" :visible.sync="dialogVisible" :close-on-click-modal="false" width="50%">
-      <el-form label-width="80px" :model="userForm" ref="userForm" :rules="rules">
+      <el-form label-width="80px" :model="userForm" ref="userForm" :rules="rules" status-icon>
         <!-- :rules="rules" -->
 
         <el-row>

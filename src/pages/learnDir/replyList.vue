@@ -250,7 +250,7 @@ export default {
       }
 
       console.log(param)
-      this.axios.post(url, param).then().catch()
+      this.$request(url, param).then().catch()
     },
     openPopover (index) {
       this.$refs.popoverDelete[index].setVisible(false)
