@@ -15,110 +15,99 @@
 
     <!------------------ 试卷 ------------------>
     <div class="exam_qus clearfix" v-show="!showNotes" v-loading.fullscreen.lock="bIsSubmit" :element-loading-text="loadingText">
-      <div class="qus">
+
+      <!------------------ 题目 ------------------>
+      <div class="question">
 
         <!-- 选择题:单选 -->
         <div class="top">
-          <div :class="queTitleClass" class="title" style="">一.单选题</div>
-          <template v-for="(item_sel,idx_sel) in qusList.select" class="text item">
-            <el-card :key="idx_sel" class="box-card" :id="`${idPrefix[1]}_${idx_sel+1}`">
-
-              <div slot="header" class="clearfix">
-                <span>第{{idx_sel+1}}题</span>
-                <span style="margin-left:10px">{{item_sel.title}}</span>
-                <el-button style=" float: right; padding: 3px 0" type="text">{{item_sel.qusLevel}}</el-button>
-              </div>
+          <ExamItem :queTypeTitle="`一.${mapData.get(1).name}`" :qusList="qusList.singleSel" :idPrefix="mapData.get(1).idPrefix">
+            <template slot="options" slot-scope="props">
 
               <!-- 选项 -->
-              <template>
-                <el-radio-group v-model="answerSheet.choice[idx_sel]">
-                  <el-radio :label="index_op" v-for="(item_op,index_op) in item_sel.options" :key="index_op" :disabled="bTested">
+              <el-radio-group v-model="answerSheet.singleSel[props.idx]">
+                <template v-for="(item_op,index_op) in props.item.options">
+                  <el-radio :label="index_op" :key="index_op" :disabled="bTested">
                     {{`${item_op.key}`}}.{{item_op.value}}
                   </el-radio>
-                </el-radio-group>
-              </template>
+                </template>
+              </el-radio-group>
 
-            </el-card>
-          </template>
+            </template>
+          </ExamItem>
+        </div>
+
+        <!-- 多选题 -->
+        <div class="center">
+          <ExamItem :queTypeTitle="`二.${mapData.get(2).name}`" :qusList="qusList.multiSel" :idPrefix="mapData.get(2).idPrefix">
+            <template slot="options" slot-scope="props">
+
+              <!-- 选项 -->
+              <el-checkbox-group v-model="answerSheet.multiSel[props.idx]">
+                <template v-for="(item_op_mul,idx_op_mul) in props.item.options">
+                  <el-checkbox :label="idx_op_mul" :key="item_op_mul.key">
+                    {{`${item_op_mul.key}`}}.{{item_op_mul.value}}
+                  </el-checkbox>
+                </template>
+              </el-checkbox-group>
+
+            </template>
+          </ExamItem>
         </div>
 
         <!-- 判断题 -->
         <div class="bottom">
-          <div :class="queTitleClass" class="title">二.判断题</div>
-          <template v-for="(item_dec,idx_dec) in qusList.tOrF" class="text item">
-            <el-card :key="idx_dec" class="box-card" :id="`${idPrefix[0]}_${idx_dec+1}`">
-
-              <div slot="header" class="clearfix">
-                <span>第{{idx_dec+1}}题</span>
-                <span style="margin-left:10px">{{item_dec.title}}</span>
-                <el-button style=" float: right; padding: 3px 0" type="text">{{item_dec.qusLevel}}</el-button>
-              </div>
+          <ExamItem :queTypeTitle="`三.${mapData.get(0).name}`" :qusList="qusList.tOrF" :idPrefix="mapData.get(0).idPrefix">
+            <template slot="options" slot-scope="props">
 
               <!-- 选项 -->
-              <template>
-                <el-radio-group v-model="answerSheet.tOrF[idx_dec]" :disabled="bTested">
-                  <!-- 绑定值label本来为true || false; 为适应后台数据传参更改为相应格式 -->
-                  <el-radio :label="true">
-                    {{true | formatBooleanVal}}
-                  </el-radio>
-                  <el-radio :label="false">
-                    {{false | formatBooleanVal}}
-                  </el-radio>
-                </el-radio-group>
-              </template>
+              <el-radio-group v-model="answerSheet.tOrF[props.idx]" :disabled="bTested">
+                <!-- 绑定值label本来为true || false; 为适应后台数据传参更改为相应格式 -->
+                <el-radio :label="true">
+                  {{true | formatBooleanVal}}
+                </el-radio>
+                <el-radio :label="false">
+                  {{false | formatBooleanVal}}
+                </el-radio>
+              </el-radio-group>
 
-            </el-card>
-          </template>
+            </template>
+          </ExamItem>
         </div>
 
       </div>
 
       <!------------------ 答题卡 ------------------>
       <div class="sheet">
-        <div class="title ">
+        <div class="title">
           <span>答题卡</span>
           <span class="time">{{this.showTimeLeft | formatTimeLeft}}</span>
         </div>
 
         <div class="block">
-          <!-- 选择题 -->
+          <!-- 单选题 -->
           <div class="top">
-            <div class="title">
-              <span>选择题(共{{answerSheet.choice.length}}题)</span>
-            </div>
-            <div class="g_spilt_div_Horizontal"></div>
-            <div>
-              <template v-for="(item_sheet_sel,idx_sheet_sel) in answerSheet.choice">
-                <a :key="idx_sheet_sel" :href="`#${idPrefix[1]}_${idx_sheet_sel+1}`" :class="{answered:item_sheet_sel !== undefined}">
-                  <el-button :key="idx_sheet_sel" type="primary" plain style="margin-left: 10px;" class="btn_sheet">
-                    {{idx_sheet_sel+1}}-{{ item_sheet_sel !== undefined ? String.fromCharCode(65 + item_sheet_sel) : ""}}
-                  </el-button>
-                </a>
-              </template>
-            </div>
+            <AnswerItem :queTypeTitle="mapData.get(1).name" :answerList="answerSheet.singleSel" :idPrefix="mapData.get(1).idPrefix">
+            </AnswerItem>
+          </div>
+
+          <!-- 多选题 -->
+          <div class="center">
+            <AnswerItem :queTypeTitle="mapData.get(2).name" :answerList="answerSheet.multiSel" :idPrefix="mapData.get(2).idPrefix">
+            </AnswerItem>
           </div>
 
           <!-- 判断题 -->
           <div class="bottom">
-            <div class="title">
-              <span>判断题(共{{answerSheet.tOrF.length}}题)</span>
-            </div>
-            <div class="g_spilt_div_Horizontal"></div>
-            <div>
-              <template v-for="(item_sheet_dec,idx_sheet_dec) in answerSheet.tOrF">
-                <a :key="idx_sheet_dec" :href="`#${idPrefix[0]}_${idx_sheet_dec+1}`" :class="{answered:item_sheet_dec !== undefined}">
-                  <el-button :key="idx_sheet_dec" type="primary" plain style="margin-left: 10px;" class="btn_sheet">
-                    {{idx_sheet_dec+1}}-{{formatAnswerVal(item_sheet_dec)}}
-                  </el-button>
-                </a>
-              </template>
-            </div>
+            <AnswerItem :queTypeTitle="mapData.get(0).name" :answerList="answerSheet.tOrF" :idPrefix="mapData.get(0).idPrefix"></AnswerItem>
           </div>
 
+          <!-- 交卷按钮 -->
           <el-button type="primary" class="submit" :loading="bIsSubmit" @click="submit()" :disabled="bTested">{{ bIsSubmit ? "正在交卷":"交卷"}}
           </el-button>
         </div>
 
+        <!-- 考试说明 -->
         <div class="block">
           <span style="font-weight:700">说明</span>
           <div>
@@ -126,6 +115,7 @@
           </div>
         </div>
 
+        <!-- 分数 -->
         <div class="block title score" v-show="bTested">
           <span>分数</span>
           <span class="time"> {{allScore}}</span>
@@ -139,38 +129,21 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { UtilsTimer, countScore } from '@/utils/index'
+import { UtilsTimer } from '@/utils/index'
 // 测试文件
 import testExam from '@/utils/testFiles/testExam'
 
 const ExamItem = () => import('./exam/ExamItem')
+const AnswerItem = () => import('./exam/AnswerItem')
 
 export default {
   name: '',
   components: {
-    ExamItem
+    ExamItem,
+    AnswerItem
   },
   computed: {
-    ...mapGetters(['getBasicsReqURL', 'getExamStatus', 'getUserInfo']),
-    formatAnswerVal () {
-      return function (val) {
-        switch (val) {
-          case true:
-            return 'T'
-          case false:
-            return 'F'
-          default:
-            return ''
-        }
-      }
-    },
-    updateOptionClass () {
-      return function (strclass, param1, param2) {
-        if (param1 === param2 && this.bTested) {
-          return strclass
-        }
-      }
-    }
+    ...mapGetters(['getBasicsReqURL', 'getExamStatus', 'getUserInfo'])
   },
   filters: {
     formatTimeLeft (val) {
@@ -184,17 +157,26 @@ export default {
 
   },
   watch: {
+    // 监听题目列表
     qusList: {
-      handler (newName, oldName) {
-        console.log(newName, oldName)
-        this.answerSheet.choice.length = this.qusList.select.length
-        this.answerSheet.tOrF.length = this.qusList.tOrF.length
+      handler (newVal, oldVal) {
+        this.answerSheet.singleSel = this.qusList.singleSel.map(() => '')
+        this.answerSheet.tOrF = this.qusList.tOrF.map(() => '')
+        // 多选绑定的是二维数据
+        this.answerSheet.multiSel = this.qusList.multiSel.map(() => [])
       },
       deep: true
       // immediate: true
     }
   },
   data () {
+    // 传递数据解析
+    // idPrefix 标识id前缀
+    const mapData = new Map()
+    mapData.set(0, { name: '判断题', idPrefix: 'TF' })
+    mapData.set(1, { name: '单选题', idPrefix: 'singleSel' })
+    mapData.set(2, { name: '多选题', idPrefix: 'multiSel' })
+
     return {
       loading: true,
       loadingText: '统计分数中',
@@ -205,22 +187,18 @@ export default {
       timer: null,
       // 显示剩余时间
       showTimeLeft: {},
-      queTitleClass: 'el-card box-card is-always-shadow',
       // 题目列表
       qusList: {
-        select: [],
-        tOrF: []
+        tOrF: [],
+        singleSel: [],
+        multiSel: []
       },
       answerSheet: {
-        choice: [],
-        tOrF: []
+        tOrF: [],
+        singleSel: [],
+        multiSel: []
       },
-      // id前缀
-      idPrefix: {
-        0: 'tf',
-        1: 'select',
-        2: 'multSel'
-      },
+      mapData: mapData,
       // 正在提交
       bIsSubmit: false,
       // 是否已经考完
@@ -241,25 +219,25 @@ export default {
     this.clearTimer()
 
     // 选择题
-    let data = {
-      title: '1+2=?',
-      options: [{
-        key: 'A',
-        value: '3'
-      },
-      {
-        key: 'B',
-        value: '6'
-      },
-      {
-        key: 'C',
-        value: '9'
-      }]
-    }
+    // let data = {
+    //   title: '1+2=?',
+    //   options: [{
+    //     key: 'A',
+    //     value: '3'
+    //   },
+    //   {
+    //     key: 'B',
+    //     value: '6'
+    //   },
+    //   {
+    //     key: 'C',
+    //     value: '9'
+    //   }]
+    // }
 
     // let len = 3
     // for (let idx = 0; idx < len; idx++) {
-    //   this.qusList.select.push(data)
+    //   this.qusList.singleSel.push(data)
     // }
 
     // // 判断题
@@ -317,18 +295,17 @@ export default {
      **/
     submit (bTime) {
       let vm = this
-      console.log('提交', bTime)
-      let sheSel = this.answerSheet.choice
-      let sheDec = this.answerSheet.tOrF
+      let answerTF = this.answerSheet.singleSel
+      let answerSS = this.answerSheet.tOrF
+      let answerMS = this.answerSheet.multiSel
 
-      console.log(sheSel, sheDec)
-      console.log(this.qusList.select, this.qusList.tOrF, this.qusListResult)
+      console.log(answerTF, answerSS, answerMS)
 
       if (bTime) {
         this.bIsSubmit = true
-        // 直接提交
+        // 时间到直接提交
         // let url = `${this.getBasicsReqURL}/system/role/updateRole`
-        // let params = { sheSel, sheDec }
+        // let params = { answerTF, answerSS }
         // this.$request(url, params).then(
         //   data => {
         //     console.log(data)
@@ -336,7 +313,7 @@ export default {
         //   }
         // )
       } else {
-        if (sheSel.includes(undefined) || sheDec.includes(undefined)) {
+        if (answerTF.includes('') || answerSS.includes('') || !this.checkAnswerMulSel()) {
           this.$message.error('还有题目未选择！')
           return
         }
@@ -346,16 +323,13 @@ export default {
       // 交卷中
       this.bIsSubmit = true
 
-      // 统计分数
-      let fenshuSelect = countScore(this.qusList.select, sheSel, 20)
-      let fenshuDec = countScore(this.qusList.tOrF, sheDec, 20)
-      this.allScore = fenshuSelect + fenshuDec
-
       // 题目添加答案 (转换数据格式)
-      let paramChoice = this.setAnswer(this.qusList.select, sheSel)
-      let paramTOrF = this.setAnswer(this.qusList.tOrF, sheDec)
+      let paramSS = this.setAnswer(this.qusList.singleSel, answerTF)
+      let paramTF = this.setAnswer(this.qusList.tOrF, answerSS)
+      let paramMS = this.setAnswer(this.qusList.multiSel, answerMS)
+
       // 合并答案
-      let param = paramChoice.concat(paramTOrF)
+      let param = paramSS.concat(paramTF, paramMS)
 
       console.log(param)
 
@@ -398,14 +372,16 @@ export default {
       this.qusListResult = testExam
 
       // 选择题
-      this.qusList.select = this.getFilterExam('1')
+      this.qusList.singleSel = this.getFilterExam('1')
       // 判断题
       this.qusList.tOrF = this.getFilterExam('0')
+      // 多选题
+      this.qusList.multiSel = this.getFilterExam('2')
     },
     /**
      * @description 获取题目过滤后的
-     * @param { String } 参数1
-     * @param { String } 参数2
+     * @param { String } type 题目类别
+     * @returns { Array } 相应类别的题目组成的数组 || [] === 找不到
     **/
     getFilterExam (type) {
       let objOp = new this.$dataProcess.FormatOption()
@@ -422,6 +398,12 @@ export default {
         return false
       }).filter(i => i !== false)
     },
+    /**
+     * @description 设置答案(把答案加入到题目列表里面并且转换成请求传参格式)
+     * @param { Array } que 题目列表
+     * @param { Array } sheet 答案列表
+     * @returns { Array } 题目和答案组成的数组
+    **/
     setAnswer (que = [], sheet = [], type) {
       let objOp = new this.$dataProcess.FormatOption()
 
@@ -433,9 +415,16 @@ export default {
           type: item.type,
           answer: sheet[idx]
         }
+        // 判断题
         if (item.type === '0') {
           res.answer = this.chgAnswerType(sheet[idx])
         }
+
+        // 多选题
+        if (item.type === '2') {
+          res.answer = sheet[idx].toString()
+        }
+
         return res
       }, this)
     },
@@ -444,6 +433,17 @@ export default {
         return 0
       }
       return 1
+    },
+    // 校验多选题答案
+    checkAnswerMulSel () {
+      let arr = this.answerSheet.multiSel
+      for (let idx = 0; idx < arr.length; idx++) {
+        let item = arr[idx]
+        if (item.length === 0) {
+          return false
+        }
+      }
+      return true
     }
 
   }
@@ -464,6 +464,8 @@ export default {
 .notes_wrap {
   background: #fff;
 }
+
+// 考试提示
 .exam_notes {
   width: 500px;
   margin: 50px auto;
@@ -483,9 +485,10 @@ export default {
   }
 }
 
+// 试卷
 .exam_qus {
   $sheet-width: 300px;
-  .qus,
+  .question,
   .sheet {
     display: inline-block;
     height: 100%;
@@ -510,19 +513,12 @@ export default {
     }
   }
 
-  .qus {
+  // 题目
+  .question {
     width: calc(100% - 10px - #{$sheet-width});
     margin-right: 10px;
     float: left;
     margin-bottom: 40%;
-
-    .text {
-      font-size: 14px;
-    }
-
-    .item {
-      margin-bottom: 18px;
-    }
 
     .title {
       background-color: #409eff;
@@ -537,6 +533,7 @@ export default {
     }
   }
 
+  // 答题卡
   .sheet {
     width: 29%;
     width: $sheet-width;
@@ -566,37 +563,8 @@ export default {
       border-left: 1px solid;
     }
 
-    .btn_sheet {
-      width: 40px;
-      height: 40px;
-      padding: 0;
-      margin-top: 10px;
-
-      &:hover {
-        a {
-          color: #fff;
-        }
-      }
-
-      span {
-        text-align: center;
-      }
-
-      a {
-        color: inherit;
-      }
-    }
-
     .top {
       margin-bottom: 10px;
-    }
-
-    .answered {
-      color: #000;
-      button {
-        background: #409eff;
-        color: #eee;
-      }
     }
 
     .submit {
@@ -617,7 +585,9 @@ export default {
   width: 100%;
 }
 
-.el-radio {
+// 按钮组
+.el-radio,
+.el-checkbox {
   width: 100%;
   margin: 0;
   padding: 10px;
@@ -636,5 +606,9 @@ export default {
   }
   // .el-radio__input.is-checked + .el-radio__label {
   // }
+
+  .el-checkbox.is-bordered + .el-checkbox.is-bordered {
+    margin-left: 0px;
+  }
 }
 </style>

@@ -98,7 +98,7 @@ export function isBoolean (b) {
 /**
  * @functionName isObject
  * @description 校验数据格式是否为对象
- * @param { String } 参数1
+ * @param { Object } obj
  * @returns {Boolean} true === 是对象 || false === 不是对象
  * @author 巫昭雯
  * @date 2020-07-21 11:41:50
@@ -106,6 +106,22 @@ export function isBoolean (b) {
 */
 export function isObject (obj) {
   if (typeof obj === 'object' && Object.prototype.toString.call(obj) === '[object Object]') {
+    return true
+  }
+  return false
+}
+
+/**
+ * @functionName isNumber
+ * @description 校验数据格式是否为整型
+ * @param { Number } num
+ * @returns {Boolean} true === 是对象 || false === 不是对象
+ * @author 巫昭雯
+ * @date 2020-07-21 11:41:50
+ * @version V1.0
+*/
+export function isNumber (num) {
+  if (typeof num === 'number') {
     return true
   }
   return false
