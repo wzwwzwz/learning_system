@@ -7,7 +7,7 @@ const HomeIndex = () => import('@/pages/HomeIndex')
 const NotFound = () => import('@/pages/NotFound')
 const Login = () => import('@/pages/Login')
 const Home = () => import('@/pages/Home')
-const Exam = () => import('@/pages/Exam')
+const Exam = () => import('@/pages/exam/index')
 const QueIndex = () => import('@/pages/question/QueIndex')
 // 测试组件
 const testPage = () => import('@/components/testPage')

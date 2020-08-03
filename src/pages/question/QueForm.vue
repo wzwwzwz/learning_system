@@ -4,10 +4,11 @@
     <el-form :label-position="labelPosition" label-width="70px" :model="examQueForm" :rules="formRules" ref="examQueForm">
 
       <!-- 题目类型 -->
-      <el-form-item label="类型" v-show="!examQueForm.bIsSelectQue">
+      <el-form-item label="类型" v-show="examQueForm.queType === 1">
         <el-switch style="vertical-align: baseline;" v-model="switchDate.switchVal" :active-color="switchDate.activeColor"
           :inactive-color="switchDate.inactiveColor" :active-text="switchDate.activeText" :inactive-text="switchDate.inactiveText"
-          class="switch dbclick_unchecked" @change="switchChg"></el-switch>
+          class="switch dbclick_unchecked" :active-value="switchDate.activeValue" :inactive-value="switchDate.inactiveValue"
+          @change="switchChg"></el-switch>
       </el-form-item>
 
       <!--题目 -->
@@ -40,12 +41,12 @@
         </el-button>
       </el-form-item>
 
-      <el-form-item v-show="!examQueForm.bIsSelectQue">
+      <el-form-item v-show="examQueForm.queType === 1">
         <el-button @click="addItem">新增选项</el-button>
       </el-form-item>
 
       <!-- 答案(单选) -->
-      <el-form-item label="答案" prop="answer" v-show="switchDate.switchVal">
+      <el-form-item label="答案" prop="answer" v-show="switchDate.switchVal !== 2 || examQueForm.queType === 0">
         <el-radio-group v-model="examQueForm.answer" @change="answerChg">
           <template v-for="(item,idx) in updateAnswerList">
             <el-radio :label="idx" :key="item.key" border size="small">{{item.key | formatBooleanVal}}</el-radio>
@@ -54,8 +55,8 @@
       </el-form-item>
 
       <!-- 答案(多选) -->
-      <el-form-item label="答案(" prop="answerMulti" v-show="!examQueForm.bIsSelectQue && !switchDate.switchVal">
-        <el-checkbox-group v-model="examQueForm.answerList">
+      <el-form-item label="答案()" prop="answerMulti" v-show="examQueForm.queType === 1 && switchDate.switchVal === 2">
+        <el-checkbox-group v-model="examQueForm.answerMulti">
           <template v-for="(item,idx) in updateAnswerList">
             <el-checkbox :label="idx" :key="item.key" border size="small">{{item.key}}</el-checkbox>
           </template>
@@ -73,21 +74,28 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { isBoolean } from '@/utils/validate'
+import * as check from '@/utils/validate'
 
 export default {
   name: '',
   props: {
-
+    initData: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    }
   },
   components: {
   },
   computed: {
     ...mapGetters(['getKnowledgePoint', 'getArrQusLevel', 'getUserInfo']),
     updateAnswerList () {
-      if (this.examQueForm.bIsSelectQue) {
+      if (this.examQueForm.queType === 0) {
+        // 判断题
         return [{ key: true }, { key: false }]
       } else {
+        // 选择题
         return this.examQueForm.selectOptions
       }
     },
@@ -103,11 +111,14 @@ export default {
       labelPosition: 'left',
       // 开关
       switchDate: {
-        switchVal: true,
+        // 选择题类型开关 1 === 单选 || 2 === 多选
+        switchVal: 1,
         activeColor: '#13ce66',
         inactiveColor: '#409eff',
         activeText: '单选题',
-        inactiveText: '多选题'
+        inactiveText: '多选题',
+        activeValue: 1,
+        inactiveValue: 2
       },
       // 默认选项值
       selectOptionsDefaltArr: [
@@ -117,14 +128,14 @@ export default {
       ],
       // 出题表单
       examQueForm: {
-        // 是否为选择题
-        bIsSelectQue: true,
+        // 题目类型 0 === 判断题 || 1 === 选择题
+        queType: 0,
         examTitle: '1+1=?',
-        qusLevel: '',
+        qusLevel: '2',
         knowledgePoint: ['业内名词'],
         answer: '',
         // 多选答案
-        answerList: [],
+        answerMulti: [],
         // 绑定选项
         selectOptions: [
           //   {
@@ -150,7 +161,7 @@ export default {
           { required: true, message: '请选择知识点', trigger: ['change', 'blur'] }
         ],
         answer: [
-          { required: true, message: '请选择答案', trigger: 'change' }
+          { required: true, message: '请选择答案', trigger: ['change', 'blur'] }
         ],
         answerMulti: [
           { type: 'array', required: true, message: '请至少选择一个答案', trigger: 'change' }
@@ -163,28 +174,38 @@ export default {
   },
   mounted () { },
   methods: {
-    // @param { Boolean } 是否为考试题目弹框
-    swichForm (b) {
-      if (!isBoolean(b)) {
+    /**
+     * @description 切换表单
+     * @param { Number } 题型 0 === 判断题 || 1 === 选择题
+    **/
+    switchForm (type) {
+      // console.log(type)
+      if (!check.isNumber(type)) {
         return
       }
 
-      if (this.$refs.examQueForm) {
-        this.$refs.examQueForm.resetFields()
-      }
+      this.resetForm()
+      this.examQueForm.queType = type
 
-      if (!b) {
-        this.switchDate.switchVal = false
-        this.switchChg(this.switchDate.switchVal)
+      if (type === 0) {
+        this.examQueForm.selectOptions = []
+      } else {
+        this.switchDate.switchVal = 1
+        this.examQueForm.selectOptions = [...this.selectOptionsDefaltArr]
       }
     },
+    /**
+     * @description 表单确定； 需要过滤校验。分为判断题 || 选择题
+    **/
     dialogOk () {
       const vm = this
-      let propName = ''
-      this.switchDate.switchVal ? propName = 'answerMulti' : propName = 'answer'
-      let fields = this.getProps(propName)
-      // console.log(fields)
+      let propName = 'answerMulti'
 
+      if (this.examQueForm.queType === 1 && this.switchDate.switchVal === 2) {
+        propName = 'answer'
+      }
+
+      let fields = this.getProps(propName)
       let error = false
       vm.$refs['examQueForm'].validateField(fields, (errorMessage) => {
         if (errorMessage) {
@@ -201,18 +222,35 @@ export default {
 
       // console.log(vm.examQueForm)
 
-      let objOption = new this.$dataProcess.FormatOption()
       let objData = new this.$dataProcess.Parameter()
       objData.setFunc('set_exam_item')
-      let { bIsSelectQue: bIsjudgeQue, examTitle, qusLevel, knowledgePoint, selectOptions: options, answer } = vm.examQueForm
+
+      // 获取表单数据
+      let { examTitle, qusLevel, selectOptions: options, answer } = vm.examQueForm
+
+      // 答案封装（多选）
+      if (this.examQueForm.queType === 1 && this.switchDate.switchVal === 2) {
+        let objAnswer = new this.$dataProcess.FormatOption()
+        objAnswer.setSeparator(',')
+        objAnswer.setItemMode(false)
+        answer = objAnswer.toStr(vm.examQueForm.answerMulti.sort())
+      }
+
+      // 判断题选项
+      if (this.examQueForm.queType === 0) {
+        options = [{ value: '正确' }, { value: '错误' }]
+      }
+
       // 设置请求id
       let reqId = 'add_exam_1'
+      let objOption = new this.$dataProcess.FormatOption()
       let data = {
         id: reqId,
         // 新增考题key为空
         key: '',
         question: examTitle,
         option: objOption.toStr(options),
+        // 答案封装
         answer: answer,
         level: qusLevel,
         authid: this.getUserInfo.userId
@@ -220,50 +258,33 @@ export default {
 
       objData.setParams(data)
 
-      console.log(data)
+      // console.log(data)
 
-      vm.$emit('submitForm', { bIsjudgeQue, examTitle, qusLevel, knowledgePoint, options, answer })
+      // 提交请求
       this.$request('/set_exam_item', { data: objData.getJson() }).then((res) => {
         console.log('ok', res)
       }).catch((error) => {
         console.log('error', error)
       })
-      vm.$refs.examQueForm.resetFields()
+      vm.resetForm()
     },
     dialogCancel () {
       const vm = this
-      vm.$refs.examQueForm.resetFields()
+      vm.resetForm()
     },
+    // 选择题题型 开关切换
     switchChg (val) {
-      console.log(`切换标签${val}`)
-      if (this.$refs.examQueForm) {
-        this.$refs.examQueForm.resetFields()
-      }
-
-      val ? this.examQueForm.answer = '' : this.examQueForm.answer = []
+      // console.log(`切换标签${val}`)
+      this.resetForm()
+      val === 1 ? this.examQueForm.answer = '' : this.examQueForm.answer = []
     },
-    // 切换表单
-    // @param { Boolean } 是否为判断题
-    switchForm (val) {
-      if (typeof val !== 'boolean') {
-        return
-      }
-
-      if (this.$refs.examQueForm) {
-        this.$refs.examQueForm.resetFields()
-      }
-
-      this.switchDate.switchVal = true
-      this.examQueForm.bIsSelectQue = val
-
-      //  true === 判断题 || false === 选择题
-      val ? this.examQueForm.selectOptions = [] : this.examQueForm.selectOptions = [...this.selectOptionsDefaltArr]
-    },
+    // 添加选项
     addItem () {
       let len = this.examQueForm.selectOptions.length
       let key = String.fromCharCode(65 + len)
       this.examQueForm.selectOptions.push({ key, value: '' })
     },
+    // 表单移除选项
     removeItem (item) {
       let arrOptions = this.examQueForm.selectOptions
       var index = arrOptions.indexOf(item)
@@ -271,9 +292,10 @@ export default {
         arrOptions.splice(index, 1)
       }
 
-      console.log(arrOptions)
+      // console.log(arrOptions)
       this.updateOptions()
     },
+    // 更新选项
     updateOptions () {
       let arrOptions = this.examQueForm.selectOptions
       for (let [idx, item] of arrOptions.entries()) {
@@ -283,6 +305,11 @@ export default {
     answerChg (value) {
       // console.log(value, this.examQueForm.answer)
     },
+    /**
+     * @description 获取表单校验的 Props 数组；
+     * @param { String } prop 过滤的表单校验值props
+     * @returns { Array } 表单所有选项校验的Props值组成的数组（已过滤）
+    **/
     getProps (prop) {
       let res = []
       let arrProps = this.$refs['examQueForm'].fields
@@ -294,6 +321,11 @@ export default {
       }
 
       return res
+    },
+    resetForm () {
+      if (this.$refs.examQueForm) {
+        this.$refs.examQueForm.resetFields()
+      }
     }
   }
 }
@@ -310,7 +342,7 @@ export default {
 
 <style lang='scss' scoped>
 #queForm {
-  width: calc(100% - 150px);
+  width: 100%;
   float: left;
   padding: 0px 60px;
 }

@@ -220,9 +220,10 @@ class Parameter {
 *******************************************************************/
 class FormatOption {
   constructor () {
-    this.keyName = 'key'
-    this.valueName = 'value'
-    this.defaultSeparator = '<br/>'
+    this._keyName = 'key'
+    this._valueName = 'value'
+    this._defaultSeparator = '<br/>'
+    this._mode = true
   }
 
   /**
@@ -237,24 +238,39 @@ class FormatOption {
       return false
     }
 
-    this.defaultSeparator = str
+    this._defaultSeparator = str
   }
 
   /**
-   * @description 设置转化的键值名称 (默认键值名称为:key value)
-   * @method setKeyValue
+   * @description 设置数组内的项的模式（默认为键值对模式 === true）
+   * @method setItemMode
+   * @for FormatOption
+   * @param { Boolean } type 键值对模式 === true || false === 单独的项模式
+   * @return { 返回值类型 } 返回值说明
+  **/
+  setItemMode (type) {
+    if (!check.isBoolean(type)) {
+      return false
+    }
+
+    this._mode = type
+  }
+
+  /**
+   * @description 设置转化的每一项的键值名称 (默认键值名称为:key value)
+   * @method setItemKeyValue
    * @for FormatOption
    * @param { String } keyName 转化对象的key名称
    * @param { String } valueName 转化对象的value名称
    * @return { Boolean } 格式错误
   **/
-  setKeyValue (keyName, valueName) {
+  setItemKeyValue (keyName, valueName) {
     if (!check.isString(keyName) || !check.isString(valueName)) {
       return false
     }
 
-    this.keyName = keyName
-    this.valueName = valueName
+    this._keyName = keyName
+    this._valueName = valueName
   }
 
   /**
@@ -271,14 +287,20 @@ class FormatOption {
 
     let arr = []
 
-    if (str.indexOf(this.defaultSeparator) !== -1) {
-      str.split(this.defaultSeparator).forEach((item, idx) => {
-        arr.push({
-          [this.keyName]: String.fromCharCode(65 + idx),
-          [this.valueName]: item
-        })
+    if (str.indexOf(this._defaultSeparator) !== -1) {
+      str.split(this._defaultSeparator).forEach((item, idx) => {
+        let data = item
+
+        if (this._mode) {
+          data = {
+            [this._keyName]: String.fromCharCode(65 + idx),
+            [this._valueName]: item
+          }
+        }
+
+        arr.push(data)
         // console.log(item, idx)
-      })
+      }, this)
       return arr
     }
   }
@@ -300,12 +322,16 @@ class FormatOption {
     let str = ''
     for (let item of arr.values()) {
       // console.log(item)
-      str += `${this.defaultSeparator}${item[this.valueName]}`
+      if (this._mode) {
+        str += `${this._defaultSeparator}${item[this._valueName]}`
+      } else {
+        str += `${this._defaultSeparator}${item}`
+      }
     }
 
-    let first = str.indexOf(this.defaultSeparator)
+    let first = str.indexOf(this._defaultSeparator)
     if (first !== -1) {
-      return str.substring(first + this.defaultSeparator.length)
+      return str.substring(first + this._defaultSeparator.length)
     }
 
     return str

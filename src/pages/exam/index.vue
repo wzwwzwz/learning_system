@@ -133,8 +133,8 @@ import { UtilsTimer } from '@/utils/index'
 // 测试文件
 import testExam from '@/utils/testFiles/testExam'
 
-const ExamItem = () => import('./exam/ExamItem')
-const AnswerItem = () => import('./exam/AnswerItem')
+const ExamItem = () => import('./ExamItem')
+const AnswerItem = () => import('./AnswerItem')
 
 export default {
   name: '',

@@ -2,7 +2,7 @@
 <template>
   <div id="queIndex" class="component_wrap">
     <el-row class="div_wrap">
-      <el-col :span="1" style="width:100px;height:100%">
+      <el-col class="queIndexMenu">
         <el-tabs :tab-position="tabPosition" style="height: 100%;" v-model="tabsIndex" @tab-click="switchTab()"
           :before-leave="beforeSwitch">
           <template v-for="(item_tabs,idx_tabs) in aTabs">
@@ -12,8 +12,10 @@
         </el-tabs>
       </el-col>
 
-      <!-- 动态挂载 -->
-      <QueForm ref="queForm" :auditType="tabsIndex"></QueForm>
+      <el-col class="queIndexForm">
+        <!-- 动态挂载 -->
+        <QueForm ref="queForm" :initData="{type:tabsIndex}"></QueForm>
+      </el-col>
     </el-row>
 
   </div>
@@ -38,7 +40,7 @@ export default {
         key: '1', val: '选择题'
       },
       {
-        key: '2', val: '判断题'
+        key: '0', val: '判断题'
       }]
     }
   },
@@ -46,30 +48,16 @@ export default {
 
   },
   created () {
+
   },
   mounted () {
-
+    this.$refs.queForm.switchForm(Number(this.tabsIndex))
   },
   methods: {
-    switchTab () {
-
-    },
+    switchTab () { },
     beforeSwitch (newVal, oldVal) {
-      console.log(newVal, oldVal)
-      let val = false
-
-      switch (this.tabsIndex) {
-        case '1':
-          val = false
-          break
-        case '2':
-          val = true
-          break
-        default:
-          break
-      }
-
-      this.$refs.queForm.switchForm(val)
+      // console.log(newVal, oldVal)
+      this.$refs.queForm.switchForm(Number(newVal))
     },
     handleOpen (key, keyPath) {
       console.log(key, keyPath)
@@ -88,7 +76,17 @@ export default {
 
   .div_wrap {
     height: calc(100% - 40px);
-    // margin: 20px 136px;
+  }
+
+  $MenuWidth: 100px;
+  .queIndexMenu {
+    width: $MenuWidth;
+    height: 100%;
+  }
+
+  .queIndexForm {
+    width: calc(100% - #{$MenuWidth});
+    // width: $MenuWidth;
   }
 }
 </style>
