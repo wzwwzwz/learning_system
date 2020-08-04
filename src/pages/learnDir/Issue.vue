@@ -15,22 +15,19 @@
         </el-divider>
       </template>
 
-      <!-- <el-button type="primary" icon="el-icon-edit" @click="editExam()">出题</el-button> -->
+      <!-- 添加一条 -->
       <el-button type="text" icon="el-icon-edit" @click="addLearnQus()" style="float: right;">添加一条</el-button>
       <!-- 出题表单弹框 -->
-      <examQueDialog ref="examQueForm" :knowledgeOptions="oBtnGrpInfo.aBtn" @submitForm="submitForm($event)"
-        :dialogTiltle="examQueData.title">
-      </examQueDialog>
+      <AddIssue ref="addIssueForm"></AddIssue>
 
       <!-- list -->
       <template>
         <el-table ref="filterTable" :data="tableData" style="width: 100%" @row-click="rowClick" :cell-class-name="setTableCellClass">
           <el-table-column type="index" label="序号" width="50" align="left"></el-table-column>
-          <el-table-column prop="name" label="题目" width="500">
-          </el-table-column>
-          <el-table-column prop="address" label="知识点">
-          </el-table-column>
-          <el-table-column class="ditInfo" width="80">查看回答</el-table-column>
+          <el-table-column prop="title" label="题目" width="500"></el-table-column>
+          <el-table-column prop="descript" label="描述"></el-table-column>
+          <el-table-column prop="knowledgePoint" label="知识点"></el-table-column>
+          <el-table-column class="ditInfo" width="80" :hoverShow="true" prop="view">查看回答</el-table-column>
         </el-table>
       </template>
 
@@ -40,84 +37,83 @@
 </template>
 
 <script>
-import btnGrp from '@/components/common/btnGrp.vue'
-import examQueDialog from '@/components/common/examQueDialog.vue'
+import { mapGetters } from 'vuex'
+import * as check from '@/utils/validate'
+
+const btnGrp = () => import('@/components/common/btnGrp.vue')
+const AddIssue = () => import('./AddIssue.vue')
 
 export default {
   name: '',
   components: {
     btnGrp,
-    examQueDialog
+    AddIssue
   },
   computed: {
-    updateType () {
-      console.log()
-      // return item
-      if (this.examQueForm.bIsSelectQue) {
-        return [{ key: true }, { key: false }]
-      } else {
-        return this.examQueForm.selectOptions
-      }
-    }
+    ...mapGetters(['getKnowledgePoint'])
+  },
+  created () {
+    this.getIssue()
   },
   data () {
     return {
       typeName: '',
       aTypeTags: ['全部'],
-      // 出题组件数据
-      examQueData: {
-        showDialog: false,
-        title: '添加学习纲目'
-      },
       oBtnGrpInfo: {
         titleName: '知识点分类',
-        aBtn: [{
-          name: '业内名词',
-          label: '业内名词'
-        }, {
-          name: '公司内部名词',
-          label: '公司内部名词'
-        }, {
-          name: '行业产品',
-          label: '行业产品'
-        }, {
-          name: '公司产品',
-          label: '公司产品'
-        }, {
-          name: '产品应用场景',
-          label: '产品应用场景'
-        }, {
-          name: '产品目的',
-          label: '产品目的'
-        }]
+        aBtn: this.$store.getters.getKnowledgePoint
       },
-      tableData: [{
-        date: '2016-05-02',
-        name: '什么时色温？',
-        address: '业内名词',
-        tag: '家'
-      }, {
-        date: '2016-05-04',
-        name: '什么是LED亮度？',
-        address: '行业产品',
-        tag: '公司'
-      }, {
-        date: '2016-05-01',
-        name: '世界论',
-        address: '产品应用场景',
-        tag: '家'
-      }, {
-        date: '2016-05-03',
-        name: '黑洞讨论',
-        address: '产品目的',
-        tag: '公司'
-      }]
+      tableData: [
+        {
+          key: 123,
+          status: 1451, // 状态，最佳答案的KEY，如果为空，则表示未完成
+          title: '什么时色温？',
+          knowledgePoint: '8596',
+          descript: '这只是一个小描述'
+        }, {
+          key: 124,
+          status: 1452,
+          title: '什么是LED亮度？',
+          knowledgePoint: '行业产品',
+          descript: '烦躁的描述'
+        }, {
+          key: 125,
+          status: 1453,
+          title: '世界论',
+          knowledgePoint: '产品应用场景',
+          descript: '简单描述'
+        }, {
+          key: 1236,
+          status: 1454,
+          title: '黑洞讨论',
+          knowledgePoint: '产品目的',
+          descript: '一般的描述'
+        }
+      ]
     }
   },
   methods: {
+    getIssue (condition = {}) {
+      if (!check.isObject(condition)) {
+        return false
+      }
+
+      let objData = new this.$dataProcess.Parameter()
+      objData.setFunc('get_issue')
+
+      if (JSON.stringify(condition) !== '{}') {
+        objData.setParams(condition)
+      }
+
+      this.$request('/getIssue', { data: objData.getJson() }).then((res) => {
+        console.log('ok', res)
+      }).catch((error) => {
+        console.log('error', error)
+      })
+    },
     setTableCellClass ({ row, column, rowIndex, columnIndex }) {
       // console.log(row, column, rowIndex, columnIndex)
-      if (columnIndex === 3) {
+      if (column.property === 'view') {
         return 'ditInfo'
         // return 'color:#fff'
       } else {
@@ -140,21 +136,16 @@ export default {
       // this.typeName = ''
     },
     addLearnQus () {
-      this.examQueData.title = '添加学习纲目'
-      this.$refs.examQueForm.openDialog(false)
-    },
-    editExam () {
-      this.examQueData.title = ''
-      this.$refs.examQueForm.openDialog(true)
+      // this.$refs.examQueForm.openDialog(false)
+      this.$refs.addIssueForm.openDialog(false)
     },
     submitForm (data) {
       console.log(data)
       let { title, knowledgePoint } = data
       this.tableData.push({
-        date: '2016-05-02',
-        name: title,
-        address: knowledgePoint[0],
-        tag: '家'
+        title: title,
+        knowledgePoint: knowledgePoint[0],
+        descript: '家'
       })
     },
     // 表格方法
@@ -167,7 +158,8 @@ export default {
       // 跳转详情
       this.$router.push({
         name: 'DetailsAnswer',
-        params: { data: row }
+        // path: '/learnDir/DetailsAnswer',
+        query: { key: row.key }
       })
     },
     resetDateFilter () {
@@ -177,7 +169,7 @@ export default {
       this.$refs.filterTable.clearFilter()
     },
     formatter (row, column) {
-      return row.address
+      return row.knowledgePoint
     },
     filterTag (value, row) {
       console.log('filterTag')

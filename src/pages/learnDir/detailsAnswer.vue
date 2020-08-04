@@ -41,8 +41,10 @@ import zReplyList from '@/pages/learnDir/ReplyList'
 
 import { getSystemTime } from '@/utils/index'
 import { mapGetters } from 'vuex'
+
 // 测试代码
 import TestData from '@/utils/testFiles/testData'
+import testIssue from '@/utils/testFiles/testIssue'
 
 export default {
   name: 'answerList',
@@ -95,31 +97,6 @@ export default {
         //   time: '2020-1-1',
         //   likes: 0,
         //   commenters: 5
-        // },
-        // {
-        //   userId: '254',
-        //   userName: '甜酒果',
-        //   strhtml: '<div>啊啊啊算法</div>',
-        //   time: '2020-1-1',
-        //   likes: 2,
-        //   commenters: 0
-        // },
-        // {
-        //   userId: 111,
-        //   userName: '甜酒果',
-        //   strhtml: '<div>啊啊啊算法</div>',
-        //   time: '2020-1-1',
-        //   likes: 2,
-        //   commenters: 0
-        // },
-        // {
-        //   userId: 111,
-        //   userName: '甜酒果',
-        //   time: '2020-1-1',
-        //   likes: 2,
-        //   commenters: 0,
-        //   showMore: true,
-        //   strhtml: '<p>中。”网民“orfila2011”在评论中表示；“陕西蓝天救援队”官方微博也表示，民间在地震预测工作中有价值的经验方法，有关部门应给予足够的重视。</p><p><strong>预报根据省地震局数据分析得出</strong></p><p>该民间地震ddddddddddddddddddd预报微博的资料显示，所在地位于湖北。“很久以前，该微博就已经在微博上播报地震预测信息，但一直很神秘。”有网友表示。昨日，记者通过微博联系上这一神秘民间地震预报机构。</p><p>该民间机构是怎样获得地震预报信息的？该微博博主向记者表示，他们是根据云南省地震局官网云南地震数据共享中心查询到了云南省内的一些地震监测数据，分析得出的预报信息。记者发现，确实可以通过该网站查到云南各地震监测点的预处理数据。</p><p>&gt;该微博博主还透露，分析这些相关数据需要很多专业知识，但并不需要仪器。对于民间机构预报地震的动力，该博主表示“物质和精神都有”。对于其他信息，该博主不愿意更多透露。</p><p><strong>省地震局：民间仅限于学术交流</strong></p><p>“地震预测预报必须遵守相应的法律法规。”省地震局科学技术处处长、新闻发言人张俊伟在接受记者采访时表示，根据我国法律，任何个人或民间机构对外发布地震预报信息都是违法行为。</p>'
         // }
       ]
     }
@@ -166,12 +143,27 @@ export default {
     this.TestDateFun.add(data3)
     // 测试数据结束
 
-    this.getAllAnswer()
+    // 获取链接参数
+    let key = this.$route.query.key
+    console.log(this.$route.query)
+    if (key) {
+      let vm = this
 
-    // 获取连接参数
-    let id = this.$route.params.data
-    this.qusTitle = id.name
-    console.log(id)
+      let obj = {
+        param: { key },
+        success: function (res) {
+          let issueData = res
+          console.log(issueData)
+          // issueData.name =
+          vm.getAllAnswer(key)
+        },
+        fail: function (error) {
+          console.log(error)
+        }
+      }
+      // 获取论点信息
+      this.$emit('getIssue', obj)
+    }
   },
   mounted () { },
   methods: {
@@ -208,10 +200,29 @@ export default {
         // console.log(this.$refs.showEdit.innerText)
       }
     },
-    // 获取所有回答
-    getAllAnswer () {
+    /**
+     * @description 获取所有回答
+     * @param { String } key 论点的key
+    **/
+    getAllAnswer (key) {
       this.answerList = []
       this.answerList = this.TestDateFun.getData()
+
+      let objData = new this.$dataProcess.Parameter()
+      objData.setFunc('get_issue_rep')
+
+      let data = {
+        issuekey: key,
+        selection: '1-20'
+      }
+      objData.setParams(data)
+
+      this.$request('/getIssueRep', { data: objData.getJson() }).then((res) => {
+        console.log('ok', res)
+        console.log(testIssue)
+      }).catch((error) => {
+        console.log('error', error)
+      })
     },
     deleteAnswer (param) {
       this.TestDateFun.delete(param.id)
