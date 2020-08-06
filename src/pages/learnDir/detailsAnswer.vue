@@ -1,6 +1,8 @@
 <template>
-  <div class=''>
-    <el-page-header @back="goBack" :content="qusTitle"></el-page-header>
+  <div id="DetailsAnswer" class=''>
+    <!-- 论点数据 -->
+    <el-page-header @back="goBack" :content="issueData.title" style="font-weight: 700;"></el-page-header>
+    <div class="descript">{{issueData.descript}} </div>
 
     <!-- 所有回答 -->
     <!-- <el-input type="textarea" :rows="2" placeholder="写下你的回答" v-model="textarea"></el-input> -->
@@ -27,7 +29,7 @@
       <!-- <div class="ql-editor" v-html="answerTest" ref="showEdit"></div> -->
     </div>
 
-    <div class="answer_list_div">
+    <div class="answer_list_div" v-loading.lock="loading" :element-loading-text="'正在获取回答'">
       <div class="show_answers">{{answerList.length === 0 ? "暂无回答" : `全部回答(${answerList.length})`}}</div>
       <zReplyList :answerList="answerList" :componentLevel="0" @delete="deleteAnswer($event)"></zReplyList>
     </div>
@@ -41,6 +43,8 @@ import zReplyList from '@/pages/learnDir/ReplyList'
 
 import { getSystemTime } from '@/utils/index'
 import { mapGetters } from 'vuex'
+
+import * as check from '@/utils/validate'
 
 // 测试代码
 import TestData from '@/utils/testFiles/testData'
@@ -70,6 +74,13 @@ export default {
     },
     updateTitle () {
       return this.qusTitle
+    },
+    updateAnswerStyle () {
+      if (this.answerList.length === 0) {
+        return { height: '770px' }
+      }
+
+      return { height: 'auto' }
     }
   },
   watch: {
@@ -80,6 +91,7 @@ export default {
       TestDateFun: new TestData(),
       EditorVal: '',
       qusTitle: '',
+      // 多文本编辑器内容
       article: {
         content: null
       },
@@ -98,7 +110,10 @@ export default {
         //   likes: 0,
         //   commenters: 5
         // }
-      ]
+      ],
+      loading: true,
+      // 跳转时请求的论点数据
+      issueData: {}
     }
   },
   filters: {
@@ -152,13 +167,18 @@ export default {
       let obj = {
         param: { key },
         success: function (res) {
-          let issueData = res
-          console.log(issueData)
-          // issueData.name =
-          vm.getAllAnswer(key)
         },
         fail: function (error) {
           console.log(error)
+          vm.getAllAnswer(key)
+
+          // 论点数据赋值
+          for (const item of testIssue.issue.values()) {
+            if (Number(item.key) === Number(key)) {
+              vm.issueData = item
+              return
+            }
+          }
         }
       }
       // 获取论点信息
@@ -174,39 +194,64 @@ export default {
       this.$emit('goBack')
     },
     submit () {
-      // console.log(this.article.content)
+      let strHtml = this.article.content
+      // console.log(strHtml)
 
-      if (this.article.content !== null) {
-        // let contentVal = this.article.content.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;')
-        // console.log(this.article.content, '----------', contentVal)
-        this.answerTest = this.article.content
-        this.showEditor = false
-
-        let data = {
-          id: 2255,
-          userId: this.getUserInfo.userId,
-          userName: 'jimim',
-          time: getSystemTime(),
-          strhtml: this.article.content,
-          showMore: true,
-          likes: 2,
-          commenters: 0
-        }
-
-        this.answerList.push(data)
-        this.EditorVal = ''
-        this.$refs.Editor.clearContent()
-
-        // console.log(this.$refs.showEdit.innerText)
+      if (strHtml === null) {
+        return this.$message.error('写点啥吧')
       }
+
+      let str = strHtml.replace(/<[^<>]+>/g, '') // 剔出<html>的标签
+
+      if (str.trim() === '') {
+        return this.$message.error('不能为空')
+      }
+
+      // 提交
+      this.answerTest = strHtml
+      this.showEditor = false
+
+      let objData = new this.$dataProcess.Parameter()
+      objData.setFunc('rep_issue')
+
+      let id = `submitAnswer_${new Date().getTime()}`
+      let data = {
+        id,
+        key: '',
+        issuekey: this.issueData.key,
+        descript: strHtml
+      }
+      objData.setParams(data)
+      objData.getJson()
+
+      this.$request('/repIssue', { data: data }).then((res) => {
+      }).catch(() => {
+      })
+
+      // 假数据
+      let virData = {
+        id: 2255,
+        userId: this.getUserInfo.userId,
+        userName: 'jimim',
+        time: getSystemTime(),
+        strhtml: strHtml,
+        showMore: true,
+        likes: 2,
+        commenters: 0
+      }
+      // 成功回调执行
+      this.answerList.push(virData)
+      this.EditorVal = ''
+      this.$refs.Editor.clearContent()
     },
     /**
      * @description 获取所有回答
      * @param { String } key 论点的key
     **/
     getAllAnswer (key) {
+      this.loading = true
       this.answerList = []
-      this.answerList = this.TestDateFun.getData()
+      // this.answerList = this.TestDateFun.getData()
 
       let objData = new this.$dataProcess.Parameter()
       objData.setFunc('get_issue_rep')
@@ -217,16 +262,42 @@ export default {
       }
       objData.setParams(data)
 
+      let vm = this
       this.$request('/getIssueRep', { data: objData.getJson() }).then((res) => {
         console.log('ok', res)
-        console.log(testIssue)
       }).catch((error) => {
         console.log('error', error)
+        console.log(testIssue)
+        vm.answerList = []
+        vm.answerList = vm.formatRspData(testIssue.answer)
+        this.loading = false
       })
     },
     deleteAnswer (param) {
       this.TestDateFun.delete(param.id)
       this.getAllAnswer()
+    },
+    // 将请求数据转化为ui使用的数据格式
+    formatRspData (arr = []) {
+      if (!check.isArray(arr)) {
+        return false
+      }
+      let objFormat = new this.$dataProcess.FormatOption()
+      objFormat.setItemMode(false)
+
+      return arr.map((item, idx) => {
+        let user = objFormat.toArr(item.user)
+        return {
+          id: item.key,
+          userId: user[0],
+          userName: user[1],
+          time: item.time,
+          strhtml: item.descript,
+          showMore: true,
+          likes: item.agree,
+          commenters: item.disagree
+        }
+      })
     }
   }
 }
@@ -246,8 +317,12 @@ export default {
   border: none;
 }
 
+.descript {
+  padding: 10px 0;
+}
+
 .editBtnGrp {
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 // 评论显示

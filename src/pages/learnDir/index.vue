@@ -70,7 +70,7 @@ export default {
       }).catch((error) => {
         return fail(error)
       }).finally(() => {
-        return success('finally')
+
       })
     }
   }
@@ -79,5 +79,6 @@ export default {
 <style lang='scss' scoped>
 #learnDirIndex {
   height: auto;
+  min-height: 870px;
 }
 </style>

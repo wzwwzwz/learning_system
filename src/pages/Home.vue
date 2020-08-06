@@ -24,7 +24,6 @@
 <script>
 import zHeader from '@/components/common/header.vue'
 import examQueDialog from '@/components/common/examQueDialog.vue'
-// import UploadAvatar from '@/components/common/UploadAvatar.vue'
 
 const UploadAvatar = () => import('@/components/common/UploadAvatar.vue')
 

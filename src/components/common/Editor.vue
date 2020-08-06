@@ -49,7 +49,7 @@ const toolbarOptions = [
 ]
 
 // 内容清掉换行符
-// const content = this.content.eplace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;')
+// const content = this.content.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;')
 
 export default {
   props: {

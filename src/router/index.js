@@ -60,7 +60,7 @@ let routes = [
       { path: '/system',
         name: 'system',
         component: SystemIndex,
-        redirect: '/company',
+        redirect: '/organization',
         children: [
           {path: '/company', name: 'Company', component: Company},
           {path: '/user', name: 'User', component: User},

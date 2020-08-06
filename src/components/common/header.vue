@@ -53,12 +53,10 @@ import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
   name: '',
-  components: {
-
-  },
+  components: {},
   data () {
     return {
-      activeIndex: '/',
+      // activeIndex: '/',
       // 消息对象
       o_msg: {
         b_new_msg: true,
@@ -124,18 +122,14 @@ export default {
   },
   created () {
     // this.realName = sessionStorage.getItem("realName");
-    // let url = `${this.getBasicsReqURL}/system/role/updateRole`
-    // console.log('urlurlurlurlurlurlurlurlurl', url)
-
   },
   computed: {
     // 用mapGetters获取vuex state状态
-    ...mapGetters(['getUserInfo', 'getBasicsReqURL', 'getCount'])
-    // activeIndex () {
-    //   // console.log('activeIndex', this.$route.path)
-    //   // return '1'
-    //   return this.$route.path
-    // }
+    ...mapGetters(['getUserInfo', 'getBasicsReqURL', 'getCount']),
+    // 刷新页面菜单高亮
+    activeIndex () {
+      return this.$route.matched[1].path
+    }
   },
   methods: {
     // 添加vuex状态函数

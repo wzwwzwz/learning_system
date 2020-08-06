@@ -45,7 +45,6 @@ const state = {
     name: '产品目的',
     label: '产品目的'
   }],
-  // arrQusLevel: ['简单', '中等', '困难'],
   arrQusLevel: [
     {
       key: 1,

@@ -25,6 +25,7 @@
 <script>
 export default {
   created () {
+    this.defaultActive = this.$route.path
   },
   data () {
     return {
