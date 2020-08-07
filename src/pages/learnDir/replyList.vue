@@ -1,13 +1,15 @@
 <template>
   <div id="replyaList">
-    <template v-for="(item,index) in answerList">
+    <template v-for="(item,index) in list">
       <div :key="index" class="answer_list_wrap">
         <div class="answer_list_top">
           <!-- ------------------ 头像 ------------------ -->
           <el-avatar shape="square" :size="componentLevel === 0 ? 'medium':'small'" icon="el-icon-user-solid" class="btn_user_icon">
           </el-avatar>
           <span class="small_tag_wrap">
-            <span class="small_tag User">{{item.userName}}</span>
+            <!-- 发言的用户 + 被@的用户 -->
+            <span class="small_tag User">{{item.userName}} {{item.toUserName ? `回复 ${item.toUserName}` : ""}}</span>
+            <!-- 时间 -->
             <span class="small_tag Time">{{item.time}}</span>
           </span>
         </div>
@@ -20,7 +22,7 @@
 
           <!-- ------------------ 按钮：显示全部 || 收起 ------------------ -->
           <div v-show="item.strhtml.length > 500" :class="{show_answers_more:true,show_answers_less:!item.showMore}"
-            @click="clickshowMore(item.strhtml,index)" ref="refShowMoreDiv">
+            @click="clickShowMore(item.strhtml,index)" ref="refShowMoreDiv">
             {{item.showMore | updateShowMorebtn}}
             <i :class="item.showMore ?'el-icon-arrow-down':'el-icon-arrow-up'"></i>
           </div>
@@ -29,23 +31,24 @@
         <!-- ------------------ 操作按钮 ------------------ -->
         <div class="answer_list_bottom dbclick_unchecked">
           <div>
-            <el-link type="primary" class="btn_Link" @click="likeOperation()"><i class="el-icon-thumb "></i>赞 {{`(${item.likes})`}}
+            <!-- 点赞 -->
+            <el-link type="primary" class="btn_Link" @click="likeOperation(item.id)"><i class="el-icon-thumb "></i>赞 {{`(${item.likes})`}}
             </el-link>
-            <el-link type="primary" class="btn_Link" v-show="item.commenters !== 0" @click="viewComments(index)">
+            <!-- 查看评论 -->
+            <el-link type="primary" class="btn_Link" v-show="item.commenters !== 0 && componentLevel === 0"
+              @click="viewComments(item,index)">
+              <!-- 将所有回复都放在一个层级里面 -->
               <i class="el-icon-chat-dot-square"></i>{{componentLevel === 0 ? "查看评论":"查看回复"}} {{`(${item.commenters})`}}
             </el-link>
+            <!-- 评论 -->
             <el-link type="primary" class="btn_Link btn_reply" @click="comment(`replyInput_level${componentLevel}_${index}`,index)">
               <i class="el-icon-reply "></i>{{componentLevel === 0 ? "评论":"回复"}}
             </el-link>
-            <!-- <el-link type="danger" @click="deleteAnswer(item)"
-              v-show="getUserInfo.userId === item.userId || getUserInfo.userAuth === 'admin' || getUserInfo.userAuth === 'judge'">
-              <i class="el-icon-delete"></i>删除
-            </el-link> -->
-
+            <!-- 删除 -->
             <zPopover ref="popoverDelete" :title="componentLevel === 0 ? '你确定要删除这条回答吗？':'你确定要删除这条回复吗？'" :width="'auto'"
               @ok="deleteOk(item)">
               <el-link type="danger" class="btn_Link" slot="btn" @click="openPopover(index)" style="margin: 0 6px;"
-                v-show="getUserInfo.userId === item.userId || getUserInfo.userAuth === 'admin' || getUserInfo.userAuth === 'judge'">
+                v-show="Number(getUserInfo.userId) === Number(item.userId) || getUserInfo.userAuth === 'admin' || getUserInfo.userAuth === 'judge'">
                 <i class="el-icon-delete"></i>删除
               </el-link>
             </zPopover>
@@ -59,7 +62,7 @@
                     :ref="`replyInput_level${componentLevel}_${index}`">
                   </el-input>
                   <el-button type="primary" plain size="mini" class="btn_reply_sunmit" :disabled="listOperation[index].textareaReply === ''"
-                    @click="commitReply(item.id,listOperation[index].textareaReply)">
+                    @click="commitReply(item.id,listOperation[index].textareaReply,item.id)">
                     提交
                   </el-button>
                   <el-button plain size="mini" class="btn_reply_sunmit" style="margin-right:10px" @click="cancelReply(index)">
@@ -87,9 +90,11 @@
 <script>
 import zPopover from '@/components/common/popover'
 import { mapGetters } from 'vuex'
+import * as check from '@/utils/validate'
 
 // 测试代码
 import TestData from '@/utils/testFiles/testData'
+import testIssue from '@/utils/testFiles/testIssue'
 
 export default {
   name: 'ReplyList',
@@ -99,8 +104,12 @@ export default {
       type: Array,
       default: () => []
     },
-    componentLevel: {
-
+    // 组件层级
+    componentLevel: {},
+    // 论点数据
+    issueData: {
+      type: Object,
+      default: () => { return {} }
     }
   },
   computed: {
@@ -121,6 +130,11 @@ export default {
   },
   watch: {
     answerList (val) {
+      this.list = val
+
+      if (val.length === 6) {
+        // this.list = []
+      }
       // console.log(val)
       let len = val.length
       this.listOperation = []
@@ -153,7 +167,8 @@ export default {
         false: '收起'
       },
       // 列表操纵
-      listOperation: []
+      listOperation: [],
+      list: [] // 接收父级传参的answerList
     }
   },
   filters: {
@@ -171,18 +186,26 @@ export default {
   },
   mounted () { },
   methods: {
-    clickshowMore (val, idx) {
+    clickShowMore (val, idx) {
       // console.log(val)
       this.answerList[idx].showMore = !this.answerList[idx].showMore
     },
-    likeOperation () {
-      // http get请求
-      this.axios.get('http://jsonplaceholder.typicode.com/users').then(
-        data => {
-          console.log(data)
-          this.id_num = data.body
-        }
-      )
+    likeOperation (key) {
+      let objData = new this.$dataProcess.Parameter()
+      objData.setFunc('agree_rep')
+      let id = `agree_rep_${new Date().getTime()}`
+      let data = {
+        id,
+        repkey: key
+      }
+
+      objData.setParams(data)
+
+      this.$request('api/agree_rep', { data: objData.getJson() }).then((res) => {
+        console.log('ok', res)
+      }).catch((error) => {
+        console.log('error', error)
+      })
     },
     /**
     * @description 评论
@@ -195,62 +218,90 @@ export default {
         this.$refs[ref][0].focus()
       })
     },
-    viewComments (idx) {
-      // console.log(idx)
-      this.listOperation[idx].commentsList = [
-        {
-          id: '2_1',
-          userId: 111,
-          userName: 'tghrt',
-          strhtml: '<div>啊啊啊算法</div>',
-          time: '2020-1-1',
-          likes: 2,
-          commenters: 2
-        },
-        {
-          id: '2_2',
-          userId: 111,
-          userName: 'V',
-          time: '2020-1-1',
-          likes: 2,
-          commenters: 0,
-          showMore: true,
-          strhtml: '<p>中”网民“orfila2011”ch。”网民“orfila2011”在评论中atch中。”网民“orfila2011”在评论中表示；“陕西蓝天救援队”官方微博也表示watch中。”网民“orfila2011”在评论中表示；“陕西蓝天救援队”官方微博也表示watch中。”网民“orfila2011”在评论中表示；“陕西蓝天救援队”官方微博也表示watch中。”网民“orfila2011”在评论中表示；“陕西蓝天救援队”官方微博也表示watch中。”网民“orfila2011”在评论中表示；“陕西蓝天救援队”官方微博也表示watch中。”网民“orfila2011”在评论中表示；“陕西蓝天救援队”官方微博也表示watch中。”网民“orfila2011”在评论中表示；“陕西蓝天救援队”官方微博也表示watch中。”网民“orfila2011”在评论中表示；“陕西蓝天救援队”官方微博也表示watch中。”网民“orfila2011”在评论中表示；“陕西蓝天救援队”官方微博也表示watch</p>'
-        },
-        {
-          id: '2_3',
-          userId: 111,
-          userName: 'V',
-          time: '2020-1-1',
-          likes: 2,
-          commenters: 1,
-          showMore: true,
-          strhtml: '<p>我是小孩2-3</p>'
-        }
-      ]
+    /**
+     * @description 查看所有评论
+     * @param { String } 参数1
+     * @param { String } 参数2
+    **/
+    viewComments (item, idx) {
+      console.log(this.issueData)
+      console.log(item, idx)
+      let objData = new this.$dataProcess.Parameter()
+      objData.setFunc('get_issue_rep_rep')
+      let data = {
+        issurkey: this.issueData.key,
+        repkey: item.id
+      }
+      objData.setParams(data)
+
+      let vm = this
+      this.$request('/get_issue_rep_rep', { data: objData.getJson() }).then((res) => {
+      }).catch((error) => {
+        console.log('error', error)
+
+        vm.listOperation[idx].commentsList = [
+          {
+            id: '2_1',
+            userId: 111,
+            userName: 'tghrt',
+            strhtml: '<div>啊啊啊算法</div>',
+            time: '2020-1-1',
+            likes: 2,
+            commenters: 2
+          },
+          {
+            id: '2_2',
+            userId: 111,
+            userName: 'V',
+            time: '2020-1-1',
+            likes: 2,
+            commenters: 0,
+            showMore: true,
+            strhtml: '<p>中”网民“orfila2011”ch。”网民“orfila2011”在评论中atch中。”网民“orfila2011”在评论中表示；“陕西蓝天救援队”官方微博也表示watch中。”网民“orfila2011”在评论中表示；“陕西蓝天救援队”官方微博也表示watch中。”网民“orfila2011”在评论中表示；“陕西蓝天救援队”官方微博也表示watch中。”网民“orfila2011”在评论中表示；“陕西蓝天救援队”官方微博也表示watch中。”网民“orfila2011”在评论中表示；“陕西蓝天救援队”官方微博也表示watch中。”网民“orfila2011”在评论中表示；“陕西蓝天救援队”官方微博也表示watch中。”网民“orfila2011”在评论中表示；“陕西蓝天救援队”官方微博也表示watch中。”网民“orfila2011”在评论中表示；“陕西蓝天救援队”官方微博也表示watch中。”网民“orfila2011”在评论中表示；“陕西蓝天救援队”官方微博也表示watch</p>'
+          },
+          {
+            id: '2_3',
+            userId: 111,
+            userName: 'V',
+            time: '2020-1-1',
+            likes: 2,
+            commenters: 1,
+            showMore: true,
+            strhtml: '<p>我是小孩2-3</p>'
+          }
+        ]
+        // 后台数据赋值
+        vm.listOperation[idx].commentsList = vm.formatCommentData(testIssue.comment)
+      })
     },
     cancelReply (idx) {
       this.listOperation[idx].showReply = false
     },
-    commitReply (id, val) {
+    // 提交回复
+    commitReply (key, val, atkey) {
       if (val.trim() === '') {
         this.$message.error('请写点啥吧！')
         return false
       }
 
-      let url = ''
-      let param = {
+      console.log(atkey)
+
+      let objData = new this.$dataProcess.Parameter()
+      objData.setFunc('rep_rep')
+
+      let id = `rep_rep${new Date().getTime()}`
+      let data = {
         id,
-        data: {
-          userId: 111,
-          userName: this.getUserInfo.userName,
-          time: '2020-01-10 10:20:30',
-          strhtml: val
-        }
+        key: '',
+        repkey: key,
+        atkey: '',
+        descript: val
       }
 
-      console.log(param)
-      this.$request(url, param).then().catch()
+      objData.setParams(data)
+
+      console.log(data)
+      this.$request('rep_rep', { data: objData.getJson() }).then().catch()
     },
     openPopover (index) {
       this.$refs.popoverDelete[index].setVisible(false)
@@ -302,6 +353,32 @@ export default {
           commentsList: []
         })
       }
+    },
+    // 格式化评论的数据
+    formatCommentData (arr = []) {
+      if (!check.isArray(arr)) {
+        return false
+      }
+      let objFormat = new this.$dataProcess.FormatOption()
+      objFormat.setItemMode(false)
+
+      return arr.map((item, idx) => {
+        let fromUser = objFormat.toArr(item.fromuser)
+        let toUser = objFormat.toArr(item.touser)
+
+        return {
+          id: item.key,
+          userId: fromUser[0],
+          userName: fromUser[1],
+          toUserId: toUser[0],
+          toUserName: toUser[1],
+          time: item.time,
+          strhtml: item.descript,
+          showMore: true,
+          likes: item.agree,
+          commenters: item.disagree
+        }
+      })
     }
   }
 }
