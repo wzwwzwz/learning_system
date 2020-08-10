@@ -8,7 +8,12 @@
           </el-avatar>
           <span class="small_tag_wrap">
             <!-- 发言的用户 + 被@的用户 -->
-            <span class="small_tag User">{{item.userName}} {{item.toUserName ? `回复 ${item.toUserName}` : ""}}</span>
+            <span class="small_tag User">{{item.userName}}
+              <span v-show="item.toUserName ">
+                <!-- 被@的用户 -->
+                <span style="color:#999">回复</span> {{item.toUserName}}
+              </span>
+            </span>
             <!-- 时间 -->
             <span class="small_tag Time">{{item.time}}</span>
           </span>
@@ -48,7 +53,7 @@
             <zPopover ref="popoverDelete" :title="componentLevel === 0 ? '你确定要删除这条回答吗？':'你确定要删除这条回复吗？'" :width="'auto'"
               @ok="deleteOk(item)">
               <el-link type="danger" class="btn_Link" slot="btn" @click="openPopover(index)" style="margin: 0 6px;"
-                v-show="Number(getUserInfo.userId) === Number(item.userId) || getUserInfo.userAuth === 'admin' || getUserInfo.userAuth === 'judge'">
+                v-show="getUserInfo.userId === item.userId || getUserInfo.userAuth === 'admin' || getUserInfo.userAuth === 'judge'">
                 <i class="el-icon-delete"></i>删除
               </el-link>
             </zPopover>
@@ -74,7 +79,8 @@
 
             <!-- 查看所有回复 -->
             <div class="childrenList" :class="{hideChildrenList:listOperation[index].commentsList.length !== 0}"
-              v-show="listOperation[index].commentsList.length !== 0 && componentLevel < 10">
+              v-show="listOperation[index].commentsList.length !== 0  || listOperation[index].loading === true"
+              v-loading.lock="listOperation[index].loading" :element-loading-text="'正在获取所有评论'">
               <ReplyList :answerList="listOperation[index].commentsList" :componentLevel="componentLevel + 1"
                 @delete="deleteAnswer($event)"></ReplyList>
             </div>
@@ -114,13 +120,6 @@ export default {
   },
   computed: {
     ...mapGetters(['getUserInfo']),
-    btnAnswerOrCancel () {
-      if (this.showEditor) {
-        return '取消'
-      } else {
-        return '我要回答'
-      }
-    },
     updateShowMoreCon () {
       let vm = this
       return function (val, len, b) {
@@ -131,21 +130,17 @@ export default {
   watch: {
     answerList (val) {
       this.list = val
-
-      if (val.length === 6) {
-        // this.list = []
-      }
       // console.log(val)
-      let len = val.length
       this.listOperation = []
+      let len = val.length
       let vm = this
-
       // this.$nextTick(() => {
       for (let idx = 0; idx < len; idx++) {
         vm.listOperation.push({
           textareaReply: '',
           showReply: false,
-          commentsList: []
+          commentsList: [],
+          loading: false
         })
       }
       // })
@@ -155,20 +150,10 @@ export default {
     return {
       // 测试函数
       TestDateFun: new TestData(),
-      EditorVal: '',
-      qusTitle: '',
-      article: {
-        content: null
-      },
-      answerTest: '',
-      showEditor: false,
-      oShowMoreVal: {
-        true: '显示全部',
-        false: '收起'
-      },
       // 列表操纵
       listOperation: [],
-      list: [] // 接收父级传参的answerList
+      // 接收父级传参的answerList
+      list: []
     }
   },
   filters: {
@@ -220,12 +205,15 @@ export default {
     },
     /**
      * @description 查看所有评论
-     * @param { String } 参数1
-     * @param { String } 参数2
+     * @param { String } item 该项的数据
+     * @param { String } idx 遍历下标
     **/
     viewComments (item, idx) {
       console.log(this.issueData)
       console.log(item, idx)
+
+      this.listOperation[idx].loading = true
+
       let objData = new this.$dataProcess.Parameter()
       objData.setFunc('get_issue_rep_rep')
       let data = {
@@ -271,7 +259,9 @@ export default {
           }
         ]
         // 后台数据赋值
-        vm.listOperation[idx].commentsList = vm.formatCommentData(testIssue.comment)
+        vm.listOperation[idx].commentsList = vm.formatCommentData(testIssue.comment, item.userId)
+
+        vm.listOperation[idx].loading = false
       })
     },
     cancelReply (idx) {
@@ -354,8 +344,12 @@ export default {
         })
       }
     },
-    // 格式化评论的数据
-    formatCommentData (arr = []) {
+    /**
+     * @description 格式化评论的数据
+     * @param { Array } arr 后套获取的评论数据
+     * @param { String } userId 该条回答的userId
+    **/
+    formatCommentData (arr = [], userId) {
       if (!check.isArray(arr)) {
         return false
       }
@@ -366,18 +360,29 @@ export default {
         let fromUser = objFormat.toArr(item.fromuser)
         let toUser = objFormat.toArr(item.touser)
 
-        return {
+        let data = {
           id: item.key,
-          userId: fromUser[0],
-          userName: fromUser[1],
-          toUserId: toUser[0],
-          toUserName: toUser[1],
           time: item.time,
           strhtml: item.descript,
           showMore: true,
-          likes: item.agree,
-          commenters: item.disagree
+          likes: item.agree
+          // commenters: item.disagree
         }
+
+        if (fromUser) {
+          data.userId = fromUser[0]
+          data.userName = fromUser[1]
+        }
+
+        if (toUser) {
+          // 被回复的人 !== 该条回答的id
+          if (toUser[0] !== userId) {
+            data.toUserId = toUser[0]
+            data.toUserName = toUser[1]
+          }
+        }
+
+        return data
       })
     }
   }

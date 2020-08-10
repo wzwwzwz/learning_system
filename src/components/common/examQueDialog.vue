@@ -83,8 +83,7 @@ export default {
       default: () => ''
     }
   },
-  components: {
-  },
+  components: {},
   computed: {
     ...mapGetters(['getKnowledgePoint', 'getArrQusLevel']),
     updateAnswerList () {

@@ -31,7 +31,7 @@
 
     <div class="answer_list_div" v-loading.lock="loading" :element-loading-text="'正在获取回答'">
       <div class="show_answers">{{answerList.length === 0 ? "暂无回答" : `全部回答(${answerList.length})`}}</div>
-      <zReplyList :answerList="answerList" :componentLevel="0" @delete="deleteAnswer($event)"></zReplyList>
+      <zReplyList :answerList="answerList" :componentLevel="0" @delete="deleteAnswer($event)" :issueData="issueData"></zReplyList>
     </div>
 
   </div>
@@ -97,10 +97,6 @@ export default {
       },
       answerTest: '',
       showEditor: false,
-      oShowMoreVal: {
-        true: '显示全部',
-        false: '收起'
-      },
       answerList: [
         // {
         //   userId: '253',
@@ -111,7 +107,7 @@ export default {
         //   commenters: 5
         // }
       ],
-      loading: true,
+      loading: false,
       // 跳转时请求的论点数据
       issueData: {}
     }
@@ -174,7 +170,7 @@ export default {
 
           // 论点数据赋值
           for (const item of testIssue.issue.values()) {
-            if (Number(item.key) === Number(key)) {
+            if (item.key === key) {
               vm.issueData = item
               return
             }
@@ -201,7 +197,8 @@ export default {
         return this.$message.error('写点啥吧')
       }
 
-      let str = strHtml.replace(/<[^<>]+>/g, '') // 剔出<html>的标签
+      // 剔出<html>的标签
+      let str = strHtml.replace(/<[^<>]+>/g, '')
 
       if (str.trim() === '') {
         return this.$message.error('不能为空')
@@ -222,9 +219,8 @@ export default {
         descript: strHtml
       }
       objData.setParams(data)
-      objData.getJson()
 
-      this.$request('/repIssue', { data: data }).then((res) => {
+      this.$request('/repIssue', { data: objData.getJson() }).then((res) => {
       }).catch(() => {
       })
 
