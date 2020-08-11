@@ -180,26 +180,7 @@ text {
   font-size: initial
 }
 
-/* 覆盖富文本编辑器 */
-.ql-container {
-  font-size: 14px;
-}
 
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="normal"]::before {
-  font-size: 10px;
-}
-
-.ql-editor .ql-size-small {
-  font-size: 12px;
-}
-
-.ql-editor .ql-size-large {
-  font-size: 16px;
-}
-
-.ql-editor .ql-size-huge {
-  font-size: 18px;
-}
 
 .el-date-editor.el-input,
 .el-date-editor.el-input__inner {

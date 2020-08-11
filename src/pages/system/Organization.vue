@@ -1,5 +1,5 @@
 <template>
-  <div class="wrap">
+  <div id="organization" class="wrap">
     <!-- 权限列表 -->
     <div class="custom-tree-container">
       <div class="block">
@@ -8,6 +8,7 @@
           <!-- <el-tree :data="treedData" :show-checkbox="showCheckbox" node-key="id" default-expand-all :expand-on-click-node="false"> -->
           <span class="custom-tree-node" slot-scope="{ node, data }">
             <span>{{ node.label }}</span>
+            <span>(简要描述:{{ data.descript }})</span>
             <span>
               <el-button type="text" size="small" @click.stop="() => append(data)">增加</el-button>
               <el-button type="text" size="small" @click.stop="() => modify(data,node)">修改</el-button>
@@ -81,12 +82,12 @@ export default {
       rootNode: [{
         key: 0,
         name: '根目录',
-        descript: '',
+        descript: '我是根目录的描述',
         superiorkey: null,
         children: [{
           key: 1,
           name: '第一级别',
-          descript: '我是1级别',
+          descript: '我是1级别miao',
           superiorkey: 0,
           children: [{}],
           leaf: false
@@ -177,7 +178,7 @@ export default {
         this.$message.error('抱歉！部门级别最高八级')
       } else {
         this.nameLabel = '部门名称'
-        // 增加时的上级key = 当前级别key
+        // 增加时的上级key === 当前级别key
         this.permissionForm.superiorkey = data.key
         this.permissionForm.key = ''
 
