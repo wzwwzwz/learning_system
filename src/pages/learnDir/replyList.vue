@@ -1,5 +1,6 @@
 <template>
   <div id="replyaList">
+
     <template v-for="(item,index) in list">
       <div :key="index" class="answer_list_wrap">
         <div class="answer_list_top">
@@ -77,13 +78,23 @@
               </el-collapse-transition>
             </template>
 
-            <!-- 查看所有回复 -->
-            <div class="childrenList" :class="{hideChildrenList:listOperation[index].commentsList.length !== 0}"
-              v-show="listOperation[index].commentsList.length !== 0  || listOperation[index].loading === true"
-              v-loading.lock="listOperation[index].loading" :element-loading-text="'正在获取所有评论'">
-              <ReplyList :answerList="listOperation[index].commentsList" :componentLevel="componentLevel + 1"
-                @delete="deleteAnswer($event)"></ReplyList>
-            </div>
+            <transition name="el-zoom-in-center">
+              <!-- 查看所有回复 -->
+              <div class="childrenList" :class="{hideChildrenList:listOperation[index].commentsList.length !== 0}"
+                v-show="listOperation[index].commentsList.length !== 0  || listOperation[index].loading === true"
+                v-loading.lock="listOperation[index].loading" :element-loading-text="'正在获取所有评论'">
+
+                <!-- 关闭按钮 -->
+                <div class="close" v-show="true" @click="closeComments(index)">
+                  <span class="el-icon-caret-bottom"></span>收起评论
+                </div>
+
+                <ReplyList :answerList="listOperation[index].commentsList" :componentLevel="componentLevel + 1"
+                  @delete="deleteAnswer($event)">
+                </ReplyList>
+
+              </div>
+            </transition>
 
           </div>
         </div>
@@ -264,6 +275,7 @@ export default {
         vm.listOperation[idx].loading = false
       })
     },
+
     cancelReply (idx) {
       this.listOperation[idx].showReply = false
     },
@@ -384,6 +396,11 @@ export default {
 
         return data
       })
+    },
+    closeComments (idx) {
+      this.listOperation[idx].loading = false
+      this.listOperation[idx].commentsList = []
+      // this.listOperation[idx].commentsList.length = 0
     }
   }
 }
@@ -394,10 +411,21 @@ export default {
   border: none;
 }
 
+.close {
+  text-align: right;
+  padding: 0 10px;
+  color: gray;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
 // 回复列表最外层
 .answer_list_wrap {
   padding: 18px 0;
   border-bottom: 1px solid #ddd;
+  border-color: #4a4a4a;
 
   .answer_list_top {
     .small_tag_wrap {
@@ -514,6 +542,7 @@ export default {
     }
     .childrenList {
       padding: 10px;
+      min-height: 150px;
     }
   }
 }
@@ -546,6 +575,10 @@ export default {
 
     .show_answers_val {
       padding: 5px 0;
+    }
+
+    .answer_list_bottom {
+      text-align: right;
     }
   }
 }

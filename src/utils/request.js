@@ -73,7 +73,9 @@ const service = axios.create({
       if (typeof data === 'string') {
         const res = decrypt(data)
 
-        return JSON.parse(res)
+        if (res.trim() !== '') {
+          return JSON.parse(res)
+        }
       }
 
       return data
@@ -153,6 +155,9 @@ service.interceptors.response.use(
       duration: 2 * 1000
     })
     return Promise.reject(error)
+
+    // 测试函数
+    // return {code: 200}
   }
 )
 
