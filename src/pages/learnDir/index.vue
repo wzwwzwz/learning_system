@@ -5,7 +5,7 @@
     <!-- <component :is="currentView" @openDetails="openDetails($event)" @goBack="returnDefault" :AnswerDate="paramsDate" :idx="curIdx">
     </component> -->
 
-    <router-view @getIssue="getIssue($event)"></router-view>
+    <router-view @getIssue="getIssueMerge($event)"></router-view>
   </div>
 </template>
 
@@ -51,9 +51,9 @@ export default {
     },
     /**
      * @description 获取论点
-     * @param { String } obj 对象包含 params发送请求的数据对象,success成功回调，fail失败回调
+     * @param { String } obj 对象包含 params发送请求的数据对象(只是param内的参数并非整个请求传参对象),success成功回调，fail失败回调
     **/
-    getIssue ({ param = {}, success = () => { }, fail = () => { } }) {
+    getIssueMerge ({ param = {}, success = () => { }, fail = () => { } }) {
       if (!check.isObject(param)) {
         return false
       }

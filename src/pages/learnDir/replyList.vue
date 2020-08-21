@@ -111,7 +111,7 @@ import * as check from '@/utils/validate'
 
 // 测试代码
 import TestData from '@/utils/testFiles/testData'
-import testIssue from '@/utils/testFiles/testIssue'
+// import testIssue from '@/utils/testFiles/testIssue'
 
 export default {
   name: 'ReplyList',
@@ -197,7 +197,7 @@ export default {
 
       objData.setParams(data)
 
-      this.$request('api/agree_rep', { data: objData.getJson() }).then((res) => {
+      this.$request('api/agreeRep', { data: objData.getJson() }).then((res) => {
         console.log('ok', res)
       }).catch((error) => {
         console.log('error', error)
@@ -220,8 +220,8 @@ export default {
      * @param { String } idx 遍历下标
     **/
     viewComments (item, idx) {
-      console.log(this.issueData)
-      console.log(item, idx)
+      // console.log(this.issueData)
+      // console.log(item, idx)
 
       this.listOperation[idx].loading = true
 
@@ -234,10 +234,7 @@ export default {
       objData.setParams(data)
 
       let vm = this
-      this.$request('/get_issue_rep_rep', { data: objData.getJson() }).then((res) => {
-      }).catch((error) => {
-        console.log('error', error)
-
+      this.$request('/getIssueRepRep', { data: objData.getJson() }).then((res) => {
         vm.listOperation[idx].commentsList = [
           {
             id: '2_1',
@@ -269,10 +266,16 @@ export default {
             strhtml: '<p>我是小孩2-3</p>'
           }
         ]
+
+        let objData = new this.$dataProcess.Parameter()
+        objData.setJson(res)
+
         // 后台数据赋值
-        vm.listOperation[idx].commentsList = vm.formatCommentData(testIssue.comment, item.userId)
+        vm.listOperation[idx].commentsList = vm.formatCommentData(objData.getParams(), item.userId)
 
         vm.listOperation[idx].loading = false
+      }).catch((error) => {
+        console.log('error', error)
       })
     },
 

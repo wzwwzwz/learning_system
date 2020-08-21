@@ -25,8 +25,8 @@
         <el-table ref="filterTable" :data="tableData" style="width: 100%" @row-click="rowClick" :cell-class-name="setTableCellClass">
           <el-table-column type="index" label="序号" width="50" align="left"></el-table-column>
           <el-table-column prop="title" label="题目" width="500"></el-table-column>
-          <el-table-column prop="descript" label="描述"></el-table-column>
-          <el-table-column prop="knowledgePoint" label="知识点"></el-table-column>
+          <el-table-column prop="descript" label="描述" :show-overflow-tooltip=true></el-table-column>
+          <el-table-column prop="knowledgePoint" label="知识点" width="180"></el-table-column>
           <el-table-column class="ditInfo" width="80" :hoverShow="true" prop="view">查看回答</el-table-column>
         </el-table>
       </template>
@@ -38,7 +38,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import * as check from '@/utils/validate'
+// import * as check from '@/utils/validate'
 
 const btnGrp = () => import('@/components/common/btnGrp.vue')
 const AddIssue = () => import('./AddIssue.vue')
@@ -53,7 +53,21 @@ export default {
     ...mapGetters(['getKnowledgePoint'])
   },
   created () {
-    this.getIssue()
+    let vm = this
+    // 获取论点
+    vm.$emit('getIssue', {
+      param: {},
+      success: function (res) {
+        let objData = new vm.$dataProcess.Parameter()
+        objData.setJson(res)
+
+        let data = objData.getParams()
+        vm.tableData = data
+      },
+      fail: function (error) {
+        console.log(error)
+      }
+    })
   },
   data () {
     return {
@@ -64,53 +78,35 @@ export default {
         aBtn: this.$store.getters.getKnowledgePoint
       },
       tableData: [
-        {
-          key: 123,
-          status: 1451, // 状态，最佳答案的KEY，如果为空，则表示未完成
-          title: '什么时色温？',
-          knowledgePoint: '8596',
-          descript: '这只是一个小描述'
-        }, {
-          key: 124,
-          status: 1452,
-          title: '什么是LED亮度？',
-          knowledgePoint: '行业产品',
-          descript: '烦躁的描述'
-        }, {
-          key: 125,
-          status: 1453,
-          title: '世界论',
-          knowledgePoint: '产品应用场景',
-          descript: '简单描述'
-        }, {
-          key: 1236,
-          status: 1454,
-          title: '黑洞讨论',
-          knowledgePoint: '产品目的',
-          descript: '一般的描述'
-        }
+        // {
+        //   key: '论点的key_123',
+        //   status: 1451, // 状态，最佳答案的KEY，如果为空，则表示未完成
+        //   title: '什么时色温？',
+        //   knowledgePoint: '8596',
+        //   descript: '这只是一个小描述'
+        // }, {
+        //   key: '124',
+        //   status: 1452,
+        //   title: '什么是LED亮度？',
+        //   knowledgePoint: '行业产品',
+        //   descript: '烦躁的描述'
+        // }, {
+        //   key: '125',
+        //   status: 1453,
+        //   title: '世界论',
+        //   knowledgePoint: '产品应用场景',
+        //   descript: '简单描述'
+        // }, {
+        //   key: '1236',
+        //   status: 1454,
+        //   title: '黑洞讨论',
+        //   knowledgePoint: '产品目的',
+        //   descript: '一般的描述'
+        // }
       ]
     }
   },
   methods: {
-    getIssue (condition = {}) {
-      if (!check.isObject(condition)) {
-        return false
-      }
-
-      let objData = new this.$dataProcess.Parameter()
-      objData.setFunc('get_issue')
-
-      if (JSON.stringify(condition) !== '{}') {
-        objData.setParams(condition)
-      }
-
-      this.$request('/getIssue', { data: objData.getJson() }).then((res) => {
-        console.log('ok', res)
-      }).catch((error) => {
-        console.log('error', error)
-      })
-    },
     setTableCellClass ({ row, column, rowIndex, columnIndex }) {
       // console.log(row, column, rowIndex, columnIndex)
       if (column.property === 'view') {

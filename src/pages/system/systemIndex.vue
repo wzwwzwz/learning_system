@@ -51,12 +51,12 @@ export default {
         },
         {
           icon: 'el-icon-menu',
-          path: '/system',
+          path: '/privilege',
           val: '权限'
         },
         {
           icon: 'el-icon-menu',
-          path: '/privilege',
+          path: '/role',
           val: '权限组'
         }
 

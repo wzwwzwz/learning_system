@@ -47,8 +47,8 @@ import { mapGetters } from 'vuex'
 import * as check from '@/utils/validate'
 
 // 测试代码
-import TestData from '@/utils/testFiles/testData'
-import testIssue from '@/utils/testFiles/testIssue'
+// import TestData from '@/utils/testFiles/testData'
+// import testIssue from '@/utils/testFiles/testIssue'
 
 export default {
   name: 'answerList',
@@ -87,8 +87,6 @@ export default {
   },
   data () {
     return {
-      // 测试函数
-      TestDateFun: new TestData(),
       EditorVal: '',
       qusTitle: '',
       // 多文本编辑器内容
@@ -115,67 +113,31 @@ export default {
   filters: {
   },
   created () {
-    // 测试数据
-    let data1 = {
-      id: 123,
-      userId: 111,
-      userName: '甜酒果',
-      time: '2020-1-1',
-      likes: 2,
-      commenters: 2,
-      showMore: true,
-      strhtml: '<p>LED排列成矩阵或笔段，预制成标准大小的模块。室内显示屏常用的有8*8象素模块、8字7段数码预制成标准大小的模块。预制成标准大小的模块。预制成标准大小的模块。预制成标准大小的模块。模块。</p><p><strong>LED排列成矩阵或笔段，预制成标准大小的模块。LED排列成矩阵或笔段，预制成标准大小的模块。</strong></p><p>户外显示屏象素模块有4*4、8*8、8*16象素等规格。户外显示屏用的象素模块因为其每一象素由两只以上LED管束组成，故又称其为集管束模块。</p>LED排列成矩阵或笔段，预制成标准大小的模块。室内显示屏常用的有8*8象素模块、8字7段数码fffffffff模块<p>户外显示屏象素模块有4*4、8*8、8*16象素等规格。户外显示屏用的象素模块因为其每一象素由两只以上LED管束组成，故又称其为集管束模块。故又称其为集管束模块故又称其为集管束模块故又称其为集管束模块故又称其为集管束模块故又称其为集管束模块故又称其为集管束模块</p><p>LED排列成矩阵或笔段</p><p>LED排列成矩阵或笔段</p><p>LED排列成矩阵或笔段</p><p>LED排列成矩阵或笔段</p><p>LED排列成矩阵或笔段</p><p>LED排列成矩阵或笔段</p><p>LED排列成矩阵或笔段</p><p>LED排列成矩阵或笔段</p><p>LED排列成矩阵或笔段</p><p>LED排列成矩阵或笔段</p><p>LED排列成矩阵或笔段</p>'
-    }
-
-    this.TestDateFun.add(data1)
-
-    let data2 = {
-      id: 456,
-      userId: '253',
-      userName: '小V',
-      strhtml: '<div>正常情况下，室内LED显示屏的亮度和室外LED显示屏的亮度是不同的，一般情况下，室内LED显示屏的光强在500μcd-50mcd，室外LED显示屏的光强在100mcd-1000mcd，甚至在1000mcd以上。</div><p>关于getters如何使用,可以看一下上面代码的注释,这里我重点介绍一下getters和computed的不同,就是上面的第三种用法,我之前在vue进阶系列中探讨过computed，filters两种数据处理工具的局限性,有兴趣的可以去看这篇文章,computed的一个缺点就是不能传参,假设你要去判断一个数组里是否存在某个值,那你没法将某个值传到computed中去,这其实是一个很蛋疼的事情,当然你可以通过某些特殊手段,这里我不展开,有兴趣的可以留言.<p>',
-      time: '2020-1-1',
-      likes: 0,
-      commenters: 0
-    }
-
-    this.TestDateFun.add(data2)
-
-    let data3 = {
-      id: '1-3',
-      userId: 111,
-      userName: '小V',
-      strhtml: '<div>正常情况下，室内LED显示屏的亮度和室外LED显示屏的亮度是不同的，一般情况下，室内LED显示屏的光强在500μcd-50mcd，室外LED显示屏的光强在100mcd-1000mcd，甚至在1000mcd以上。</div><p>关于getters如何使用,可以看一下上面代码的注释,这里我重点介绍一下getters和computed的不同,就是上面的第三种用法,我之前在vue进阶系列中探讨过computed，filters两种数据处理工具的局限性,有兴趣的可以去看这篇文章,computed的一个缺点就是不能传参,假设你要去判断一个数组里是否存在某个值,那你没法将某个值传到computed中去,这其实是一个很蛋疼的事情,当然你可以通过某些特殊手段,这里我不展开,有兴趣的可以留言.<p>',
-      time: '2020-1-1',
-      likes: 0,
-      commenters: 0
-    }
-
-    this.TestDateFun.add(data3)
-    // 测试数据结束
-
     // 获取链接参数
     let key = this.$route.query.key
     console.log(this.$route.query)
     if (key) {
       let vm = this
+      vm.loading = true
 
       let obj = {
         param: { key },
         success: function (res) {
-        },
-        fail: function (error) {
-          console.log(error)
-          vm.getAllAnswer(key)
+          let objData = new vm.$dataProcess.Parameter()
+          objData.setJson(res)
 
           // 论点数据赋值
-          for (const item of testIssue.issue.values()) {
+          for (const item of objData.getParams().values()) {
             if (item.key === key) {
               vm.issueData = item
               return
             }
           }
+          vm.getAllAnswer(key)
         }
+        // fail: function (error) {
+        //   console.log(error)
+        // }
       }
       // 获取论点信息
       this.$emit('getIssue', obj)
@@ -184,14 +146,12 @@ export default {
   mounted () { },
   methods: {
     goBack () {
-      //   console.log('go back')
       this.$router.go(-1)
       this.qusTitle = 'ss'
       this.$emit('goBack')
     },
     submit () {
       let strHtml = this.article.content
-      // console.log(strHtml)
 
       if (strHtml === null) {
         return this.$message.error('写点啥吧')
@@ -247,7 +207,6 @@ export default {
     getAllAnswer (key) {
       this.loading = true
       this.answerList = []
-      // this.answerList = this.TestDateFun.getData()
 
       let objData = new this.$dataProcess.Parameter()
       objData.setFunc('get_issue_rep')
@@ -260,17 +219,17 @@ export default {
 
       let vm = this
       this.$request('/getIssueRep', { data: objData.getJson() }).then((res) => {
-        console.log('ok', res)
+        let objDataRes = new vm.$dataProcess.Parameter()
+        objDataRes.setJson(res)
+
+        vm.answerList = []
+        vm.answerList = vm.formatRspData(objDataRes.getParams())
+        this.loading = false
       }).catch((error) => {
         console.log('error', error)
-        console.log(testIssue)
-        vm.answerList = []
-        vm.answerList = vm.formatRspData(testIssue.answer)
-        this.loading = false
       })
     },
     deleteAnswer (param) {
-      this.TestDateFun.delete(param.id)
       this.getAllAnswer()
     },
     // 将请求数据转化为ui使用的数据格式

@@ -141,12 +141,11 @@ export default {
       })
     },
     handleSelect (key, keyPath) {
-      console.log(key, keyPath)
+      // console.log(key, keyPath)
 
       this.$router.push({
         path: key
       })
-      this.activeIndex = key
     },
     handleCommand (command) {
       // this.$message('click on item ' + command)
