@@ -45,7 +45,7 @@
               <!-- 选项 -->
               <el-checkbox-group v-model="answerSheet.multiSel[props.idx]">
                 <template v-for="(item_op_mul,idx_op_mul) in props.item.options">
-                  <el-checkbox :label="idx_op_mul" :key="item_op_mul.key">
+                  <el-checkbox :label="idx_op_mul" :key="item_op_mul.key" :disabled="bTested">
                     {{`${item_op_mul.key}`}}.{{item_op_mul.value}}
                   </el-checkbox>
                 </template>
@@ -128,10 +128,10 @@
 </template>
 
 <script>
+import * as check from '@/utils/validate'
+
 import { mapActions, mapGetters } from 'vuex'
 import { UtilsTimer } from '@/utils/index'
-// 测试文件
-import testExam from '@/utils/testFiles/testExam'
 
 const ExamItem = () => import('./ExamItem')
 const AnswerItem = () => import('./AnswerItem')
@@ -171,7 +171,7 @@ export default {
   },
   data () {
     // 传递数据解析
-    // idPrefix 标识id前缀
+    // idPrefix 标识id前缀;  0 === "判断题" || 1 === "单选题" || 2 === "多选题"
     const mapData = new Map()
     mapData.set(0, { name: '判断题', idPrefix: 'TF' })
     mapData.set(1, { name: '单选题', idPrefix: 'singleSel' })
@@ -266,6 +266,7 @@ export default {
   mounted () { },
   methods: {
     ...mapActions(['setExamStatus']),
+    // clearTimer
     clearTimer () {
       if (this.timerInterval !== null) {
         clearTimeout(this.timerInterval)
@@ -275,16 +276,18 @@ export default {
     startAnswerQue () {
       this.showNotes = false
       this.setExamStatus(true)
-      this.initExam()
-      this.timer = new UtilsTimer(60 * 60 * 2)
+      this.getQuestion()
+
+      this.timer = new UtilsTimer(2 * 60 * 60)
       let vm = this
+
       vm.showTimeLeft = vm.timer.getTimeLeft()
       vm.timerInterval = setInterval(() => {
         vm.showTimeLeft = vm.timer.updateTime()
 
         if (!vm.showTimeLeft) {
           // this.showTimeLeft = '时间到'
-          this.submit(true)
+          vm.submit(true)
           return false
         }
       }, 1000)
@@ -295,24 +298,14 @@ export default {
      **/
     submit (bTime) {
       let vm = this
+
       let answerTF = this.answerSheet.singleSel
       let answerSS = this.answerSheet.tOrF
       let answerMS = this.answerSheet.multiSel
 
-      console.log(answerTF, answerSS, answerMS)
+      // console.log(answerTF, answerSS, answerMS)
 
-      if (bTime) {
-        this.bIsSubmit = true
-        // 时间到直接提交
-        // let url = `${this.getBasicsReqURL}/system/role/updateRole`
-        // let params = { answerTF, answerSS }
-        // this.$request(url, params).then(
-        //   data => {
-        //     console.log(data)
-        //     this.id_num = data.body
-        //   }
-        // )
-      } else {
+      if (!bTime) {
         if (answerTF.includes('') || answerSS.includes('') || !this.checkAnswerMulSel()) {
           this.$message.error('还有题目未选择！')
           return
@@ -331,7 +324,7 @@ export default {
       // 合并答案
       let param = paramSS.concat(paramTF, paramMS)
 
-      console.log(param)
+      // console.log(param)
 
       // 提交考试
       let objData = new this.$dataProcess.Parameter()
@@ -353,30 +346,28 @@ export default {
       })
     },
     // 获取题目列表
-    getQuestion (bIsSelect) {
+    getQuestion () {
+      let vm = this
       let objData = new this.$dataProcess.Parameter('get_exam')
 
       this.$request('/getExam', { data: objData.getJson() }).then((res) => {
         console.log('ok', res)
-        this.qusListResult = res.data
+
+        objData.clear()
+        objData.setJson(res)
+
+        // all qustion
+        vm.qusListResult = objData.getParams()
+
+        // 选择题
+        vm.qusList.singleSel = vm.getFilterExam('1')
+        // 判断题
+        vm.qusList.tOrF = vm.getFilterExam('0')
+        // 多选题
+        vm.qusList.multiSel = vm.getFilterExam('2')
       }).catch((error) => {
         console.log('error', error)
       })
-
-      let obj = this.$store.state.classTestBank
-      return obj.getData(bIsSelect)
-    },
-    initExam () {
-      // 测试
-      console.log(testExam)
-      this.qusListResult = testExam
-
-      // 选择题
-      this.qusList.singleSel = this.getFilterExam('1')
-      // 判断题
-      this.qusList.tOrF = this.getFilterExam('0')
-      // 多选题
-      this.qusList.multiSel = this.getFilterExam('2')
     },
     /**
      * @description 获取题目过滤后的
@@ -429,6 +420,9 @@ export default {
       }, this)
     },
     chgAnswerType (b) {
+      if (!check.isBoolean(b)) {
+        return b
+      }
       if (b) {
         return 0
       }
@@ -604,8 +598,10 @@ export default {
   .el-radio__input.is-disabled + span.el-radio__label {
     color: inherit;
   }
-  // .el-radio__input.is-checked + .el-radio__label {
-  // }
+
+  .el-checkbox__input.is-disabled + span.el-checkbox__label {
+    color: inherit;
+  }
 
   .el-checkbox.is-bordered + .el-checkbox.is-bordered {
     margin-left: 0px;

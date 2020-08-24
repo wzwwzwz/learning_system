@@ -5,8 +5,8 @@
       <el-card :key="idx" class="box-card" :id="`${idPrefix}_${idx+1}`">
 
         <div slot="header" class="clearfix">
-          <span>第{{idx+1}}题</span>
-          <span style="margin-left:10px">{{item.title ? item.title : ""}}</span>
+          <span>第{{idx+1}}题<strong> .</strong></span>
+          <span style="">{{item.title ? item.title : ""}}</span>
           <!-- <el-button style=" float: right; padding: 3px 0" type="text">{{item.qusLevel}}</el-button> -->
         </div>
 

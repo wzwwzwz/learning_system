@@ -14,7 +14,7 @@ import store from '@/store/index'
 import { getToken } from '@/utils/auth'
 
 // AES加密解密
-import { encrypt, decrypt } from './encryption'
+import { encrypt } from './encryption'
 import * as check from './validate'
 
 // Gzip压缩
@@ -31,6 +31,9 @@ const service = axios.create({
   // baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
   method: 'POST',
+  headers: {
+    'Content-Type': 'text/plain;charset=utf-8'
+  },
   transformRequest: [
     // 复用原有的转换，实现json --> json string
     axios.defaults.transformRequest[0],
@@ -70,21 +73,25 @@ const service = axios.create({
   ],
   transformResponse: [
     function (data) {
-      if (typeof data === 'string') {
-        const res = decrypt(data)
+      // if (typeof data === 'string') {
+      //   // 解密
+      // const res = decrypt(data)
 
-        if (res.trim() !== '') {
-          return JSON.parse(res)
-        }
+      //   if (res.trim() !== '') {
+      //  // 转化为对象
+      //     return JSON.parse(res)
+      //   }
+      // }
+      let res = data
+
+      if (res.trim() !== '' && check.isString(res)) {
+        return JSON.parse(res)
       }
 
       return data
     }
   ]
 })
-
-// console.log(axios.defaults)
-// console.log(service.defaults)
 
 // request interceptor
 service.interceptors.request.use(
@@ -107,45 +114,39 @@ service.interceptors.request.use(
 
 // response interceptor
 service.interceptors.response.use(
-  /**
-   * If you want to get http information such as headers or status
-   * Please return  response => response
-  */
-
-  /**
-   * Determine the request status by custom code
-   * Here is just an example
-   * You can also judge the status by HTTP Status Code
-   */
   response => {
-    console.log('response', response)
+    // console.log('response', response)
+
+    if (response.status !== 200) {
+      return Promise.reject(new Error(response.message || 'Error'))
+    }
+
     const res = response.data
 
-    // if the custom code is not 20000, it is judged as an error.
-    if (res.code !== 20000) {
-      Message({
-        message: res.message || 'Error',
-        type: 'error',
-        duration: 2 * 1000
-      })
-
-      // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
-        // to re-login
-        MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
-          confirmButtonText: 'Re-Login',
-          cancelButtonText: 'Cancel',
-          type: 'warning'
-        }).then(() => {
-          store.dispatch('user/resetToken').then(() => {
-            location.reload()
-          })
-        })
-      }
-      return Promise.reject(new Error(res.message || 'Error'))
-    } else {
+    if (Number(res.CODE) === 200) {
       return res
     }
+
+    Message({
+      message: res.message || 'Error',
+      type: 'error',
+      duration: 2 * 1000
+    })
+
+    // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
+    if (res.CODE === 50008 || res.CODE === 50012 || res.CODE === 50014) {
+      // to re-login
+      MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
+        confirmButtonText: 'Re-Login',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      }).then(() => {
+        store.dispatch('user/resetToken').then(() => {
+          location.reload()
+        })
+      })
+    }
+    return Promise.reject(new Error(res.message || 'Error'))
   },
   error => {
     // console.log('err' + error) // for debug
@@ -155,9 +156,6 @@ service.interceptors.response.use(
       duration: 2 * 1000
     })
     return Promise.reject(error)
-
-    // 测试函数
-    // return {code: 200}
   }
 )
 

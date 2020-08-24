@@ -132,7 +132,6 @@ export default {
       // this.typeName = ''
     },
     addLearnQus () {
-      // this.$refs.examQueForm.openDialog(false)
       this.$refs.addIssueForm.openDialog(false)
     },
     submitForm (data) {
@@ -146,7 +145,7 @@ export default {
     },
     // 表格方法
     rowClick (row) {
-      // console.log(`点击行${row}`, row)
+      console.log(`点击行${row}`, row)
       this.getIndex = row.index
 
       // this.$emit('openDetails', row)
@@ -154,8 +153,7 @@ export default {
       // 跳转详情
       this.$router.push({
         name: 'DetailsAnswer',
-        // path: '/learnDir/DetailsAnswer',
-        query: { key: row.key }
+        query: row
       })
     },
     resetDateFilter () {

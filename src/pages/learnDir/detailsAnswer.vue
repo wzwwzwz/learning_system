@@ -115,32 +115,13 @@ export default {
   created () {
     // 获取链接参数
     let key = this.$route.query.key
-    console.log(this.$route.query)
+    // console.log(this.$route.query)
     if (key) {
       let vm = this
       vm.loading = true
 
-      let obj = {
-        param: { key },
-        success: function (res) {
-          let objData = new vm.$dataProcess.Parameter()
-          objData.setJson(res)
-
-          // 论点数据赋值
-          for (const item of objData.getParams().values()) {
-            if (item.key === key) {
-              vm.issueData = item
-              return
-            }
-          }
-          vm.getAllAnswer(key)
-        }
-        // fail: function (error) {
-        //   console.log(error)
-        // }
-      }
-      // 获取论点信息
-      this.$emit('getIssue', obj)
+      vm.issueData = this.$route.query
+      vm.getAllAnswer(key)
     }
   },
   mounted () { },
