@@ -14,11 +14,8 @@ import store from '@/store/index'
 import { getToken } from '@/utils/auth'
 
 // AES加密解密
-import { encrypt } from './encryption'
+import { encrypt, decrypt, ungzip, gzip } from './encryption'
 import * as check from './validate'
-
-// Gzip压缩
-import zlib from 'zlib'
 
 // 全局配置
 axios.defaults.baseURL = store.getters.getBasicsReqURL
@@ -33,12 +30,13 @@ const service = axios.create({
   method: 'POST',
   headers: {
     'Content-Type': 'text/plain;charset=utf-8'
+    // 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
   },
   transformRequest: [
     // 复用原有的转换，实现json --> json string
     axios.defaults.transformRequest[0],
     function (data, header) {
-      // const d = qs.stringify(data)
+      // data = qs.stringify(data)
       if (typeof data === 'undefined') {
         return data
       }
@@ -50,8 +48,6 @@ const service = axios.create({
         data = encrypt(data)
       }
 
-      // gzip压缩
-
       // 如果已处理过数据，则跳过
       if (header['Content-Encoding']) {
         return data
@@ -59,36 +55,34 @@ const service = axios.create({
 
       // 如果数据长度1KB（如字符数据并不一定小于1KB），不压缩
       if (data.length < 1024) {
-        return data
+        // return data
       }
 
       // 将数据压缩（可根据需要，只压缩长度大于多少的数据）
       // 设置数据类型
-      header['Content-Encoding'] = 'gzip'
-      const gzip = zlib.createGzip()
-      gzip.end(Buffer.from(data))
-      return gzip
-      // return data
+      header['Content-Encoding'] = 'gzip,deflate'
+
+      return gzip(data)
     }
   ],
   transformResponse: [
-    function (data) {
-      // if (typeof data === 'string') {
-      //   // 解密
-      // const res = decrypt(data)
-
-      //   if (res.trim() !== '') {
-      //  // 转化为对象
-      //     return JSON.parse(res)
-      //   }
-      // }
+    function (data, header) {
       let res = data
 
       if (res.trim() !== '' && check.isString(res)) {
+        header['Content-Encoding'] = 'gzip'
+
+        // 解压
+        res = ungzip(data)
+
+        // 解密
+        res = decrypt(res)
+
+        // 转化为对象
         return JSON.parse(res)
       }
 
-      return data
+      return res
     }
   ]
 })

@@ -3,14 +3,17 @@ import Vuex from 'vuex'
 
 // 测试文件
 import { TestBack } from '@/utils/testFiles/testBank'
+import * as check from '@/utils/validate'
 
 Vue.use(Vuex)
 
 // 要设置的全局访问的state对象
 const state = {
+  aesKey: 'lsAesKey13471_88',
   token: '',
   // 基本请求地址
-  basicsReqURL: 'http://192.168.1.41:8080',
+  // basicsReqURL: 'http://192.168.1.41:3000',
+  basicsReqURL: 'http://localhost:3000',
   // 用户信息
   userInfo: {
     userId: 111,
@@ -91,6 +94,7 @@ const state = {
 
 // 实时监听state值的变化(最新状态)
 const getters = {
+  getAesKey: state => state.aesKey,
   getToken: state => state.token,
   getUserInfo: (state) => state.userInfo,
   getCount: (state) => state.count,
@@ -106,6 +110,12 @@ const getters = {
 
 // 该方法接受第一个参数接受 state作为上下文
 const mutations = {
+  setAesKey (state, str) {
+    if (!check.isString(str)) {
+      return
+    }
+    state.aesKey = str
+  },
   setToken (state, str) {
     state.token = str
   },
@@ -141,6 +151,9 @@ const mutations = {
 
 // 可以实现异步
 const actions = {
+  setAesKey ({commit}, str) {
+    commit('setAesKey', str)
+  },
   setToken ({commit}, str) {
     commit('setToken', str)
   },
@@ -155,6 +168,7 @@ const actions = {
     console.log('actions上传头像')
     commit('uploadHead', param)
   },
+  // 设置考试状态
   setExamStatus ({commit}, param) {
     commit('setExamStatus', param)
   },
