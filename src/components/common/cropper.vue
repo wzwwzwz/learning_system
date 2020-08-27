@@ -89,7 +89,7 @@ export default {
     },
     // 上传图片（点击上传按钮）
     finish (type) {
-      console.log('finish', type)
+      // console.log('finish', type)
       let _this = this
       let formData = new FormData()
       // 输出
@@ -98,20 +98,32 @@ export default {
           //   let img = window.URL.createObjectURL(data)
           formData.append('multfile', data, _this.fileName)
           formData.append('operaType', _this.uploadType)
+
+          let paramData = {}
+          formData.forEach((value, key) => { paramData[key] = value })
+
+          console.log(paramData)
+
+          // paramData = {
+          //   multfile: _this.fileName,
+          //   operaType: _this.uploadType
+          // }
+          _this.$emit('upload', paramData)
+          return false
           //   _this.$store.dispatch('UPLOAD_HEAD', formData)
-          _this.UPLOAD_HEAD(formData)
-            .then(res => {
-              let data = res.data.data
-              _this.$emit('upload', data)
-              _this.$message.success('上传成功！')
-              _this.$emit('closeDialog')
-            }).catch(err => {
-              if (err.data) {
-                _this.$message.error(err.data.msg)
-              } else {
-                _this.$message.error('上传失败！')
-              }
-            })
+          // _this.UPLOAD_HEAD(formData)
+          //   .then(res => {
+          //     let data = res.data.data
+          //     _this.$emit('upload', data)
+          //     _this.$message.success('上传成功！')
+          //     _this.$emit('closeDialog')
+          //   }).catch(err => {
+          //     if (err.data) {
+          //       _this.$message.error(err.data.msg)
+          //     } else {
+          //       _this.$message.error('上传失败！')
+          //     }
+          //   })
         })
       } else {
         _this.$refs.cropper.getCropData((data) => {
@@ -122,12 +134,12 @@ export default {
     },
     // 实时预览函数
     realTime (data) {
-      console.log('realTime')
+      // console.log('realTime')
       this.previews = data
     },
     // 下载图片
     down (type) {
-      console.log('down')
+      // console.log('down')
       var aLink = document.createElement('a')
       aLink.download = 'author-img'
       if (type === 'blob') {
@@ -146,7 +158,7 @@ export default {
     },
     // 选择本地图片
     uploadImg (e, num) {
-      console.log('uploadImg')
+      // console.log('uploadImg')
       var _this = this
       // 上传图片
       var file = e.target.files[0]
@@ -176,8 +188,8 @@ export default {
       reader.readAsArrayBuffer(file)
     },
     imgLoad (msg) {
-      console.log('imgLoad')
-      console.log(msg)
+      // console.log('imgLoad')
+      // console.log(msg)
     }
   }
 }

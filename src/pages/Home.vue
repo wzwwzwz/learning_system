@@ -22,6 +22,8 @@
   </div>
 </template>
 <script>
+import { mapGetters, mapMutations } from 'vuex'
+
 import zHeader from '@/components/common/header.vue'
 import examQueDialog from '@/components/common/examQueDialog.vue'
 
@@ -34,8 +36,8 @@ export default {
       examQueData: {
         showDialog: false,
         title: ''
-      }
-
+      },
+      timer: null
     }
   },
   components: {
@@ -44,14 +46,18 @@ export default {
     UploadAvatar
   },
   created () {
-    // this.$store.commit("changeBreadcumb", []);
-    // this.$router.push({
-    //   name: 'learn_dir'
-    // })
+    this.clearTimer()
+    this.isOnline()
+    let vm = this
+    vm.timer = setInterval(() => {
+      vm.isOnline()
+    }, 1000 * 60 * 5)
   },
   computed: {
+    ...mapGetters(['getAesKey'])
   },
   methods: {
+    ...mapMutations(['setAesKey']),
     editExam () {
       // this.examQueData.title = ''
       this.$refs.examQueForm.openDialog(true)
@@ -73,7 +79,33 @@ export default {
       let obj = this.$store.state.classTestBank
       obj.add(data)
       console.log(obj.getData())
+    },
+    isOnline () {
+      let objData = new this.$dataProcess.Parameter()
+      objData.setFunc('heartbeat')
+      objData.setParams({ key: this.getAesKey })
+
+      let vm = this
+      this.$request('/heartbeat', { data: objData.getJson() }).then((res) => {
+        console.log('ok', res)
+        objData.clear()
+        objData.setJson(res)
+        let data = objData.getParams()
+
+        // update aes key
+        vm.setAesKey(data[0].key)
+      }).catch((error) => {
+        console.log('error', error)
+      })
+    },
+    clearTimer () {
+      if (this.timer) {
+        clearInterval(this.timer)
+      }
     }
+  },
+  destroyed () {
+    this.clearTimer()
   }
 }
 </script>
