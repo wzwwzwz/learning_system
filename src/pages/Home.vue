@@ -68,13 +68,6 @@ export default {
     // 提交出题
     examQueDialogSubmitForm (data) {
       console.log(data)
-      // let params = data
-      // let url = `${this.getBasicsReqURL}/system/role/updateRole`
-      // this.$request(url, params).then(
-      //   data => {
-      //     console.log('成功')
-      //   }
-      // ).catch()
 
       let obj = this.$store.state.classTestBank
       obj.add(data)

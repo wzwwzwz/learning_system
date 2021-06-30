@@ -1,6 +1,6 @@
 /**
  * @description 此文件用于处理后台数据
- * @author 巫昭雯
+ * @author WZW
  * @date 2020-07-15 17:34:39
  * @version V1.0
 */
@@ -11,7 +11,7 @@ import { encrypt, decrypt } from '@/utils/encryption'
 /********************************************************************
 * @description 构造参数格式明
 * @class Parameter
-* @author 巫昭雯
+* @author WZW
 * @constructor
 * @param { String } rqsName 请求名
 *******************************************************************/
@@ -214,7 +214,7 @@ class Parameter {
 /********************************************************************
  * @description 格式化下拉框选项
  * @class FormatOption
- * @author 巫昭雯
+ * @author WZW
  * @constructor
  * @param { String } nodes constructor的参数
 *******************************************************************/

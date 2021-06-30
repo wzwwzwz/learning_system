@@ -59,7 +59,8 @@
     <!-- 分页显示 -->
     <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
       :page-sizes="[5, 10, 20, 30, 40]" :page-size="5" layout="total, sizes, prev, pager, next, jumper" :total="tableData.length"
-      background></el-pagination>
+      background>
+    </el-pagination>
   </div>
 </template>
 <script>
@@ -142,7 +143,7 @@ export default {
       vm.tableData = []
       // let pageIndex = vm.pageIndex
       // vm.$request(
-      //   `${vm.getBasicsReqURL}/system/role/roleInfo`,
+      //   `/system/role/roleInfo`,
       //   pageIndex
       // ).then(data => {
       //   if (data.code === 200) {
@@ -172,7 +173,7 @@ export default {
         console.log(param)
 
         // vm.$request(
-        //   //   `${vm.getBasicsReqURL}/system/role/deleteUser`,
+        //   //   `/system/role/deleteUser`,
         //   res
         // ).then(data => {
         //   if (data.code === 200) {

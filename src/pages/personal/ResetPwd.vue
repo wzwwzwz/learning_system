@@ -23,16 +23,16 @@ export default {
     this.pwdForm.userId = id
   },
   data () {
-    var validatePass = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请输入密码'))
-      } else {
-        if (this.pwdForm.checkPass !== '') {
-          this.$refs.pwdForm.validateField('newPwd')
-        }
-        callback()
-      }
-    }
+    // var validatePass = (rule, value, callback) => {
+    //   if (value === '') {
+    //     callback(new Error('请输入密码'))
+    //   } else {
+    //     if (this.pwdForm.checkPass !== '') {
+    //       this.$refs.pwdForm.validateField('newPwd')
+    //     }
+    //     callback()
+    //   }
+    // }
     return {
       pwdForm: {
         userId: '',
@@ -50,11 +50,7 @@ export default {
           }
         ],
         newPwd: [
-          {
-            required: true,
-            message: '请输入新的密码',
-            trigger: ['blur', 'change']
-          },
+          { required: true, message: '请输入新的密码', trigger: ['blur', 'change'] },
           {
             // pattern: window._check.pattern,
             message: '请输入正确的密码格式（4-16位任意字符)',
@@ -112,7 +108,9 @@ export default {
       })
     },
     resetForm () {
-      this.$refs.pwdForm.resetFields()
+      if (this.$refs.pwdForm) {
+        this.$refs.pwdForm.resetFields()
+      }
     },
     // 加密的方法
     cryptPwd (value) {

@@ -23,6 +23,7 @@ const Company = () => import(/* webpackChunkName:'systemPackage' */ '@/pages/sys
 const User = () => import(/* webpackChunkName:'systemPackage' */ '@/pages/system/User')
 const Organization = () => import(/* webpackChunkName:'systemPackage' */ '@/pages/system/Organization')
 const Privilege = () => import(/* webpackChunkName:'systemPackage' */ '@/pages/system/Privilege')
+const Role = () => import(/* webpackChunkName:'systemPackage' */ '@/pages/system/Role')
 
 // 个人设置
 const AuditIndex = () => import(/* webpackChunkName:'personalPackage' */ '@/pages/personal/myAudit/AuditIndex')
@@ -65,7 +66,8 @@ let routes = [
           {path: '/company', name: 'Company', component: Company},
           {path: '/user', name: 'User', component: User},
           {path: '/organization', name: 'organization', component: Organization},
-          {path: '/privilege', name: 'Privilege', component: Privilege}
+          {path: '/privilege', name: 'privilege', component: Privilege},
+          {path: '/role', name: 'role', component: Role}
         ]
       },
       // 测试页：二级页面

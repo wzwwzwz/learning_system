@@ -115,12 +115,11 @@ export default {
 
         this.$request('/addIssue', { data: objData.getJson() }).then((res) => {
           console.log('ok', res)
+          vm.dialogCancel()
         }).catch((error) => {
           console.log('error', error)
         }).finally(() => {
           // vm.$emit('submitForm', { title, knowledgePoint, descript })
-          vm.dialogVisible = false
-          vm.$refs.issueForm.resetFields()
         })
       })
     },

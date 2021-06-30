@@ -1,7 +1,7 @@
 
 /**
  * @description 全局过滤 || 格式化函数
- * @author 巫昭雯
+ * @author WZW
  * @date 2020-07-03 15:46:38
  * @version V1.0
 */
@@ -11,7 +11,7 @@
  * @description  布尔值转换
  * @param { Boolean } 参数1
  * @return { String } true === "正确" | false === "错误"
- * @author 巫昭雯
+ * @author WZW
  * @date 2020-07-03 15:47:02
  * @version V1.0
 */

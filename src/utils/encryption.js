@@ -1,7 +1,7 @@
 
 /**
  * @description 此文件用于AES数据加密
- * @author 巫昭雯
+ * @author WZW
  * @date 2020-07-21 16:41:00
  * @version V1.0
 */
@@ -17,7 +17,7 @@ import * as check from '@/utils/validate'
  * @param { String } word 需要加密的字符串;因此对象需要先转化为字符串
  * @param { String } keyStr 用到的16位字符串的key
  * @return { String } 加密后的字符串
- * @author 巫昭雯
+ * @author WZW
  * @date 2020-07-21 16:30:01
  * @version V1.0
 */
@@ -38,7 +38,7 @@ function encrypt (word, keyStr) {
  * @param { String } word 需要解密的字符串
  * @param { String } keyStr 用到的16位字符串的key
  * @return { String } 解密后的字符串
- * @author 巫昭雯
+ * @author WZW
  * @date 2020-07-21 16:30:08
  * @version V1.0
 */

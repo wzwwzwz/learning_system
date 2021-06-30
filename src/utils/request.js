@@ -1,6 +1,6 @@
 /**
  * @description 此文件用于封装Axios请求
- * @author 巫昭雯
+ * @author WZW
  * @date 2020-07-24 10:45:14
  * @version V1.0
 */
@@ -37,6 +37,8 @@ const service = axios.create({
     axios.defaults.transformRequest[0],
     function (data, header) {
       // data = qs.stringify(data)
+      // data = JSON.stringify(data)
+
       if (typeof data === 'undefined') {
         return data
       }
@@ -61,6 +63,8 @@ const service = axios.create({
       // 将数据压缩（可根据需要，只压缩长度大于多少的数据）
       // 设置数据类型
       header['Content-Encoding'] = 'gzip,deflate'
+
+      // console.log(data)
 
       return gzip(data)
     }

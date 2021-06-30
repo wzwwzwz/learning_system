@@ -100,7 +100,7 @@ export function isBoolean (b) {
  * @description 校验数据格式是否为对象
  * @param { Object } obj
  * @returns {Boolean} true === 是对象 || false === 不是对象
- * @author 巫昭雯
+ * @author WZW
  * @date 2020-07-21 11:41:50
  * @version V1.0
 */
@@ -116,7 +116,7 @@ export function isObject (obj) {
  * @description 校验数据格式是否为整型
  * @param { Number } num
  * @returns {Boolean} true === 是对象 || false === 不是对象
- * @author 巫昭雯
+ * @author WZW
  * @date 2020-07-21 11:41:50
  * @version V1.0
 */

@@ -464,7 +464,7 @@ export class UtilsTimer {
  * @param { Array } aExam 原题目
  * @param { Array } aAnswer 答题卡
  * @param { Number || false} step 每题的分数
- * @author 巫昭雯
+ * @author WZW
  * @date 2020-07-01 16:38:20
  * @version V1.0
  */
@@ -488,7 +488,7 @@ export function countScore (aExam, aAnswer, step) {
  * @description 是否存在路径
  * @param { String } routes 路由
  * @return { Number }  true === "存在" || false === "不存在"
- * @author 巫昭雯
+ * @author WZW
  * @date 2020-07-10 17:35:17
  * @version V1.0
 */

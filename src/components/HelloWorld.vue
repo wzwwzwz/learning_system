@@ -1,113 +1,69 @@
-<template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
-    <ul>
-      <li>
-        <a
-          href="https://vuejs.org"
-          target="_blank"
-        >
-          Core Docs
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://forum.vuejs.org"
-          target="_blank"
-        >
-          Forum
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://chat.vuejs.org"
-          target="_blank"
-        >
-          Community Chat
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://twitter.com/vuejs"
-          target="_blank"
-        >
-          Twitter
-        </a>
-      </li>
-      <br>
-      <li>
-        <a
-          href="http://vuejs-templates.github.io/webpack/"
-          target="_blank"
-        >
-          Docs for This Template
-        </a>
-      </li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
-      <li>
-        <a
-          href="http://router.vuejs.org/"
-          target="_blank"
-        >
-          vue-router
-        </a>
-      </li>
-      <li>
-        <a
-          href="http://vuex.vuejs.org/"
-          target="_blank"
-        >
-          vuex
-        </a>
-      </li>
-      <li>
-        <a
-          href="http://vue-loader.vuejs.org/"
-          target="_blank"
-        >
-          vue-loader
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/awesome-vue"
-          target="_blank"
-        >
-          awesome-vue
-        </a>
-      </li>
-    </ul>
-  </div>
+<template >
+  <el-tree :props="props" :load="loadNode" lazy>
+    <span class="custom-tree-node" slot-scope="{ node, data }">
+      <span>{{ node.label }}</span>
+      <span>
+        <el-button type="text" size="small" @click="() => append(node,data)">增加</el-button>
+        <el-button type="text" size="small" @click="() => modify(node,data)">修改</el-button>
+        <el-button type="text" size="small" @click="() => remove(node, data)">删除</el-button>
+      </span>
+    </span>
+  </el-tree>
+
 </template>
 
 <script>
 export default {
-  name: 'HelloWorld',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      props: {
+        val: 'key',
+        label: 'name',
+        children: 'children',
+        isLeaf: 'leaf',
+        superiorkey: 'superiorkey'
+      }
+    }
+  },
+  methods: {
+    loadNode (node, resolve) {
+      if (node.level === 0) {
+        return resolve([{
+          name: 'region96',
+          key: 1,
+          children: [{
+            name: 'region-1', key: 1 - 1
+          }]
+        }])
+      }
+      if (node.level > 1) return resolve([])
+
+      setTimeout(() => {
+        // const data = [{
+        //   name: 'fef',
+        //   key: 2,
+        //   leaf: true
+        // }, {
+        //   name: 'zone',
+        //   key: 3
+        // }]
+
+        const data = node.data.children
+
+        resolve(data)
+      }, 500)
+    },
+    append (node, data) {
+      let val = 'SUPERIORKEY'.toLowerCase()
+      'SUPERIORKEY'.toLocaleLowerCase()
+
+      if (val === 'superiorkey') {
+        console.log(true)
+        return
+      }
+      console.log(false)
+      console.log(data)
     }
   }
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h1, h2 {
-  font-weight: normal;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>

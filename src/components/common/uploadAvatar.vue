@@ -19,7 +19,7 @@ export default {
     }
   },
   created () {
-    this.openDialog()
+    // this.openDialog()
   },
   methods: {
     openDialog () {
